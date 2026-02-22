@@ -1,0 +1,7 @@
+[tools]
+node = "lts"
+"npm:@haasstefan/skills-lint" = "latest"
+
+[tasks.lint]
+description = "Lint all SKILL.md files with skills-lint"
+run = "skills-lint"
