@@ -2,6 +2,21 @@
 node = "lts"
 "npm:@haasstefan/skills-lint" = "latest"
 
+[tasks.install]
+description = "Symlink skills into ~/.config/agents/skills"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+SKILLS_DIR="${HOME}/.config/agents/skills"
+mkdir -p "$SKILLS_DIR"
+for skill in */SKILL.md; do
+  name="$(dirname "$skill")"
+  rm -rf "${SKILLS_DIR}/${name}"
+  ln -s "${PWD}/${name}" "${SKILLS_DIR}/${name}"
+  echo "✓ ${name}"
+done
+"""
+
 [tasks.lint]
 description = "Lint all SKILL.md files with skills-lint"
 run = "skills-lint"
