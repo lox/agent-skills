@@ -4,12 +4,16 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  codex_review_loop.sh state [--pr <number>] [--repo <owner/repo>] [--codex-pattern <regex>]
-  codex_review_loop.sh wait  [--pr <number>] [--repo <owner/repo>] [--timeout <seconds>] [--interval <seconds>] [--codex-pattern <regex>]
+  codex_review_loop.sh state   [--pr <number>] [--repo <owner/repo>] [--codex-pattern <regex>]
+  codex_review_loop.sh wait    [--pr <number>] [--repo <owner/repo>] [--timeout <seconds>] [--interval <seconds>] [--codex-pattern <regex>]
+  codex_review_loop.sh resolve [--pr <number>] [--repo <owner/repo>] --comment-ids <id1,id2,...>
+  codex_review_loop.sh checks  [--pr <number>] [--repo <owner/repo>]
 
 Commands:
-  state   Print JSON summary of Codex review status for the PR.
-  wait    Poll until pending Codex review completes or timeout occurs.
+  state    Print JSON summary of Codex review status for the PR.
+  wait     Poll until pending Codex review completes or timeout occurs.
+  resolve  Resolve review threads containing the given comment IDs.
+  checks   Show CI check status for the PR as JSON.
 EOF
 }
 
@@ -40,6 +44,96 @@ resolve_pr() {
     return
   fi
   gh pr view --json number --jq .number
+}
+
+resolve_threads() {
+  local repo="$1"
+  local pr="$2"
+  local comment_ids="$3"
+
+  local owner name
+  owner="${repo%%/*}"
+  name="${repo##*/}"
+
+  # Fetch all review threads with their first comment's databaseId
+  local threads
+  threads="$(gh api graphql -f query='
+    query($owner: String!, $name: String!, $pr: Int!) {
+      repository(owner: $owner, name: $name) {
+        pullRequest(number: $pr) {
+          reviewThreads(first: 100) {
+            nodes {
+              id
+              isResolved
+              comments(first: 1) {
+                nodes {
+                  databaseId
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ' -f owner="$owner" -f name="$name" -F pr="$pr")"
+
+  # Build array of target comment IDs
+  local ids_json
+  ids_json="$(echo "$comment_ids" | tr ',' '\n' | jq -Rn '[inputs | select(. != "") | tonumber]')"
+
+  # Find threads whose first comment matches any target ID and resolve them
+  local thread_ids
+  thread_ids="$(jq -r \
+    --argjson ids "$ids_json" '
+      .data.repository.pullRequest.reviewThreads.nodes[]
+      | select(.isResolved | not)
+      | select(.comments.nodes[0].databaseId as $cid | $ids | index($cid))
+      | .id
+    ' <<<"$threads")"
+
+  local resolved=0
+  for tid in $thread_ids; do
+    gh api graphql -f query='
+      mutation($threadId: ID!) {
+        resolveReviewThread(input: {threadId: $threadId}) {
+          thread { id isResolved }
+        }
+      }
+    ' -f threadId="$tid" >/dev/null
+    resolved=$((resolved + 1))
+  done
+
+  jq -cn --argjson resolved "$resolved" '{resolved_count: $resolved}'
+}
+
+checks_json() {
+  local repo="$1"
+  local pr="$2"
+
+  local checks
+  checks="$(gh pr checks "$pr" --repo "$repo" --json name,state,conclusion,detailsUrl 2>/dev/null || echo '[]')"
+
+  local all_passed
+  all_passed="$(jq '[.[] | .conclusion == "SUCCESS" or .conclusion == "NEUTRAL" or .conclusion == "SKIPPED"] | all' <<<"$checks")"
+
+  local any_failed
+  any_failed="$(jq '[.[] | .conclusion == "FAILURE" or .conclusion == "CANCELLED" or .conclusion == "TIMED_OUT" or .conclusion == "ACTION_REQUIRED"] | any' <<<"$checks")"
+
+  local any_pending
+  any_pending="$(jq '[.[] | .state == "QUEUED" or .state == "IN_PROGRESS" or .state == "WAITING" or .state == "PENDING"] | any' <<<"$checks")"
+
+  jq -cn \
+    --argjson checks "$checks" \
+    --argjson all_passed "$all_passed" \
+    --argjson any_failed "$any_failed" \
+    --argjson any_pending "$any_pending" '
+      {
+        all_passed: $all_passed,
+        any_failed: $any_failed,
+        any_pending: $any_pending,
+        checks: $checks
+      }
+    '
 }
 
 state_json() {
@@ -187,6 +281,7 @@ main() {
   local codex_pattern='codex|chatgpt-codex-connector'
   local timeout=900
   local interval=20
+  local comment_ids=""
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -210,6 +305,10 @@ main() {
         interval="$2"
         shift 2
         ;;
+      --comment-ids)
+        comment_ids="$2"
+        shift 2
+        ;;
       -h|--help)
         usage
         exit 0
@@ -228,6 +327,16 @@ main() {
   case "$mode" in
     state)
       state_json "$repo" "$pr" "$codex_pattern"
+      ;;
+    resolve)
+      if [[ -z "$comment_ids" ]]; then
+        echo "resolve requires --comment-ids" >&2
+        exit 1
+      fi
+      resolve_threads "$repo" "$pr" "$comment_ids"
+      ;;
+    checks)
+      checks_json "$repo" "$pr"
       ;;
     wait)
       local start end now state pending
