@@ -1,0 +1,4 @@
+interface:
+  display_name: "Go CLI Writing"
+  short_description: "Build and review Go CLI apps"
+  default_prompt: "Use $go-cli-writing to implement or review a Go CLI with Kong command parsing, charmbracelet/log logging, and clean command package boundaries."

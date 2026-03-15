@@ -1,0 +1,4 @@
+interface:
+  display_name: "Go Writing"
+  short_description: "Write and review clear Go code"
+  default_prompt: "Use $go-writing to implement or review Go code that follows idiomatic Go, current version-gated Go guidance, and repository conventions."
