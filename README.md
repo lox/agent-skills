@@ -4,6 +4,7 @@ Reusable Amp/agent skills that can be copied into other environments.
 
 ## Included Skills
 
+- `adversarial-code-reviewing`: Guidance for skeptical, high-signal code reviews that look for material ship blockers and subtle production risks.
 - `addressing-pr-reviews`: Workflow for triaging and replying to GitHub PR review comments.
 - `autofixing-codex-reviews`: Automated loop for handling Codex PR feedback, fixing code, and posting replies.
 - `go-cli-writing`: Guidance for building and reviewing Go CLIs with Kong, charmbracelet/log, and clean command layout.
