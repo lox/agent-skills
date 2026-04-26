@@ -1,0 +1,4 @@
+interface:
+  display_name: "Librarian"
+  short_description: "Read code outside the workspace"
+  default_prompt: "Use $consulting-librarian when you need deep understanding of frameworks, dependencies, or repositories outside the current workspace with an Amp-style Librarian workflow."

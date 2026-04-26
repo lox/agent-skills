@@ -4,21 +4,7 @@ node = "lts"
 
 [tasks.install]
 description = "Symlink skills into ~/.config/agents/skills and ~/.agents/skills"
-run = """
-#!/usr/bin/env bash
-set -euo pipefail
-AMPCODE_DIR="${HOME}/.config/agents/skills"
-CODEX_DIR="${HOME}/.agents/skills"
-mkdir -p "$AMPCODE_DIR" "$CODEX_DIR"
-for skill in */SKILL.md; do
-  name="$(dirname "$skill")"
-  for dir in "$AMPCODE_DIR" "$CODEX_DIR"; do
-    rm -rf "${dir}/${name}"
-    ln -s "${PWD}/${name}" "${dir}/${name}"
-  done
-  echo "✓ ${name}"
-done
-"""
+run = "bash ./scripts/install_skills.sh"
 
 [tasks.lint]
 description = "Lint all SKILL.md files with skills-lint"
