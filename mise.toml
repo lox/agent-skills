@@ -4,35 +4,7 @@ node = "lts"
 
 [tasks.install]
 description = "Symlink skills into ~/.config/agents/skills and ~/.agents/skills"
-run = """
-#!/usr/bin/env bash
-set -euo pipefail
-AMPCODE_DIR="${HOME}/.config/agents/skills"
-CODEX_DIR="${HOME}/.agents/skills"
-NON_AMP_ONLY_SKILLS=("consulting-librarian")
-mkdir -p "$AMPCODE_DIR" "$CODEX_DIR"
-for skill in */SKILL.md; do
-  name="$(dirname "$skill")"
-  rm -rf "${AMPCODE_DIR}/${name}" "${CODEX_DIR}/${name}"
-  ln -s "${PWD}/${name}" "${CODEX_DIR}/${name}"
-
-  is_non_amp_only=false
-  for restricted_skill in "${NON_AMP_ONLY_SKILLS[@]}"; do
-    if [[ "$name" == "$restricted_skill" ]]; then
-      is_non_amp_only=true
-      break
-    fi
-  done
-
-  if [[ "$is_non_amp_only" == true ]]; then
-    echo "✓ ${name} (non-Amp only)"
-    continue
-  fi
-
-  ln -s "${PWD}/${name}" "${AMPCODE_DIR}/${name}"
-  echo "✓ ${name}"
-done
-"""
+run = "bash ./scripts/install_skills.sh"
 
 [tasks.lint]
 description = "Lint all SKILL.md files with skills-lint"
