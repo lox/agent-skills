@@ -1,6 +1,6 @@
 # agent-skills
 
-Reusable Amp/agent skills that can be copied into other environments.
+Reusable Amp/Codex skills that can be copied into other environments.
 
 ## Included Skills
 
@@ -21,7 +21,16 @@ Each skill lives in its own directory and is centred on a `SKILL.md` file.
 Some skills also include helper scripts under `scripts/`.
 Some skills also include agent-specific prompt metadata under `agents/`.
 
-`mise run install` links all skills into both supported skill directories except `consulting-librarian`, which is linked only into `~/.agents/skills` so it stays out of Amp's built-in skill set.
+`mise run install` links shared skills into:
+
+- `~/.codex/skills` for the Codex macOS app and modern Codex CLI.
+- `~/.config/agents/skills` for Amp.
+
+`consulting-librarian` is Codex-only and is linked only into `~/.codex/skills`, because Amp already includes Librarian guidance. The installer also removes old repo-owned symlinks from `~/.agents/skills`; Amp can discover that legacy path from projects under the home directory, so Codex-only skills must not live there.
+
+If the `codex` on `PATH` does not support `codex app`, update `PATH` to a newer Codex CLI before launching the macOS app.
+
+When a destination already contains a real directory instead of a symlink, the installer moves it to a sibling `skill-backups` directory before linking the repo copy. Backups are kept outside the scanned `skills` directories so agents do not load duplicate skills.
 
 ## Linting
 
