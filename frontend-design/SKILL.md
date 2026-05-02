@@ -1,22 +1,33 @@
 ---
 name: frontend-design
-description: Creates distinctive, production-grade frontend interfaces with high design quality. Use when building web components, pages, or applications. Generates creative, polished code that avoids generic AI aesthetics.
+description: Creates distinctive, production-grade frontend interfaces with a strong visual point of view. Use when building web components, pages, applications, or prototypes that should feel memorable, polished, and non-generic.
 ---
 
 # Frontend Design
 
-Creates distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implements real working code with exceptional attention to aesthetic details and creative choices.
+Creates distinctive, production-grade frontend interfaces with a clear point of view. Builds real working code that feels designed, not statistically averaged.
 
 ## Design Thinking
 
-Before coding, understand the context and commit to a BOLD aesthetic direction:
+Before coding, lock the concept:
 
-- **Purpose**: What problem does this interface solve? Who uses it?
-- **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian, etc. Use these for inspiration but design one that is true to the aesthetic direction.
-- **Constraints**: Technical requirements (framework, performance, accessibility).
-- **Differentiation**: What makes this UNFORGETTABLE? What's the one thing someone will remember?
+- **Purpose**: What problem does this interface solve? Who uses it? What emotion, energy, or reaction should it create?
+- **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian, etc. Use it as a commitment, not a loose vibe.
+- **Reference Check**: Name 2-3 specific inspirations before building. Include at least 1 non-obvious real-world or historical reference. Avoid defaulting to common tech examples unless the product already demands that language.
+- **Reference Inputs**: If the user provides a Refero style page, `styles.refero.design` result, or `DESIGN.md`, extract the palette, typography, spacing rhythm, component density, and interaction cues. Turn those into design tokens and direction notes before coding.
+- **Constraints**: Technical requirements, framework boundaries, performance limits, accessibility needs, and existing design-system constraints.
+- **Signature Hook**: Define the one memorable move users will remember. It could be a sculptural type treatment, a reactive background, a custom cursor, an asymmetric hero, a storytelling hover state, or another clear signature element.
 
-**CRITICAL**: Choose a clear conceptual direction and execute it with precision. Bold maximalism and refined minimalism both work — the key is intentionality, not intensity.
+**CRITICAL**: Choose one clear conceptual direction and execute it with precision. Bold maximalism and refined minimalism both work. The key is intentionality, not intensity. Simplicity should feel architectural, not empty.
+
+Before full implementation, define a compact design system in your own working notes or response:
+
+- A strict 5-7 colour palette with roles: primary, accent, neutrals, and one surprise colour
+- One characterful display font paired with one highly legible body font
+- Core tokens for spacing, radius, shadow, and motion using CSS variables or Tailwind theme tokens
+- One representative component that proves the system
+
+When references are provided, reinterpret them for the current product, content, and constraints. Use them for taste calibration, not branded layout cloning.
 
 Then implement working code (HTML/CSS/JS, React, Vue, etc.) that is:
 - Production-grade and functional
@@ -28,11 +39,11 @@ Then implement working code (HTML/CSS/JS, React, Vue, etc.) that is:
 
 Focus on:
 
-- **Typography**: Choose fonts that are beautiful, unique, and interesting. Avoid generic fonts like Arial and Inter; opt instead for distinctive choices that elevate the frontend's aesthetics; unexpected, characterful font choices. Pair a distinctive display font with a refined body font.
-- **Colour & Theme**: Commit to a cohesive aesthetic. Use CSS variables for consistency. Dominant colours with sharp accents outperform timid, evenly-distributed palettes.
-- **Motion**: Use animations for effects and micro-interactions. Prioritise CSS-only solutions for HTML. Use Motion library for React when available. Focus on high-impact moments: one well-orchestrated page load with staggered reveals (animation-delay) creates more delight than scattered micro-interactions. Use scroll-triggering and hover states that surprise.
-- **Spatial Composition**: Unexpected layouts. Asymmetry. Overlap. Diagonal flow. Grid-breaking elements. Generous negative space OR controlled density.
-- **Backgrounds & Visual Details**: Create atmosphere and depth rather than defaulting to solid colours. Add contextual effects and textures that match the overall aesthetic. Apply creative forms like gradient meshes, noise textures, geometric patterns, layered transparencies, dramatic shadows, decorative borders, custom cursors, and grain overlays.
+- **Typography**: Avoid generic fonts like Arial, Inter, Roboto, and system defaults. Pair one characterful display font with a legible but slightly off-mainstream body font. Include production-friendly font loading when needed.
+- **Colour & Theme**: Commit to a disciplined palette. Use CSS variables and prefer HSL or OKLCH when practical for better control. Build colour from cultural or visual references such as film grading, posters, architecture, materials, or landscapes rather than generic SaaS gradients.
+- **Motion**: Give animation hierarchy. Use 1-2 hero moments, then support them with subtler interactions. Prefer CSS-first motion for HTML, use Motion for React when available, and always provide `prefers-reduced-motion` fallbacks.
+- **Spatial Composition**: Break the grid on purpose. Use asymmetry, overlap, cropping, tension, negative space, or dense editorial rhythm. Avoid safe centre-stacked layouts unless the concept specifically calls for them.
+- **Backgrounds & Visual Details**: Build atmosphere instead of filling space. Use textures, grain, lighting, borders, repeated motifs, graphic shapes, reflections, or dramatic shadows that reinforce the concept.
 
 ## Anti-Patterns to Avoid
 
@@ -40,13 +51,27 @@ NEVER use generic AI-generated aesthetics:
 
 - Overused font families (Inter, Roboto, Arial, system fonts)
 - Clichéd colour schemes (particularly purple gradients on white backgrounds)
+- Default glassmorphism, heavy neumorphism, or floating card grids unless explicitly requested
 - Predictable layouts and component patterns
-- Cookie-cutter design that lacks context-specific character
+- Cookie-cutter polish that ignores the product's context
+- Treating a reference library as permission to clone a branded layout
+- Overwriting user-provided references with your own default style
 
-Interpret creatively and make unexpected choices that feel genuinely designed for the context. No design should be the same. Vary between light and dark themes, different fonts, different aesthetics. NEVER converge on common choices (Space Grotesk, for example) across generations.
+Interpret creatively and make unexpected choices that feel genuinely designed for the context. No two outputs should converge on the same fonts, palettes, motifs, or layout logic. If the user shares screenshots or references, amplify their distinctive traits instead of averaging them out.
 
 ## Implementation Approach
 
-**IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
+Match implementation complexity to the aesthetic vision. Maximalist designs need layered composition, richer surfaces, and more choreography. Minimalist or refined designs need stronger typography, sharper spacing, and ruthless removal of anything that weakens the idea. Every element must earn its place.
 
-Don't hold back — show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+If the project already has a framework, component library, or design system, preserve its structural conventions and push distinctiveness through tokens, composition, typography, and motion rather than bolting on random effects.
+
+Finish with a polish pass:
+
+- Check contrast, focus states, semantic HTML, keyboard flow, and screen-reader affordances
+- Make sure the layout works on mobile and desktop
+- Keep animation cheap and intentional to protect performance
+- Suggest 2-3 concrete iteration prompts if the user wants to push the style further
+
+For repeatable skill evaluation with Refero styles, use `reference/refero-evaluation.md`.
+
+Do not hold back. Commit fully to the concept and make at least one decision that a cautious template would never make.
