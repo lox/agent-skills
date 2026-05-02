@@ -3,7 +3,7 @@ node = "lts"
 "npm:@haasstefan/skills-lint" = "latest"
 
 [tasks.install]
-description = "Symlink skills into ~/.config/agents/skills and ~/.agents/skills"
+description = "Symlink skills into ~/.codex/skills and ~/.config/agents/skills"
 run = "bash ./scripts/install_skills.sh"
 
 [tasks.lint]
