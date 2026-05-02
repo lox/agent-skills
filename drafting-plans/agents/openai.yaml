@@ -1,0 +1,4 @@
+interface:
+  display_name: "Drafting Plans"
+  short_description: "Draft durable engineering plan docs"
+  default_prompt: "Use $drafting-plans to turn this implementation idea into a concrete docs/plans proposal, work through the open questions, and pressure-test it adversarially."
