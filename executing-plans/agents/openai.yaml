@@ -1,0 +1,4 @@
+interface:
+  display_name: "Executing Plans"
+  short_description: "Implement plan slices through PR review"
+  default_prompt: "Use $executing-plans to implement the next slice from this plan, validate it, open a ready PR, and drive Codex review plus CI to passing."
