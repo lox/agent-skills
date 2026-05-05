@@ -9,6 +9,7 @@ Reusable Amp/Codex skills that can be copied into other environments.
 - `autofixing-codex-reviews`: Automated loop for handling Codex PR feedback, fixing code, and posting replies.
 - `consulting-librarian`: Guidance for emulating Amp's Librarian workflow inside non-Amp agents to understand repositories outside the current workspace. Installed only for non-Amp agents because Amp already includes Librarian guidance.
 - `drafting-plans`: Guidance for drafting durable engineering plan docs with clear scope, sequencing, validation, decisions, and open questions.
+- `executing-plans`: Workflow for implementing one plan slice through validation, adversarial review, cleanup, PR creation, Codex review, and passing CI.
 - `go-cli-writing`: Guidance for building and reviewing Go CLIs with Kong, charmbracelet/log, and clean command layout.
 - `go-writing`: Guidelines for writing, reviewing, and modernising Go code with version-gated guidance, linting, and toolchain management.
 - `humanizing-text`: Guidance for rewriting AI-sounding text to feel more natural and human.
