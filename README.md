@@ -10,12 +10,18 @@ Reusable Amp/Codex skills that can be copied into other environments.
 - `consulting-librarian`: Guidance for emulating Amp's Librarian workflow inside non-Amp agents to understand repositories outside the current workspace. Installed only for non-Amp agents because Amp already includes Librarian guidance.
 - `drafting-plans`: Guidance for drafting durable engineering plan docs with clear scope, sequencing, validation, decisions, and open questions.
 - `executing-plans`: Workflow for implementing one plan slice through validation, adversarial review, cleanup, PR creation, Codex review, and passing CI.
+- `frontend-design`: Guidance for creating distinctive, production-grade frontend interfaces with a strong visual point of view.
 - `go-cli-writing`: Guidance for building and reviewing Go CLIs with Kong, charmbracelet/log, and clean command layout.
 - `go-writing`: Guidelines for writing, reviewing, and modernising Go code with version-gated guidance, linting, and toolchain management.
 - `humanizing-text`: Guidance for rewriting AI-sounding text to feel more natural and human.
+- `improve-codebase-architecture`: Guidance for finding codebase architecture deepening opportunities.
 - `linear`: Command-line workflows for searching and managing Linear issues.
 - `notion`: Command-line workflows for searching and managing Notion pages, databases, and comments.
 - `slack`: Command-line workflows for reading Slack messages, threads, channels, and users.
+
+## Attribution
+
+The `improve-codebase-architecture` skill is adapted from Matt Pocock's [`mattpocock/skills`](https://github.com/mattpocock/skills/tree/main/skills/engineering/improve-codebase-architecture) repository. These materials are licensed under MIT. Copyright (c) 2026 Matt Pocock.
 
 ## Structure
 
