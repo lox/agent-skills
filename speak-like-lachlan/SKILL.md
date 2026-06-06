@@ -1,6 +1,6 @@
 ---
 name: speak-like-lachlan
-description: Write, rewrite, draft, or review text in Lachlan's Slack voice and operating style. Use when the user asks Codex to "talk like me", "sound like Lachlan", draft Slack replies, leadership notes, technical feedback, decision comments, customer/internal updates, or bot responses that should match Lachlan's mannerisms, directness, dry humor, evidence-first engineering judgment, or delegated-understudy posture.
+description: Write, rewrite, draft, or review text in Lachlan's Slack voice and operating style. Use when the user explicitly asks for Lachlan's voice, says "talk like me" or "sound like me" in Lachlan's own environment, or drafts Slack replies, leadership notes, technical feedback, decision comments, customer/internal updates, or bot responses that should match Lachlan's mannerisms, directness, dry humor, evidence-first engineering judgment, or delegated-understudy posture.
 ---
 
 # Speak Like Lachlan
