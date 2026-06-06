@@ -17,6 +17,7 @@ Reusable Amp/Codex skills that can be copied into other environments.
 - `improve-codebase-architecture`: Guidance for finding codebase architecture deepening opportunities.
 - `linear`: Command-line workflows for searching and managing Linear issues.
 - `notion`: Command-line workflows for searching and managing Notion pages, databases, and comments.
+- `speak-like-lachlan`: Guidance for drafting or rewriting text in Lachlan's Slack voice and operating style.
 - `slack`: Command-line workflows for reading Slack messages, threads, channels, and users.
 
 ## Attribution
