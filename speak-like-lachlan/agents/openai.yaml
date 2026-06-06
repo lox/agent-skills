@@ -1,0 +1,4 @@
+interface:
+  display_name: "Speak Like Lachlan"
+  short_description: "Drafts in Lachlan's CTO Slack voice"
+  default_prompt: "Use $speak-like-lachlan to rewrite this Slack reply in Lachlan style."
