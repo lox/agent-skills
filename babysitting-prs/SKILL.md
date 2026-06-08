@@ -20,7 +20,7 @@ Before doing PR work, verify both GitHub and Buildkite authentication.
 
 ```bash
 gh auth status
-bk auth status --no-input >/dev/null
+bk auth status >/dev/null
 ```
 
 If `bk auth status` fails, stop immediately and ask the user to run `bk auth login`. This is the hard blocker. Do not spend time triaging reviews, rebasing, or CI until Buildkite auth is available.
@@ -118,7 +118,7 @@ Only use the second template for a fresh Codex review trigger, never for routine
 
 Stop and report the exact blocker only when:
 
-- `bk auth status --no-input` fails.
+- `bk auth status` fails.
 - Required human approval, security sign-off, product judgement, or credentials are unavailable.
 - Merge permissions or branch protection prevent you from queueing, auto-merging, or merging.
 - The same CI failure persists after two evidence-based fix attempts or one justified flaky retry.

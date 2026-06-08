@@ -31,7 +31,7 @@ require_cmd() {
 }
 
 require_bk_auth() {
-  if ! bk auth status --no-input >/dev/null 2>&1; then
+  if ! bk auth status >/dev/null 2>&1; then
     echo "bk auth is not logged in; run: bk auth login" >&2
     exit 42
   fi
@@ -63,35 +63,75 @@ paginated_array() {
   gh api "$1" --paginate --slurp | jq 'add'
 }
 
-resolve_threads() {
+review_threads_graphql_json() {
   local repo="$1"
   local pr="$2"
-  local comment_ids="$3"
 
   local owner name
   owner="${repo%%/*}"
   name="${repo##*/}"
 
-  local threads
-  threads="$(gh api graphql -f query='
-    query($owner: String!, $name: String!, $pr: Int!) {
-      repository(owner: $owner, name: $name) {
-        pullRequest(number: $pr) {
-          reviewThreads(first: 100) {
-            nodes {
-              id
-              isResolved
-              comments(first: 1) {
-                nodes {
-                  databaseId
+  local all_threads='[]'
+  local cursor=""
+
+  while :; do
+    local response page_threads has_next
+    local api_args=(-f owner="$owner" -f name="$name" -F pr="$pr")
+    if [[ -n "$cursor" ]]; then
+      api_args+=(-f after="$cursor")
+    fi
+
+    response="$(gh api graphql "${api_args[@]}" -f query='
+      query($owner: String!, $name: String!, $pr: Int!, $after: String) {
+        repository(owner: $owner, name: $name) {
+          pullRequest(number: $pr) {
+            reviewThreads(first: 100, after: $after) {
+              nodes {
+                id
+                isResolved
+                comments(first: 1) {
+                  nodes {
+                    databaseId
+                    body
+                    author { login }
+                  }
                 }
+              }
+              pageInfo {
+                hasNextPage
+                endCursor
               }
             }
           }
         }
       }
-    }
-  ' -f owner="$owner" -f name="$name" -F pr="$pr")"
+    ')"
+
+    page_threads="$(jq '.data.repository.pullRequest.reviewThreads.nodes' <<<"$response")"
+    all_threads="$(jq -cn --argjson all "$all_threads" --argjson page "$page_threads" '$all + $page')"
+
+    has_next="$(jq -r '.data.repository.pullRequest.reviewThreads.pageInfo.hasNextPage' <<<"$response")"
+    if [[ "$has_next" != "true" ]]; then
+      break
+    fi
+
+    cursor="$(jq -r '.data.repository.pullRequest.reviewThreads.pageInfo.endCursor // empty' <<<"$response")"
+    if [[ -z "$cursor" ]]; then
+      echo "GitHub reported another review-thread page without an end cursor" >&2
+      exit 1
+    fi
+  done
+
+  echo "$all_threads"
+}
+
+resolve_threads() {
+  local repo="$1"
+  local pr="$2"
+  local comment_ids="$3"
+
+  local threads
+  threads="$(review_threads_graphql_json "$repo" "$pr")"
 
   local ids_json
   ids_json="$(echo "$comment_ids" | tr ',' '\n' | jq -Rn '[inputs | select(. != "") | tonumber]')"
@@ -99,7 +139,7 @@ resolve_threads() {
   local thread_ids
   thread_ids="$(jq -r \
     --argjson ids "$ids_json" '
-      .data.repository.pullRequest.reviewThreads.nodes[]
+      .[]
       | select(.isResolved | not)
       | select(.comments.nodes[0].databaseId as $cid | $ids | index($cid))
       | .id
@@ -125,7 +165,16 @@ checks_json() {
   local pr="$2"
 
   local checks
-  checks="$(gh pr checks "$pr" --repo "$repo" --json name,state,bucket,link,workflow 2>/dev/null || echo '[]')"
+  local checks_exit
+  set +e
+  checks="$(gh pr checks "$pr" --repo "$repo" --json name,state,bucket,link,workflow 2>/dev/null)"
+  checks_exit=$?
+  set -e
+  if [[ $checks_exit -ne 0 && $checks_exit -ne 8 ]]; then
+    checks='[]'
+  elif [[ -z "$checks" ]]; then
+    checks='[]'
+  fi
 
   local all_passed
   all_passed="$(jq '[.[] | .bucket == "pass" or .bucket == "skipping"] | all' <<<"$checks")"
@@ -154,33 +203,8 @@ review_threads_json() {
   local repo="$1"
   local pr="$2"
 
-  local owner name
-  owner="${repo%%/*}"
-  name="${repo##*/}"
-
-  local response nodes
-  response="$(gh api graphql -f query='
-    query($owner: String!, $name: String!, $pr: Int!) {
-      repository(owner: $owner, name: $name) {
-        pullRequest(number: $pr) {
-          reviewThreads(first: 100) {
-            nodes {
-              id
-              isResolved
-              comments(first: 1) {
-                nodes {
-                  databaseId
-                  body
-                  author { login }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  ' -f owner="$owner" -f name="$name" -F pr="$pr")"
-  nodes="$(jq '.data.repository.pullRequest.reviewThreads.nodes' <<<"$response")"
+  local nodes
+  nodes="$(review_threads_graphql_json "$repo" "$pr")"
 
   jq -cn --argjson threads "$nodes" '
     {
