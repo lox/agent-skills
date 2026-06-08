@@ -330,18 +330,19 @@ codex_json() {
             user: .user.login,
             body,
             looks_actionable: ((.body // "") | test("(?i)(P[0-3] Badge|https://github.com/.*/blob/)")),
-            has_non_codex_reply_after: (
+            has_matching_non_codex_reply_after: (
               [
                 $issue_comments[]
                 | select((.user.login | test($pattern; "i")) | not)
                 | select((.created_at // "") > (($review.submitted_at // $review.created_at // "")))
+                | select((.body // "") | contains(($review.id | tostring)))
               ]
               | length > 0
             )
           }
       ]
     ')"
-  actionable_top_level_reviews="$(jq '[.[] | select(.looks_actionable and (.has_non_codex_reply_after | not))]' <<<"$top_level_reviews")"
+  actionable_top_level_reviews="$(jq '[.[] | select(.looks_actionable and (.has_matching_non_codex_reply_after | not))]' <<<"$top_level_reviews")"
   actionable_top_level_reviews_count="$(jq 'length' <<<"$actionable_top_level_reviews")"
 
   jq -cn \
@@ -427,10 +428,6 @@ status_json() {
 }
 
 main() {
-  require_cmd gh
-  require_cmd jq
-  require_cmd bk
-
   if [[ $# -lt 1 ]]; then
     usage
     exit 1
@@ -489,6 +486,9 @@ main() {
     esac
   done
 
+  require_cmd gh
+  require_cmd jq
+  require_cmd bk
   require_bk_auth
 
   repo="$(resolve_repo "$repo")"

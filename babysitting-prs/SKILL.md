@@ -110,6 +110,12 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
 Fixed in <sha>: <concise summary of change>
 ```
 
+For top-level Codex review feedback, include the review ID so `status` can tell the feedback was answered:
+
+```text
+Fixed in <sha> for review <review-id>: <concise summary of change>
+```
+
 ```text
 @codex review
 ```
