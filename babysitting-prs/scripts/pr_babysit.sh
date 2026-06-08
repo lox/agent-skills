@@ -360,6 +360,13 @@ codex_json() {
     --argjson codex_top_level_reviews "$top_level_reviews" \
     --argjson actionable_top_level_reviews "$actionable_top_level_reviews" \
     --argjson actionable_top_level_reviews_count "$actionable_top_level_reviews_count" '
+      ($codex_events | length > 0 or $latest_trigger_time != "") as $codex_review_required
+      | ([
+          $trigger_reactions[]
+          | select(.content == "+1")
+          | select(.user.login | test($codex_pattern; "i"))
+        ] | length > 0) as $has_codex_thumbs_up
+      |
       {
         repo: $repo,
         pr: $pr,
@@ -367,16 +374,19 @@ codex_json() {
         latest_trigger: {
           created_at: (if $latest_trigger_time == "" then null else $latest_trigger_time end),
           user: (if $latest_trigger_user == "" then null else $latest_trigger_user end),
-          reactions_count: ($trigger_reactions | length)
+          reactions_count: ($trigger_reactions | length),
+          has_codex_thumbs_up: $has_codex_thumbs_up
         },
         latest_codex_activity_at: (if $latest_codex_event_time == "" then null else $latest_codex_event_time end),
+        codex_review_required: $codex_review_required,
+        main_thread_approved: ((($codex_review_required | not) or $has_codex_thumbs_up)),
         pending_review: $pending_review,
         actionable_diff_comments_count: $actionable_diff_comments_count,
         actionable_diff_comments: $actionable_diff_comments,
         codex_top_level_reviews: $codex_top_level_reviews,
         actionable_top_level_reviews_count: $actionable_top_level_reviews_count,
         actionable_top_level_reviews: $actionable_top_level_reviews,
-        ready_for_codex: ((($pending_review | not) and ($actionable_diff_comments_count == 0) and ($actionable_top_level_reviews_count == 0)))
+        ready_for_codex: ((($pending_review | not) and ($actionable_diff_comments_count == 0) and ($actionable_top_level_reviews_count == 0) and (($codex_review_required | not) or $has_codex_thumbs_up)))
       }
     '
 }
@@ -412,6 +422,7 @@ status_json() {
         if $codex.pending_review == true then "pending_codex_review" else empty end,
         if $codex.actionable_diff_comments_count > 0 then "actionable_codex_comments" else empty end,
         if $codex.actionable_top_level_reviews_count > 0 then "actionable_codex_top_level_reviews" else empty end,
+        if (($codex.pending_review | not) and $codex.codex_review_required == true and $codex.main_thread_approved == false) then "codex_thumbs_up_missing" else empty end,
         if $checks.any_failed == true then "failed_checks" else empty end,
         if $checks.any_pending == true then "pending_checks" else empty end
       ] as $blockers

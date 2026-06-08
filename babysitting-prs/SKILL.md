@@ -59,7 +59,8 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
    - If a recent `@codex review` is pending, run `scripts/pr_babysit.sh codex-wait --pr <pr> --repo <owner/repo>`.
    - Fix actionable Codex inline comments in batches just like human review comments.
    - Never use `@codex` in routine "fixed" replies; that starts task-mode noise.
-   - Trigger exactly one fresh `@codex review` only after fixes are pushed and checks are passing, and only when Codex is already part of this PR's review process or the user asks for it.
+   - If Codex has reviewed the PR and there is no review in progress, trigger exactly one fresh `@codex review` after fixes are pushed and checks are passing.
+   - Do not consider Codex complete until the latest `@codex review` comment on the main PR thread has a 👍 reaction from Codex.
 
 5. **Clear CI and Buildkite blockers**
    - Run `scripts/pr_babysit.sh checks --pr <pr> --repo <owner/repo>` and inspect failures.
@@ -103,6 +104,7 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
 - `checks.any_pending=true`: wait and re-check.
 - `codex.pending_review=true`: wait for Codex before acting on its feedback.
 - `codex.actionable_diff_comments_count>0`: unresolved Codex inline comments need fixes or explicit replies.
+- `codex.main_thread_approved=false`: Codex has participated, but the latest `@codex review` trigger has not received Codex's 👍 yet. If no review is pending, post `@codex review` and wait.
 
 ## Reply templates
 
