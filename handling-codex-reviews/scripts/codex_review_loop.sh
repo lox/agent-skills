@@ -340,10 +340,14 @@ state_json() {
       ($codex_events | length > 0 or $latest_trigger_time != "") as $codex_review_required
       | ($latest_trigger_head_oid != "" and $latest_trigger_head_oid == $head_oid) as $latest_trigger_covers_head
       | ([
+          $codex_events[]
+          | select(.created_at >= $latest_trigger_time)
+          | select(.user | test($codex_pattern; "i"))
+        ] | length > 0) as $has_post_trigger_codex_activity
+      | ([
           $pr_reactions[]
           | select(.content == "+1")
           | select(.user.login | test($codex_pattern; "i"))
-          | select(($latest_trigger_time == "") or ((.created_at // "") >= $latest_trigger_time))
         ] | length > 0) as $has_codex_pr_thumbs_up
       | ([
           $codex_events[]
@@ -355,7 +359,7 @@ state_json() {
           | select(.id == $comment_id)
           | select((.body // "") | test("(?i)Codex Review: Didn.t find any major issues"))
         ] | length > 0) as $has_codex_clean_comment
-      | ($has_codex_pr_thumbs_up and $latest_trigger_covers_head) as $has_current_head_approval
+      | ($has_codex_pr_thumbs_up and $latest_trigger_covers_head and $has_post_trigger_codex_activity) as $has_current_head_approval
       | ($pending_review and ($has_current_head_approval | not)) as $effective_pending_review
       | {
         repo: $repo,
@@ -379,6 +383,7 @@ state_json() {
         },
         latest_codex_activity_at: (if $latest_codex_event_time == "" then null else $latest_codex_event_time end),
         codex_review_required: $codex_review_required,
+        has_post_trigger_codex_activity: $has_post_trigger_codex_activity,
         main_thread_approved: ((($codex_review_required | not) or $has_current_head_approval)),
         pending_review: $effective_pending_review,
         actionable_diff_comments_count: $actionable_diff_comments_count,
