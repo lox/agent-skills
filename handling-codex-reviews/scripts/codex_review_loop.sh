@@ -252,6 +252,9 @@ state_json() {
     trigger_reactions="$(gh api "repos/$repo/issues/comments/$latest_trigger_id/reactions" --paginate --slurp 2>/dev/null | jq 'add' || echo '[]')"
   fi
 
+  local pr_reactions
+  pr_reactions="$(gh api "repos/$repo/issues/$pr/reactions" --paginate --slurp 2>/dev/null | jq 'add' || echo '[]')"
+
   local actionable_diff_roots actionable_diff_count
   actionable_diff_roots="$(jq -cn \
     --argjson comments "$diff_comments" \
@@ -326,6 +329,8 @@ state_json() {
     --arg latest_codex_event_time "$latest_codex_event_time" \
     --argjson pending_review "$pending_review" \
     --argjson trigger_reactions "$trigger_reactions" \
+    --argjson pr_reactions "$pr_reactions" \
+    --argjson issue_comments "$issue_comments" \
     --argjson codex_events "$codex_events" \
     --argjson actionable_diff_comments "$actionable_diff_roots" \
     --argjson actionable_diff_comments_count "$actionable_diff_count" \
@@ -335,11 +340,23 @@ state_json() {
       ($codex_events | length > 0 or $latest_trigger_time != "") as $codex_review_required
       | ($latest_trigger_head_oid != "" and $latest_trigger_head_oid == $head_oid) as $latest_trigger_covers_head
       | ([
-          $trigger_reactions[]
+          $pr_reactions[]
           | select(.content == "+1")
           | select(.user.login | test($codex_pattern; "i"))
-        ] | length > 0) as $has_codex_thumbs_up
-      | ($pending_review and (($has_codex_thumbs_up and $latest_trigger_covers_head) | not)) as $effective_pending_review
+          | select(($latest_trigger_time == "") or ((.created_at // "") >= $latest_trigger_time))
+        ] | length > 0) as $has_codex_pr_thumbs_up
+      | ([
+          $codex_events[]
+          | select(.kind == "issue_comment")
+          | select(.created_at >= $latest_trigger_time)
+          | select(.user | test($codex_pattern; "i"))
+          | .id as $comment_id
+          | $issue_comments[]
+          | select(.id == $comment_id)
+          | select((.body // "") | test("(?i)Codex Review: Didn.t find any major issues"))
+        ] | length > 0) as $has_codex_clean_comment
+      | ($has_codex_pr_thumbs_up and $latest_trigger_covers_head) as $has_current_head_approval
+      | ($pending_review and ($has_current_head_approval | not)) as $effective_pending_review
       | {
         repo: $repo,
         pr: $pr,
@@ -353,19 +370,23 @@ state_json() {
           user: (if $latest_trigger_user == "" then null else $latest_trigger_user end),
           head_oid: (if $latest_trigger_head_oid == "" then null else $latest_trigger_head_oid end),
           reactions_count: ($trigger_reactions | length),
-          has_codex_thumbs_up: $has_codex_thumbs_up,
+          has_codex_clean_comment: $has_codex_clean_comment,
           covers_head: $latest_trigger_covers_head
+        },
+        pr_description: {
+          reactions_count: ($pr_reactions | length),
+          has_codex_thumbs_up: $has_codex_pr_thumbs_up
         },
         latest_codex_activity_at: (if $latest_codex_event_time == "" then null else $latest_codex_event_time end),
         codex_review_required: $codex_review_required,
-        main_thread_approved: ((($codex_review_required | not) or ($has_codex_thumbs_up and $latest_trigger_covers_head))),
+        main_thread_approved: ((($codex_review_required | not) or $has_current_head_approval)),
         pending_review: $effective_pending_review,
         actionable_diff_comments_count: $actionable_diff_comments_count,
         actionable_diff_comments: $actionable_diff_comments,
         codex_top_level_reviews: $codex_top_level_reviews,
         actionable_top_level_reviews_count: $actionable_top_level_reviews_count,
         actionable_top_level_reviews: $actionable_top_level_reviews,
-        ready_for_codex: ((($effective_pending_review | not) and ($actionable_diff_comments_count == 0) and ($actionable_top_level_reviews_count == 0) and (($codex_review_required | not) or ($has_codex_thumbs_up and $latest_trigger_covers_head))))
+        ready_for_codex: ((($effective_pending_review | not) and ($actionable_diff_comments_count == 0) and ($actionable_top_level_reviews_count == 0) and (($codex_review_required | not) or $has_current_head_approval)))
       }
     '
 }
