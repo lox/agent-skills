@@ -69,7 +69,9 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
    - Do not mark a PR ready because GitHub checks are green if Buildkite is still failed, blocked, or pending.
 
 6. **Merge or hand off**
-   - A direct babysit request means keep going until the PR is merged unless the user explicitly says not to merge.
+   - Merge only when the user explicitly asks to merge, land, ship, queue, or get the PR merged.
+   - If the user asks for mergeable, green, or ready-for-review state, stop once the PR is merge-ready and report the handoff.
+   - If the user only says to babysit a PR without a merge verb, keep the PR merge-ready and ask before the final merge.
    - Before merging, verify: PR is open and not draft, no unresolved actionable threads, no pending Codex review, required reviews are satisfied, checks are green, and GitHub reports it as mergeable.
    - Use the repo's expected merge path: merge queue when required, auto-merge when branch protection is waiting, otherwise the repo's normal squash/merge/rebase method.
    - Delete the branch only when it is safe and conventional for the repo.
