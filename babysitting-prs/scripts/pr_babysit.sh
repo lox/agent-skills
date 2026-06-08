@@ -230,167 +230,33 @@ review_threads_json() {
   '
 }
 
+codex_helper_path() {
+  local script_dir
+  script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
+  local candidates=(
+    "${script_dir}/../../handling-codex-reviews/scripts/codex_review_loop.sh"
+    "${HOME}/.config/agents/skills/handling-codex-reviews/scripts/codex_review_loop.sh"
+  )
+
+  local candidate
+  for candidate in "${candidates[@]}"; do
+    if [[ -x "$candidate" ]]; then
+      echo "$candidate"
+      return
+    fi
+  done
+
+  echo "missing handling-codex-reviews helper; install or load that skill" >&2
+  exit 1
+}
+
 codex_json() {
   local repo="$1"
   local pr="$2"
   local codex_pattern="$3"
-
-  local issue_comments reviews diff_comments
-  issue_comments="$(paginated_array "repos/$repo/issues/$pr/comments")"
-  reviews="$(paginated_array "repos/$repo/pulls/$pr/reviews")"
-  diff_comments="$(paginated_array "repos/$repo/pulls/$pr/comments")"
-
-  local latest_trigger latest_trigger_time latest_trigger_id latest_trigger_user
-  latest_trigger="$(jq -c '
-    map(select(.body | test("(?m)^@codex\\s+review\\b")))
-    | sort_by(.created_at)
-    | last // empty
-  ' <<<"$issue_comments")"
-
-  latest_trigger_time=""
-  latest_trigger_id=""
-  latest_trigger_user=""
-  if [[ -n "$latest_trigger" ]]; then
-    latest_trigger_time="$(jq -r '.created_at' <<<"$latest_trigger")"
-    latest_trigger_id="$(jq -r '.id' <<<"$latest_trigger")"
-    latest_trigger_user="$(jq -r '.user.login' <<<"$latest_trigger")"
-  fi
-
-  local codex_events latest_codex_event_time
-  codex_events="$(jq -cn \
-    --argjson reviews "$reviews" \
-    --argjson issue_comments "$issue_comments" \
-    --argjson diff_comments "$diff_comments" \
-    --arg pattern "$codex_pattern" '
-      [
-        ($reviews[] | select(.user.login | test($pattern; "i")) | {kind:"review", id, created_at: (.submitted_at // .created_at), user: .user.login, state}),
-        ($issue_comments[] | select(.user.login | test($pattern; "i")) | {kind:"issue_comment", id, created_at, user: .user.login}),
-        ($diff_comments[] | select(.user.login | test($pattern; "i")) | {kind:"diff_comment", id, created_at, user: .user.login, path, line})
-      ]
-      | sort_by(.created_at)
-    ')"
-  latest_codex_event_time="$(jq -r 'last.created_at // empty' <<<"$codex_events")"
-
-  local pending_review="false"
-  if [[ -n "$latest_trigger_time" ]]; then
-    if [[ -z "$latest_codex_event_time" ]] || [[ "$latest_codex_event_time" < "$latest_trigger_time" ]]; then
-      pending_review="true"
-    fi
-  fi
-
-  local trigger_reactions='[]'
-  if [[ -n "$latest_trigger_id" ]]; then
-    trigger_reactions="$(gh api "repos/$repo/issues/comments/$latest_trigger_id/reactions" --paginate --slurp 2>/dev/null | jq 'add' || echo '[]')"
-  fi
-
-  local actionable_diff_roots actionable_diff_count
-  actionable_diff_roots="$(jq -cn \
-    --argjson comments "$diff_comments" \
-    --arg pattern "$codex_pattern" '
-      $comments as $all
-      | [
-          $all[]
-          | select((.in_reply_to_id == null) and (.user.login | test($pattern; "i")))
-          | . as $root
-          | {
-              id: $root.id,
-              created_at: $root.created_at,
-              user: $root.user.login,
-              path: $root.path,
-              line: ($root.line // $root.original_line),
-              body: $root.body,
-              has_non_codex_reply: (
-                [
-                  $all[]
-                  | select(.in_reply_to_id == $root.id)
-                  | select((.user.login | test($pattern; "i")) | not)
-                ]
-                | length > 0
-              )
-            }
-          | select(.has_non_codex_reply | not)
-        ]
-    ')"
-  actionable_diff_count="$(jq 'length' <<<"$actionable_diff_roots")"
-
-  local top_level_reviews actionable_top_level_reviews actionable_top_level_reviews_count
-  top_level_reviews="$(jq -cn \
-    --argjson reviews "$reviews" \
-    --argjson issue_comments "$issue_comments" \
-    --arg pattern "$codex_pattern" '
-      [
-        $reviews[]
-        | select(.user.login | test($pattern; "i"))
-        | select((.state // "") | ascii_downcase == "commented")
-        | select((.body // "") != "")
-        | . as $review
-        | {
-            id,
-            submitted_at: (.submitted_at // .created_at // ""),
-            user: .user.login,
-            body,
-            looks_actionable: ((.body // "") | test("(?i)(P[0-3] Badge|https://github.com/.*/blob/)")),
-            has_matching_non_codex_reply_after: (
-              [
-                $issue_comments[]
-                | select((.user.login | test($pattern; "i")) | not)
-                | select((.created_at // "") > (($review.submitted_at // $review.created_at // "")))
-                | select((.body // "") | contains(($review.id | tostring)))
-              ]
-              | length > 0
-            )
-          }
-      ]
-    ')"
-  actionable_top_level_reviews="$(jq '[.[] | select(.looks_actionable and (.has_matching_non_codex_reply_after | not))]' <<<"$top_level_reviews")"
-  actionable_top_level_reviews_count="$(jq 'length' <<<"$actionable_top_level_reviews")"
-
-  jq -cn \
-    --arg repo "$repo" \
-    --argjson pr "$pr" \
-    --arg codex_pattern "$codex_pattern" \
-    --arg latest_trigger_time "$latest_trigger_time" \
-    --arg latest_trigger_user "$latest_trigger_user" \
-    --arg latest_codex_event_time "$latest_codex_event_time" \
-    --argjson pending_review "$pending_review" \
-    --argjson trigger_reactions "$trigger_reactions" \
-    --argjson codex_events "$codex_events" \
-    --argjson actionable_diff_comments "$actionable_diff_roots" \
-    --argjson actionable_diff_comments_count "$actionable_diff_count" \
-    --argjson codex_top_level_reviews "$top_level_reviews" \
-    --argjson actionable_top_level_reviews "$actionable_top_level_reviews" \
-    --argjson actionable_top_level_reviews_count "$actionable_top_level_reviews_count" '
-      ($codex_events | length > 0 or $latest_trigger_time != "") as $codex_review_required
-      | ([
-          $trigger_reactions[]
-          | select(.content == "+1")
-          | select(.user.login | test($codex_pattern; "i"))
-        ] | length > 0) as $has_codex_thumbs_up
-      |
-      {
-        repo: $repo,
-        pr: $pr,
-        codex_pattern: $codex_pattern,
-        latest_trigger: {
-          created_at: (if $latest_trigger_time == "" then null else $latest_trigger_time end),
-          user: (if $latest_trigger_user == "" then null else $latest_trigger_user end),
-          reactions_count: ($trigger_reactions | length),
-          has_codex_thumbs_up: $has_codex_thumbs_up
-        },
-        latest_codex_activity_at: (if $latest_codex_event_time == "" then null else $latest_codex_event_time end),
-        codex_review_required: $codex_review_required,
-        main_thread_approved: ((($codex_review_required | not) or $has_codex_thumbs_up)),
-        pending_review: $pending_review,
-        actionable_diff_comments_count: $actionable_diff_comments_count,
-        actionable_diff_comments: $actionable_diff_comments,
-        codex_top_level_reviews: $codex_top_level_reviews,
-        actionable_top_level_reviews_count: $actionable_top_level_reviews_count,
-        actionable_top_level_reviews: $actionable_top_level_reviews,
-        ready_for_codex: ((($pending_review | not) and ($actionable_diff_comments_count == 0) and ($actionable_top_level_reviews_count == 0) and (($codex_review_required | not) or $has_codex_thumbs_up)))
-      }
-    '
+  "$(codex_helper_path)" state --repo "$repo" --pr "$pr" --codex-pattern "$codex_pattern"
 }
-
 status_json() {
   local repo="$1"
   local pr="$2"

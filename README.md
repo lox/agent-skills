@@ -13,6 +13,7 @@ Reusable Amp/Codex skills that can be copied into other environments.
 - `frontend-design`: Guidance for creating distinctive, production-grade frontend interfaces with a strong visual point of view.
 - `go-cli-writing`: Guidance for building and reviewing Go CLIs with Kong, charmbracelet/log, and clean command layout.
 - `go-writing`: Guidelines for writing, reviewing, and modernising Go code with version-gated guidance, linting, and toolchain management.
+- `handling-codex-reviews`: Codex-specific GitHub PR review loop for waiting on reviews, fixing feedback, resolving threads, and requiring Codex's main-thread thumbs-up.
 - `humanizing-text`: Guidance for rewriting AI-sounding text to feel more natural and human.
 - `improve-codebase-architecture`: Guidance for finding codebase architecture deepening opportunities.
 - `linear`: Command-line workflows for searching and managing Linear issues.

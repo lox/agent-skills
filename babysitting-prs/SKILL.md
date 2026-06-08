@@ -28,6 +28,7 @@ If `bk auth status` fails, stop immediately and ask the user to run `bk auth log
 ## Companion skills to load as needed
 
 - `addressing-pr-reviews`: use for collecting review comments, replying inline, reacting, requesting re-review, and avoiding Codex task-mode noise.
+- `handling-codex-reviews`: use when Codex is a reviewer or the PR has `@codex review` activity. Delegate all Codex-specific waiting, fixing, replies, thread resolution, and main-thread thumbs-up approval to this skill.
 - `adversarial-code-reviewing`: use before pushing non-trivial code fixes, especially after rebases or CI-driven changes.
 - `humanizing-text`: use before posting substantial PR comments or human-facing status updates.
 - `buildkite-preflight`: use when local changes should be validated against Buildkite before pushing, or when a repo's workflow expects preflight builds.
@@ -56,11 +57,9 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
    - Stop for user guidance when feedback conflicts, requires product judgement, or cannot be defended from repo evidence.
 
 4. **Handle Codex when present**
-   - If a recent `@codex review` is pending, run `scripts/pr_babysit.sh codex-wait --pr <pr> --repo <owner/repo>`.
-   - Fix actionable Codex inline comments in batches just like human review comments.
-   - Never use `@codex` in routine "fixed" replies; that starts task-mode noise.
-   - If Codex has reviewed the PR and there is no review in progress, trigger exactly one fresh `@codex review` after fixes are pushed and checks are passing.
-   - Do not consider Codex complete until the latest `@codex review` comment on the main PR thread has a 👍 reaction from Codex.
+   - If `scripts/pr_babysit.sh status` reports Codex activity or any `codex.*` blocker, load and use `handling-codex-reviews`.
+   - Treat Codex as incomplete until `handling-codex-reviews` reports no pending review, no actionable feedback, and `main_thread_approved=true`.
+   - Do not post ad hoc Codex replies from this generic skill; delegate the exact reply and fresh `@codex review` rules to `handling-codex-reviews`.
 
 5. **Clear CI and Buildkite blockers**
    - Run `scripts/pr_babysit.sh checks --pr <pr> --repo <owner/repo>` and inspect failures.
@@ -83,9 +82,6 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
 # Full PR state summary, including Buildkite auth gate, checks, reviews, and Codex state
 ~/.config/agents/skills/babysitting-prs/scripts/pr_babysit.sh status --pr 32 --repo owner/repo
 
-# Wait for a pending Codex review to finish
-~/.config/agents/skills/babysitting-prs/scripts/pr_babysit.sh codex-wait --pr 32 --repo owner/repo --timeout 900 --interval 20
-
 # Resolve review threads for addressed diff comments
 ~/.config/agents/skills/babysitting-prs/scripts/pr_babysit.sh resolve --pr 32 --repo owner/repo --comment-ids 12345,67890
 
@@ -104,7 +100,7 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
 - `checks.any_pending=true`: wait and re-check.
 - `codex.pending_review=true`: wait for Codex before acting on its feedback.
 - `codex.actionable_diff_comments_count>0`: unresolved Codex inline comments need fixes or explicit replies.
-- `codex.main_thread_approved=false`: Codex has participated, but the latest `@codex review` trigger has not received Codex's 👍 yet. If no review is pending, post `@codex review` and wait.
+- `codex.main_thread_approved=false`: delegate to `handling-codex-reviews`; Codex has not approved the latest `@codex review` trigger yet.
 
 ## Reply templates
 
@@ -112,17 +108,7 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
 Fixed in <sha>: <concise summary of change>
 ```
 
-For top-level Codex review feedback, include the review ID so `status` can tell the feedback was answered:
-
-```text
-Fixed in <sha> for review <review-id>: <concise summary of change>
-```
-
-```text
-@codex review
-```
-
-Only use the second template for a fresh Codex review trigger, never for routine replies.
+For Codex-specific top-level review replies or fresh `@codex review` triggers, use `handling-codex-reviews`.
 
 ## Stop conditions
 
