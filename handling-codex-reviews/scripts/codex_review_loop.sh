@@ -336,6 +336,7 @@ state_json() {
           | select(.content == "+1")
           | select(.user.login | test($codex_pattern; "i"))
         ] | length > 0) as $has_codex_thumbs_up
+      | ($pending_review and (($has_codex_thumbs_up and $latest_trigger_covers_head) | not)) as $effective_pending_review
       | {
         repo: $repo,
         pr: $pr,
@@ -354,13 +355,13 @@ state_json() {
         latest_codex_activity_at: (if $latest_codex_event_time == "" then null else $latest_codex_event_time end),
         codex_review_required: $codex_review_required,
         main_thread_approved: ((($codex_review_required | not) or ($has_codex_thumbs_up and $latest_trigger_covers_head))),
-        pending_review: $pending_review,
+        pending_review: $effective_pending_review,
         actionable_diff_comments_count: $actionable_diff_comments_count,
         actionable_diff_comments: $actionable_diff_comments,
         codex_top_level_reviews: $codex_top_level_reviews,
         actionable_top_level_reviews_count: $actionable_top_level_reviews_count,
         actionable_top_level_reviews: $actionable_top_level_reviews,
-        ready_for_codex: ((($pending_review | not) and ($actionable_diff_comments_count == 0) and ($actionable_top_level_reviews_count == 0) and (($codex_review_required | not) or ($has_codex_thumbs_up and $latest_trigger_covers_head))))
+        ready_for_codex: ((($effective_pending_review | not) and ($actionable_diff_comments_count == 0) and ($actionable_top_level_reviews_count == 0) and (($codex_review_required | not) or ($has_codex_thumbs_up and $latest_trigger_covers_head))))
       }
     '
 }
