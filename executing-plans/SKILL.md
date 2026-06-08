@@ -1,6 +1,6 @@
 ---
 name: executing-plans
-description: Implement one incremental slice from an existing engineering plan, validate it, run adversarial review and cleanup loops, publish a ready PR, and drive Codex review plus CI to passing.
+description: Implement one incremental slice from an existing engineering plan, validate it, run adversarial review and cleanup loops, publish a ready PR, and drive review plus CI to passing.
 ---
 
 # Executing Plans
@@ -10,7 +10,7 @@ Execute one plan slice end to end.
 ## Use This When
 
 - The user asks to implement the next slice, first slice, or a named slice from an existing plan.
-- The user wants plan execution to continue through validation, PR creation, Codex review, and CI cleanup.
+- The user wants plan execution to continue through validation, PR creation, review feedback, and CI cleanup.
 - A `drafting-plans` plan already exists and should be treated as the sequencing source of truth.
 
 ## Required Companion Skills
@@ -20,7 +20,7 @@ Load and use these skills when available:
 - `drafting-plans`: re-read the plan, preserve its sequencing, and update it when implementation changes scope, assumptions, validation, or progress.
 - `adversarial-code-reviewing`: run a skeptical review after the slice implementation, then again after cleanup.
 - `humanizing-text`: tighten PR titles, PR bodies, docs, and user-facing explanations so they sound like a human engineer wrote them.
-- `autofixing-codex-reviews`: run the GitHub Codex review loop once the PR exists, including feedback replies, thread resolution, check monitoring, and fresh `@codex review` triggers.
+- `babysitting-prs`: run the PR babysitting loop once the PR exists, including human and bot feedback replies, thread resolution, Buildkite check monitoring, rebases, and Codex review handling when present. Use it in ready-only mode unless the user explicitly asks to merge.
 
 If one of those skills is unavailable, follow the same workflow manually and say what was unavailable.
 
@@ -31,7 +31,7 @@ If one of those skills is unavailable, follow the same workflow manually and say
 - Keep the PR boundary slice-sized. Do not bundle unrelated cleanup or later phases.
 - Verify cheap drift-prone facts against the current repo, branch, PR, docs, schema loaders, and CI state.
 - Preserve user changes in dirty worktrees. Work with them unless they make the requested slice impossible.
-- Stop only when the PR has passing checks, Codex has approved, and there is no pending review or actionable Codex feedback.
+- Stop only when the PR has passing checks and no pending or actionable review feedback.
 
 ## Workflow
 
@@ -75,11 +75,11 @@ If one of those skills is unavailable, follow the same workflow manually and say
    - Use a concise PR title in the repo's preferred form, for example `type: Summary`.
    - Use `humanizing-text` on the PR body. Keep it brief, public, and concrete: problem, solution, examples of use, validation, and plan slice covered.
 
-9. Drive Codex review and CI to clean.
-   - Trigger exactly one fresh `@codex review` after the PR is pushed and checks are passing or no local fix is possible.
-   - Use `autofixing-codex-reviews` to wait for Codex, fix actionable feedback, reply with `Fixed in <sha>: ...`, react, resolve threads, and re-check CI.
+9. Drive review and CI to clean.
+   - Use `babysitting-prs` in ready-only mode to fix actionable human, bot, and Codex feedback; reply with `Fixed in <sha>: ...`, react, resolve threads, rebase when needed, and re-check CI.
+   - Trigger exactly one fresh `@codex review` only when Codex is already part of the PR review process or the user asks for it, and only after fixes are pushed and checks are passing or no local fix is possible.
    - If checks fail, inspect the failing jobs, fix the cause, push, and repeat the check loop.
-   - Use a bounded loop. Stop and ask for guidance if Codex feedback conflicts, requires a product decision, or cannot be defended from the code.
+   - Use a bounded loop. Stop and ask for guidance if review feedback conflicts, requires a product decision, or cannot be defended from the code.
 
 ## Definition of Done
 
@@ -89,7 +89,7 @@ The work is done only when:
 - The plan reflects any material scope, validation, or progress changes.
 - The PR is open, non-draft, and describes the problem, change, examples, and validation clearly.
 - CI checks are passing.
-- Codex review is approved, with no pending review or actionable Codex feedback.
+- There is no pending review or actionable review feedback.
 
 Do not merge unless the user explicitly asks.
 
@@ -100,7 +100,7 @@ Report:
 - PR URL and branch.
 - Slice implemented.
 - Validation run and results.
-- Codex review and CI state.
+- Review and CI state.
 - Any remaining risks or follow-up slices.
 
 If the stop condition could not be reached, explain the blocker with concrete evidence and the next action.

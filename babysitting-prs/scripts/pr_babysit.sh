@@ -4,16 +4,22 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  codex_review_loop.sh state   [--pr <number>] [--repo <owner/repo>] [--codex-pattern <regex>]
-  codex_review_loop.sh wait    [--pr <number>] [--repo <owner/repo>] [--timeout <seconds>] [--interval <seconds>] [--codex-pattern <regex>]
-  codex_review_loop.sh resolve [--pr <number>] [--repo <owner/repo>] --comment-ids <id1,id2,...>
-  codex_review_loop.sh checks  [--pr <number>] [--repo <owner/repo>]
+  pr_babysit.sh status      [--pr <number>] [--repo <owner/repo>] [--codex-pattern <regex>]
+  pr_babysit.sh codex-state [--pr <number>] [--repo <owner/repo>] [--codex-pattern <regex>]
+  pr_babysit.sh codex-wait  [--pr <number>] [--repo <owner/repo>] [--timeout <seconds>] [--interval <seconds>] [--codex-pattern <regex>]
+  pr_babysit.sh resolve     [--pr <number>] [--repo <owner/repo>] --comment-ids <id1,id2,...>
+  pr_babysit.sh checks      [--pr <number>] [--repo <owner/repo>]
 
 Commands:
-  state    Print JSON summary of Codex review status for the PR.
-  wait     Poll until pending Codex review completes or timeout occurs.
-  resolve  Resolve review threads containing the given comment IDs.
-  checks   Show CI check status for the PR as JSON.
+  status       Print JSON summary of PR merge readiness, checks, review threads, and Codex state.
+  codex-state  Print JSON summary of Codex review status for the PR.
+  codex-wait   Poll until pending Codex review completes or timeout occurs.
+  resolve      Resolve review threads containing the given diff comment IDs.
+  checks       Show CI check status for the PR as JSON.
+
+Aliases:
+  state        Alias for status.
+  wait         Alias for codex-wait.
 EOF
 }
 
@@ -21,6 +27,13 @@ require_cmd() {
   if ! command -v "$1" >/dev/null 2>&1; then
     echo "missing required command: $1" >&2
     exit 1
+  fi
+}
+
+require_bk_auth() {
+  if ! bk auth status --no-input >/dev/null 2>&1; then
+    echo "bk auth is not logged in; run: bk auth login" >&2
+    exit 42
   fi
 }
 
@@ -46,6 +59,10 @@ resolve_pr() {
   gh pr view --json number --jq .number
 }
 
+paginated_array() {
+  gh api "$1" --paginate --slurp | jq 'add'
+}
+
 resolve_threads() {
   local repo="$1"
   local pr="$2"
@@ -55,7 +72,6 @@ resolve_threads() {
   owner="${repo%%/*}"
   name="${repo##*/}"
 
-  # Fetch all review threads with their first comment's databaseId
   local threads
   threads="$(gh api graphql -f query='
     query($owner: String!, $name: String!, $pr: Int!) {
@@ -77,11 +93,9 @@ resolve_threads() {
     }
   ' -f owner="$owner" -f name="$name" -F pr="$pr")"
 
-  # Build array of target comment IDs
   local ids_json
   ids_json="$(echo "$comment_ids" | tr ',' '\n' | jq -Rn '[inputs | select(. != "") | tonumber]')"
 
-  # Find threads whose first comment matches any target ID and resolve them
   local thread_ids
   thread_ids="$(jq -r \
     --argjson ids "$ids_json" '
@@ -111,16 +125,16 @@ checks_json() {
   local pr="$2"
 
   local checks
-  checks="$(gh pr checks "$pr" --repo "$repo" --json name,state,conclusion,detailsUrl 2>/dev/null || echo '[]')"
+  checks="$(gh pr checks "$pr" --repo "$repo" --json name,state,bucket,link,workflow 2>/dev/null || echo '[]')"
 
   local all_passed
-  all_passed="$(jq '[.[] | .conclusion == "SUCCESS" or .conclusion == "NEUTRAL" or .conclusion == "SKIPPED"] | all' <<<"$checks")"
+  all_passed="$(jq '[.[] | .bucket == "pass" or .bucket == "skipping"] | all' <<<"$checks")"
 
   local any_failed
-  any_failed="$(jq '[.[] | .conclusion == "FAILURE" or .conclusion == "CANCELLED" or .conclusion == "TIMED_OUT" or .conclusion == "ACTION_REQUIRED"] | any' <<<"$checks")"
+  any_failed="$(jq '[.[] | .bucket == "fail" or .bucket == "cancel"] | any' <<<"$checks")"
 
   local any_pending
-  any_pending="$(jq '[.[] | .state == "QUEUED" or .state == "IN_PROGRESS" or .state == "WAITING" or .state == "PENDING"] | any' <<<"$checks")"
+  any_pending="$(jq '[.[] | .bucket == "pending"] | any' <<<"$checks")"
 
   jq -cn \
     --argjson checks "$checks" \
@@ -136,15 +150,64 @@ checks_json() {
     '
 }
 
-state_json() {
+review_threads_json() {
+  local repo="$1"
+  local pr="$2"
+
+  local owner name
+  owner="${repo%%/*}"
+  name="${repo##*/}"
+
+  local response nodes
+  response="$(gh api graphql -f query='
+    query($owner: String!, $name: String!, $pr: Int!) {
+      repository(owner: $owner, name: $name) {
+        pullRequest(number: $pr) {
+          reviewThreads(first: 100) {
+            nodes {
+              id
+              isResolved
+              comments(first: 1) {
+                nodes {
+                  databaseId
+                  body
+                  author { login }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ' -f owner="$owner" -f name="$name" -F pr="$pr")"
+  nodes="$(jq '.data.repository.pullRequest.reviewThreads.nodes' <<<"$response")"
+
+  jq -cn --argjson threads "$nodes" '
+    {
+      unresolved_review_threads_count: ([ $threads[] | select(.isResolved | not) ] | length),
+      unresolved_review_threads: [
+        $threads[]
+        | select(.isResolved | not)
+        | {
+            id,
+            first_comment_id: (.comments.nodes[0].databaseId // null),
+            user: (.comments.nodes[0].author.login // null),
+            body: ((.comments.nodes[0].body // "") | .[0:300])
+          }
+      ]
+    }
+  '
+}
+
+codex_json() {
   local repo="$1"
   local pr="$2"
   local codex_pattern="$3"
 
   local issue_comments reviews diff_comments
-  issue_comments="$(gh api "repos/$repo/issues/$pr/comments" --paginate)"
-  reviews="$(gh api "repos/$repo/pulls/$pr/reviews" --paginate)"
-  diff_comments="$(gh api "repos/$repo/pulls/$pr/comments" --paginate)"
+  issue_comments="$(paginated_array "repos/$repo/issues/$pr/comments")"
+  reviews="$(paginated_array "repos/$repo/pulls/$pr/reviews")"
+  diff_comments="$(paginated_array "repos/$repo/pulls/$pr/comments")"
 
   local latest_trigger latest_trigger_time latest_trigger_id latest_trigger_user
   latest_trigger="$(jq -c '
@@ -186,7 +249,7 @@ state_json() {
 
   local trigger_reactions='[]'
   if [[ -n "$latest_trigger_id" ]]; then
-    trigger_reactions="$(gh api "repos/$repo/issues/comments/$latest_trigger_id/reactions" --paginate 2>/dev/null || echo '[]')"
+    trigger_reactions="$(gh api "repos/$repo/issues/comments/$latest_trigger_id/reactions" --paginate --slurp 2>/dev/null | jq 'add' || echo '[]')"
   fi
 
   local actionable_diff_roots actionable_diff_count
@@ -259,18 +322,69 @@ state_json() {
         actionable_diff_comments_count: $actionable_diff_comments_count,
         actionable_diff_comments: $actionable_diff_comments,
         codex_top_level_reviews: $codex_top_level_reviews,
-        ready_for_merge: ((($pending_review | not) and ($actionable_diff_comments_count == 0)))
+        ready_for_codex: ((($pending_review | not) and ($actionable_diff_comments_count == 0)))
       }
+    '
+}
+
+status_json() {
+  local repo="$1"
+  local pr="$2"
+  local codex_pattern="$3"
+
+  local pr_meta checks threads codex
+  pr_meta="$(gh pr view "$pr" --repo "$repo" --json number,url,title,state,isDraft,headRefName,baseRefName,headRefOid,mergeable,mergeStateStatus,reviewDecision,reviewRequests,latestReviews,author)"
+  checks="$(checks_json "$repo" "$pr")"
+  threads="$(review_threads_json "$repo" "$pr")"
+  codex="$(codex_json "$repo" "$pr" "$codex_pattern")"
+
+  jq -cn \
+    --argjson pr "$pr_meta" \
+    --argjson checks "$checks" \
+    --argjson threads "$threads" \
+    --argjson codex "$codex" '
+      [
+        if $pr.state != "OPEN" then "pr_not_open" else empty end,
+        if $pr.isDraft == true then "draft" else empty end,
+        if ($pr.mergeable // "") == "CONFLICTING" then "merge_conflicts" else empty end,
+        if ($pr.mergeable // "") == "UNKNOWN" then "mergeability_unknown" else empty end,
+        if ($pr.mergeStateStatus // "") == "BEHIND" then "branch_behind_base" else empty end,
+        if ($pr.mergeStateStatus // "") == "BLOCKED" then "merge_blocked" else empty end,
+        if ($pr.mergeStateStatus // "") == "DIRTY" then "merge_conflicts" else empty end,
+        if ($pr.mergeStateStatus // "") == "UNKNOWN" then "merge_state_unknown" else empty end,
+        if ($pr.reviewDecision // "") == "CHANGES_REQUESTED" then "changes_requested" else empty end,
+        if ($pr.reviewDecision // "") == "REVIEW_REQUIRED" then "review_required" else empty end,
+        if $threads.unresolved_review_threads_count > 0 then "unresolved_review_threads" else empty end,
+        if $codex.pending_review == true then "pending_codex_review" else empty end,
+        if $codex.actionable_diff_comments_count > 0 then "actionable_codex_comments" else empty end,
+        if $checks.any_failed == true then "failed_checks" else empty end,
+        if $checks.any_pending == true then "pending_checks" else empty end
+      ] as $blockers
+      | {
+          bk_auth: true,
+          pr: $pr,
+          checks: $checks,
+          review_threads: $threads,
+          codex: $codex,
+          merge_blockers: $blockers,
+          ready_to_merge: (($blockers | length) == 0)
+        }
     '
 }
 
 main() {
   require_cmd gh
   require_cmd jq
+  require_cmd bk
 
   if [[ $# -lt 1 ]]; then
     usage
     exit 1
+  fi
+
+  if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    usage
+    exit 0
   fi
 
   local mode="$1"
@@ -321,12 +435,17 @@ main() {
     esac
   done
 
+  require_bk_auth
+
   repo="$(resolve_repo "$repo")"
   pr="$(resolve_pr "$pr")"
 
   case "$mode" in
-    state)
-      state_json "$repo" "$pr" "$codex_pattern"
+    status|state)
+      status_json "$repo" "$pr" "$codex_pattern"
+      ;;
+    codex-state)
+      codex_json "$repo" "$pr" "$codex_pattern"
       ;;
     resolve)
       if [[ -z "$comment_ids" ]]; then
@@ -338,13 +457,13 @@ main() {
     checks)
       checks_json "$repo" "$pr"
       ;;
-    wait)
+    codex-wait|wait)
       local start end now state pending
       start="$(now_epoch)"
       end=$((start + timeout))
 
       while :; do
-        state="$(state_json "$repo" "$pr" "$codex_pattern")"
+        state="$(codex_json "$repo" "$pr" "$codex_pattern")"
         pending="$(jq -r '.pending_review' <<<"$state")"
         if [[ "$pending" == "false" ]]; then
           echo "$state"

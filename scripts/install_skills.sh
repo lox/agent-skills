@@ -53,6 +53,16 @@ remove_repo_symlink() {
   esac
 }
 
+remove_retired_skill_links() {
+  local name
+
+  for name in autofixing-codex-reviews; do
+    remove_repo_symlink "${ampcode_dir}/${name}"
+    remove_repo_symlink "${codex_dir}/${name}"
+    remove_repo_symlink "${legacy_agents_dir}/${name}"
+  done
+}
+
 warn_if_old_codex_cli() {
   local codex_path
 
@@ -67,6 +77,8 @@ warn_if_old_codex_cli() {
 }
 
 cd "$repo_root"
+
+remove_retired_skill_links
 
 for skill in */SKILL.md; do
   name="$(dirname "$skill")"
