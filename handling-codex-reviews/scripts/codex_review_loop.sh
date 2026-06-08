@@ -158,7 +158,7 @@ checks_json() {
   checks_output="$(gh pr checks "$pr" --repo "$repo" --json name,state,bucket,link,workflow 2>&1)"
   checks_exit=$?
   set -e
-  if [[ $checks_exit -eq 0 || $checks_exit -eq 8 ]]; then
+  if jq -e type >/dev/null 2>&1 <<<"$checks_output"; then
     checks="$checks_output"
   elif [[ "$checks_output" == no\ checks\ reported* ]]; then
     checks='[]'
@@ -207,7 +207,7 @@ state_json() {
   head_oid="$(gh pr view "$pr" --repo "$repo" --json headRefOid --jq .headRefOid)"
   head_committed_at="$(gh api "repos/$repo/commits/$head_oid" --jq '.commit.committer.date')"
 
-  local latest_trigger latest_trigger_time latest_trigger_id latest_trigger_user
+  local latest_trigger latest_trigger_time latest_trigger_id latest_trigger_user latest_trigger_head_oid
   latest_trigger="$(jq -c '
     map(select(.body | test("(?m)^@codex\\s+review\\b")))
     | sort_by(.created_at)
@@ -217,10 +217,12 @@ state_json() {
   latest_trigger_time=""
   latest_trigger_id=""
   latest_trigger_user=""
+  latest_trigger_head_oid=""
   if [[ -n "$latest_trigger" ]]; then
     latest_trigger_time="$(jq -r '.created_at' <<<"$latest_trigger")"
     latest_trigger_id="$(jq -r '.id' <<<"$latest_trigger")"
     latest_trigger_user="$(jq -r '.user.login' <<<"$latest_trigger")"
+    latest_trigger_head_oid="$(jq -r '(.body | capture("(?im)^Head:[[:space:]]*(?<sha>[0-9a-f]{40})")? // {}).sha // ""' <<<"$latest_trigger")"
   fi
 
   local codex_events latest_codex_event_time
@@ -320,6 +322,7 @@ state_json() {
     --arg head_committed_at "$head_committed_at" \
     --arg latest_trigger_time "$latest_trigger_time" \
     --arg latest_trigger_user "$latest_trigger_user" \
+    --arg latest_trigger_head_oid "$latest_trigger_head_oid" \
     --arg latest_codex_event_time "$latest_codex_event_time" \
     --argjson pending_review "$pending_review" \
     --argjson trigger_reactions "$trigger_reactions" \
@@ -330,7 +333,7 @@ state_json() {
     --argjson actionable_top_level_reviews "$actionable_top_level_reviews" \
     --argjson actionable_top_level_reviews_count "$actionable_top_level_reviews_count" '
       ($codex_events | length > 0 or $latest_trigger_time != "") as $codex_review_required
-      | ($latest_trigger_time != "" and ($head_committed_at == "" or $latest_trigger_time >= $head_committed_at)) as $latest_trigger_covers_head
+      | ($latest_trigger_head_oid != "" and $latest_trigger_head_oid == $head_oid) as $latest_trigger_covers_head
       | ([
           $trigger_reactions[]
           | select(.content == "+1")
@@ -348,6 +351,7 @@ state_json() {
         latest_trigger: {
           created_at: (if $latest_trigger_time == "" then null else $latest_trigger_time end),
           user: (if $latest_trigger_user == "" then null else $latest_trigger_user end),
+          head_oid: (if $latest_trigger_head_oid == "" then null else $latest_trigger_head_oid end),
           reactions_count: ($trigger_reactions | length),
           has_codex_thumbs_up: $has_codex_thumbs_up,
           covers_head: $latest_trigger_covers_head

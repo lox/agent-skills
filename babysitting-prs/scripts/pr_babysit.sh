@@ -171,7 +171,7 @@ checks_json() {
   checks_output="$(gh pr checks "$pr" --repo "$repo" --json name,state,bucket,link,workflow 2>&1)"
   checks_exit=$?
   set -e
-  if [[ $checks_exit -eq 0 || $checks_exit -eq 8 ]]; then
+  if jq -e type >/dev/null 2>&1 <<<"$checks_output"; then
     checks="$checks_output"
   elif [[ "$checks_output" == no\ checks\ reported* ]]; then
     checks='[]'

@@ -28,7 +28,12 @@ Drive the Codex-specific review loop for a GitHub pull request.
 9. Add 👍 reactions to addressed Codex comments.
 10. Resolve addressed review threads: `scripts/codex_review_loop.sh resolve --pr <pr> --repo <owner/repo> --comment-ids <id1,id2,...>`.
 11. Check CI status: `scripts/codex_review_loop.sh checks --pr <pr> --repo <owner/repo>`.
-12. If there is no review in progress and Codex has not approved the latest trigger, post exactly one fresh `@codex review`.
+12. If there is no review in progress and Codex has not approved the latest trigger for the current head, post exactly one fresh review trigger that includes the current head SHA:
+    ```text
+    @codex review
+
+    Head: <40-character-head-sha>
+    ```
 13. Repeat until no pending review, no actionable Codex feedback, checks pass, and the latest `@codex review` comment has a 👍 reaction from Codex.
 
 ## Important rules
@@ -79,4 +84,6 @@ Fixed in <sha> for review <review-id>: <concise summary of change>
 
 ```text
 @codex review
+
+Head: <40-character-head-sha>
 ```
