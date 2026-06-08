@@ -203,6 +203,10 @@ state_json() {
   reviews="$(paginated_array "repos/$repo/pulls/$pr/reviews")"
   diff_comments="$(paginated_array "repos/$repo/pulls/$pr/comments")"
 
+  local head_oid head_committed_at
+  head_oid="$(gh pr view "$pr" --repo "$repo" --json headRefOid --jq .headRefOid)"
+  head_committed_at="$(gh api "repos/$repo/commits/$head_oid" --jq '.commit.committer.date')"
+
   local latest_trigger latest_trigger_time latest_trigger_id latest_trigger_user
   latest_trigger="$(jq -c '
     map(select(.body | test("(?m)^@codex\\s+review\\b")))
@@ -312,6 +316,8 @@ state_json() {
     --arg repo "$repo" \
     --argjson pr "$pr" \
     --arg codex_pattern "$codex_pattern" \
+    --arg head_oid "$head_oid" \
+    --arg head_committed_at "$head_committed_at" \
     --arg latest_trigger_time "$latest_trigger_time" \
     --arg latest_trigger_user "$latest_trigger_user" \
     --arg latest_codex_event_time "$latest_codex_event_time" \
@@ -324,6 +330,7 @@ state_json() {
     --argjson actionable_top_level_reviews "$actionable_top_level_reviews" \
     --argjson actionable_top_level_reviews_count "$actionable_top_level_reviews_count" '
       ($codex_events | length > 0 or $latest_trigger_time != "") as $codex_review_required
+      | ($latest_trigger_time != "" and ($head_committed_at == "" or $latest_trigger_time >= $head_committed_at)) as $latest_trigger_covers_head
       | ([
           $trigger_reactions[]
           | select(.content == "+1")
@@ -333,22 +340,27 @@ state_json() {
         repo: $repo,
         pr: $pr,
         codex_pattern: $codex_pattern,
+        head: {
+          oid: $head_oid,
+          committed_at: (if $head_committed_at == "" then null else $head_committed_at end)
+        },
         latest_trigger: {
           created_at: (if $latest_trigger_time == "" then null else $latest_trigger_time end),
           user: (if $latest_trigger_user == "" then null else $latest_trigger_user end),
           reactions_count: ($trigger_reactions | length),
-          has_codex_thumbs_up: $has_codex_thumbs_up
+          has_codex_thumbs_up: $has_codex_thumbs_up,
+          covers_head: $latest_trigger_covers_head
         },
         latest_codex_activity_at: (if $latest_codex_event_time == "" then null else $latest_codex_event_time end),
         codex_review_required: $codex_review_required,
-        main_thread_approved: ((($codex_review_required | not) or $has_codex_thumbs_up)),
+        main_thread_approved: ((($codex_review_required | not) or ($has_codex_thumbs_up and $latest_trigger_covers_head))),
         pending_review: $pending_review,
         actionable_diff_comments_count: $actionable_diff_comments_count,
         actionable_diff_comments: $actionable_diff_comments,
         codex_top_level_reviews: $codex_top_level_reviews,
         actionable_top_level_reviews_count: $actionable_top_level_reviews_count,
         actionable_top_level_reviews: $actionable_top_level_reviews,
-        ready_for_codex: ((($pending_review | not) and ($actionable_diff_comments_count == 0) and ($actionable_top_level_reviews_count == 0) and (($codex_review_required | not) or $has_codex_thumbs_up)))
+        ready_for_codex: ((($pending_review | not) and ($actionable_diff_comments_count == 0) and ($actionable_top_level_reviews_count == 0) and (($codex_review_required | not) or ($has_codex_thumbs_up and $latest_trigger_covers_head))))
       }
     '
 }
