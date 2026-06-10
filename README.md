@@ -27,7 +27,7 @@ Reusable Amp/Codex skills that can be copied into other environments.
 
 The `improve-codebase-architecture` skill is adapted from Matt Pocock's [`mattpocock/skills`](https://github.com/mattpocock/skills/tree/main/skills/engineering/improve-codebase-architecture) repository. These materials are licensed under MIT. Copyright (c) 2026 Matt Pocock.
 
-The `thermo-nuclear-code-quality-review` skill is adapted from Cursor's [`cursor/plugins`](https://github.com/cursor/plugins/blob/3347cbab5b54136f6fba0994c3a01a56f7fb7fca/cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md) repository at commit `3347cbab5b54136f6fba0994c3a01a56f7fb7fca`. Cursor Team Kit is licensed under MIT in its plugin manifest. Copyright (c) Cursor.
+The `thermo-nuclear-code-quality-review` skill is adapted from Cursor's [`cursor/plugins`](https://github.com/cursor/plugins/blob/3347cbab5b54136f6fba0994c3a01a56f7fb7fca/cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md) repository at commit `3347cbab5b54136f6fba0994c3a01a56f7fb7fca`. Cursor Team Kit is licensed under MIT; the upstream permission notice is included in `thermo-nuclear-code-quality-review/LICENSE`.
 
 ## Structure
 
