@@ -1,11 +1,11 @@
 ---
 name: general-code-reviewing
-description: Orchestrate a broad code review by delegating ship-risk review to adversarial-code-reviewing and maintainability review to thermo-nuclear-code-quality-review, then synthesize both. Use for general PR reviews, diff reviews, code reviews, or broad review requests when the user did not ask for only one narrower review lens.
+description: Orchestrate a broad code review by running ship-risk and maintainability review passes, then synthesizing both. Supports sub-agent delegation only when the user explicitly asks for sub-agents, delegation, or parallel review work. Use for general PR reviews, diff reviews, code reviews, or broad review requests when the user did not ask for only one narrower review lens.
 ---
 
 # General Code Reviewing
 
-Run a broad review without flattening distinct review lenses into mush. Delegate separate passes for ship risk and structural maintainability, then synthesize the results into one findings-first review.
+Run a broad review without flattening distinct review lenses into mush. Run separate passes for ship risk and structural maintainability, then synthesize the results into one findings-first review.
 
 ## Use This When
 
@@ -24,21 +24,23 @@ Use two independent passes:
 
 Do not ask either pass to cover the other's job. Overlap is useful evidence, but separate perspectives are the point.
 
-## Delegation
+## Running The Passes
 
-When multi-agent tools are available, spawn both review passes as sub-agents in parallel. If the spawn tools are not already available, search for multi-agent or sub-agent tools before falling back to local sequential review.
+Default to running both review passes sequentially in the current agent. A normal request like "review this PR" or "review this diff" does not authorize spawning sub-agents.
 
-Before spawning, identify the exact target:
+Use sub-agents only when the current user request explicitly asks for sub-agents, delegation, parallel agents, or parallel review work. When that permission is present and multi-agent tools are available, spawn both review passes as sub-agents in parallel. If spawn tools are not already available, search for multi-agent or sub-agent tools before falling back to local sequential review.
+
+Before running either pass, identify the exact target:
 
 1. PR number, branch diff, staged diff, commit range, or named files.
 2. Base revision for comparison when reviewing a branch or PR.
 3. Any user-supplied focus area or constraints.
 
-Give each sub-agent the same concrete target, but a different skill and output contract. Review sub-agents must not edit files.
+Whether the passes are local or delegated, use the same concrete target for both, but keep their skill lenses and output contracts separate. Review passes must not edit files.
 
-### Adversarial Sub-Agent Prompt
+### Adversarial Pass Contract
 
-Ask the sub-agent to use `adversarial-code-reviewing` and return:
+Use `adversarial-code-reviewing` and return:
 
 ```json
 {
@@ -60,9 +62,9 @@ Ask the sub-agent to use `adversarial-code-reviewing` and return:
 }
 ```
 
-### Thermonuclear Sub-Agent Prompt
+### Thermonuclear Pass Contract
 
-Ask the sub-agent to use `thermo-nuclear-code-quality-review` and return:
+Use `thermo-nuclear-code-quality-review` and return:
 
 ```json
 {
@@ -84,7 +86,7 @@ Ask the sub-agent to use `thermo-nuclear-code-quality-review` and return:
 }
 ```
 
-If sub-agents are unavailable, run both skill passes yourself and say the review was sequential rather than delegated.
+If the user explicitly requested sub-agents but they are unavailable, run both skill passes yourself and say the review was sequential rather than delegated.
 
 ## Synthesis
 

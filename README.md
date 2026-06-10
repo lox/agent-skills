@@ -11,7 +11,7 @@ Reusable Amp/Codex skills that can be copied into other environments.
 - `drafting-plans`: Guidance for drafting durable engineering plan docs with clear scope, sequencing, validation, decisions, and open questions.
 - `executing-plans`: Workflow for implementing one plan slice through validation, adversarial review, cleanup, PR creation, PR babysitting, and passing CI.
 - `frontend-design`: Guidance for creating distinctive, production-grade frontend interfaces with a strong visual point of view.
-- `general-code-reviewing`: Orchestrates broad code reviews by delegating ship-risk and maintainability passes to focused review skills, then synthesizing the results.
+- `general-code-reviewing`: Orchestrates broad code reviews by running separate ship-risk and maintainability passes, then synthesizing the results.
 - `go-cli-writing`: Guidance for building and reviewing Go CLIs with Kong, charmbracelet/log, and clean command layout.
 - `go-writing`: Guidelines for writing, reviewing, and modernising Go code with version-gated guidance, linting, and toolchain management.
 - `handling-codex-reviews`: Codex-specific GitHub PR review loop for waiting on reviews, fixing feedback, resolving threads, and requiring Codex's main-thread thumbs-up.
