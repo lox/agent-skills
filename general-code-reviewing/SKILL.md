@@ -109,7 +109,9 @@ Separate:
 
 ## Output
 
-Use findings-first review format:
+If the user, platform, connector, or integration requires a specific output format or schema, honor that format first. Apply the findings-first prose format only for normal interactive reviews without a stricter caller-required format.
+
+For normal interactive reviews, use:
 
 1. Verdict line: `Verdict: approve | needs-attention | no-ship`
 2. Findings ordered by severity, each with file and line references.
