@@ -1,6 +1,6 @@
 # agent-skills
 
-Reusable Amp/Codex skills that can be copied into other environments.
+Reusable Amp/Codex skills managed with `skillyard`.
 
 ## Included Skills
 
@@ -31,16 +31,21 @@ Each skill lives in its own directory and is centred on a `SKILL.md` file.
 Some skills also include helper scripts under `scripts/`.
 Some skills also include agent-specific prompt metadata under `agents/`.
 
-`mise run install` links shared skills into:
+## Installation
 
-- `~/.codex/skills` for the Codex macOS app and modern Codex CLI.
-- `~/.config/agents/skills` for Amp.
+Use `skillyard` to subscribe Codex and Amp to the published repo:
 
-`consulting-librarian` is Codex-only and is linked only into `~/.codex/skills`, because Amp already includes Librarian guidance. The installer also removes old repo-owned symlinks from `~/.agents/skills`; Amp can discover that legacy path from projects under the home directory, so Codex-only skills must not live there.
+```bash
+skillyard setup
+skillyard subscribe github:lox/agent-skills --include '*' --target codex --force
+skillyard subscribe github:lox/agent-skills --include '*' --exclude consulting-librarian --target amp --force
+```
 
-If the `codex` on `PATH` does not support `codex app`, update `PATH` to a newer Codex CLI before launching the macOS app.
+`mise run install` runs the two `subscribe` commands. The `--force` flag is useful when migrating old repo-owned symlinks; omit it if you want `skillyard` to stop instead of replacing unmanaged links.
 
-When a destination already contains a real directory instead of a symlink, the installer moves it to a sibling `skill-backups` directory before linking the repo copy. Backups are kept outside the scanned `skills` directories so agents do not load duplicate skills.
+`consulting-librarian` is Codex-only because Amp already includes Librarian guidance.
+
+After the subscription exists, use `skillyard sync github:lox/agent-skills` to reconcile installed links with the current locked source state.
 
 ## Linting
 
