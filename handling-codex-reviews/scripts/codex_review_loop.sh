@@ -387,30 +387,49 @@ state_json() {
           | select(.id == $comment_id)
           | select((.body // "") | test("(?i)Codex Review: Didn.t find any major issues"))
         ] | length > 0) as $has_codex_clean_comment
-      | ([
-          if ($latest_trigger_time != "" and $latest_trigger_covers_head) then $latest_trigger_time else empty end,
-          if $latest_codex_eyes_time != "" then $latest_codex_eyes_time else empty end
-        ] | sort | last // "") as $explicit_review_started_at
       | (
-          if $explicit_review_started_at != "" then $explicit_review_started_at
-          elif $latest_codex_thumbs_up_time != "" then $head_committed_at
+          if (
+            $latest_codex_eyes_time != ""
+            and $latest_codex_eyes_time >= $head_committed_at
+            and ($latest_trigger_time == "" or $latest_codex_eyes_time >= $latest_trigger_time)
+          ) then $latest_codex_eyes_time
           else ""
           end
-        ) as $codex_review_started_at
+        ) as $active_codex_eyes_time
+      | ([
+          if $latest_trigger_time != "" then $latest_trigger_time else empty end,
+          if $active_codex_eyes_time != "" then $active_codex_eyes_time else empty end
+        ] | sort | last // "") as $codex_review_started_at
+      | ([
+          if ($latest_trigger_time != "" and $latest_trigger_covers_head) then $latest_trigger_time else empty end,
+          if $active_codex_eyes_time != "" then $active_codex_eyes_time else empty end
+        ] | sort | last // "") as $current_head_review_started_at
       | ([
           if $latest_codex_event_time != "" then $latest_codex_event_time else empty end,
           if $latest_codex_thumbs_up_time != "" then $latest_codex_thumbs_up_time else empty end
         ] | sort | last // "") as $latest_codex_completion_time
       | (
-          $latest_codex_thumbs_up_time != ""
-          and $codex_review_started_at != ""
-          and $latest_codex_thumbs_up_time >= $codex_review_started_at
+          ($has_codex_trigger_thumbs_up or $has_codex_pr_thumbs_up)
+          and (
+            (
+              $current_head_review_started_at != ""
+              and (
+                $latest_codex_thumbs_up_time >= $current_head_review_started_at
+                or ($latest_trigger_covers_head and $has_post_trigger_codex_activity)
+              )
+            )
+            or (
+              $current_head_review_started_at == ""
+              and $latest_codex_thumbs_up_time != ""
+              and $latest_codex_thumbs_up_time >= $head_committed_at
+            )
+          )
         ) as $has_current_head_approval
       | (
           $codex_review_started_at != ""
           and ($latest_codex_completion_time == "" or $latest_codex_completion_time < $codex_review_started_at)
         ) as $effective_pending_review
-      | ($has_codex_eyes and $effective_pending_review) as $eyes_pending_review
+      | ($active_codex_eyes_time != "" and $effective_pending_review) as $eyes_pending_review
       | {
         repo: $repo,
         pr: $pr,
@@ -440,6 +459,8 @@ state_json() {
         },
         latest_codex_activity_at: (if $latest_codex_event_time == "" then null else $latest_codex_event_time end),
         codex_review_started_at: (if $codex_review_started_at == "" then null else $codex_review_started_at end),
+        current_head_review_started_at: (if $current_head_review_started_at == "" then null else $current_head_review_started_at end),
+        active_codex_eyes_at: (if $active_codex_eyes_time == "" then null else $active_codex_eyes_time end),
         latest_codex_completion_at: (if $latest_codex_completion_time == "" then null else $latest_codex_completion_time end),
         codex_review_required: $codex_review_required,
         has_codex_eyes: $has_codex_eyes,
