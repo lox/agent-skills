@@ -58,7 +58,7 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
 
 4. **Handle Codex when present**
    - If `scripts/pr_babysit.sh status` reports Codex activity, `codex.has_codex_eyes=true`, or any `codex.*` blocker, load and use `handling-codex-reviews`.
-   - Treat Codex as incomplete until `handling-codex-reviews` reports no pending review, no actionable feedback, and `main_thread_approved=true` from Codex's 👍 reaction on the PR description.
+   - Treat Codex as incomplete until `handling-codex-reviews` reports no pending review, no actionable feedback, and `main_thread_approved=true` from Codex's 👍 reaction on the PR description or latest review trigger.
    - Do not post ad hoc Codex replies from this generic skill; delegate the exact reply and fresh `@codex review` rules to `handling-codex-reviews`.
 
 5. **Clear CI and Buildkite blockers**

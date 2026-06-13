@@ -18,7 +18,7 @@ Drive the Codex-specific review loop for a GitHub pull request.
 
 1. Resolve PR context (`owner/repo`, PR number, branch).
 2. Run `scripts/codex_review_loop.sh state --pr <pr> --repo <owner/repo>`.
-3. If `pending_review=true`, run `scripts/codex_review_loop.sh wait --pr <pr> --repo <owner/repo>`. A clean Codex pass may complete as a 👍 reaction on the latest trigger instead of a review comment.
+3. If `pending_review=true`, run `scripts/codex_review_loop.sh wait --pr <pr> --repo <owner/repo>`. A clean Codex pass may complete as a 👍 reaction on the PR description or latest trigger instead of a review comment.
 4. Fix all actionable Codex feedback in one batch:
    - inline diff comments from `actionable_diff_comments`
    - actionable top-level review bodies from `actionable_top_level_reviews`
@@ -35,7 +35,7 @@ Drive the Codex-specific review loop for a GitHub pull request.
 
     Head: <40-character-head-sha>
     ```
-13. Repeat until no pending review, no actionable Codex feedback, checks pass, the latest `@codex review` trigger names the current head SHA, Codex has activity after that trigger, and the PR description has Codex's 👍 reaction.
+13. Repeat until no pending review, no actionable Codex feedback, checks pass, the latest `@codex review` trigger names the current head SHA, and Codex has approved with a 👍 reaction on the PR description or latest review trigger.
 
 ## Important rules
 
