@@ -10,6 +10,7 @@ Drive the Codex-specific review loop for a GitHub pull request.
 ## Use this when
 
 - A PR has `@codex review` activity.
+- Codex has added an `eyes` reaction to the PR description or latest review trigger.
 - Codex has left inline diff comments or top-level review feedback.
 - Another skill, such as `babysitting-prs`, detects Codex as a reviewer and needs the Codex loop completed.
 
@@ -66,7 +67,7 @@ Drive the Codex-specific review loop for a GitHub pull request.
 
 ## State interpretation
 
-- `pending_review=true`: a recent `@codex review` trigger exists without newer Codex activity.
+- `pending_review=true`: a recent `@codex review` trigger exists without newer Codex activity, or Codex still has an `eyes` reaction on the PR description or latest review trigger.
 - `actionable_diff_comments_count>0`: unresolved Codex inline diff comments need fixes or explicit replies.
 - `actionable_top_level_reviews_count>0`: actionable Codex top-level review feedback needs fixes or an explicit PR comment that references the review ID.
 - `main_thread_approved=false`: Codex has participated, but the latest current-head `@codex review` trigger has not resulted in post-trigger Codex activity plus Codex's 👍 reaction on the PR description.

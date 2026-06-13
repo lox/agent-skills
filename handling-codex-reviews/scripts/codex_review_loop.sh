@@ -337,7 +337,18 @@ state_json() {
     --argjson codex_top_level_reviews "$top_level_reviews" \
     --argjson actionable_top_level_reviews "$actionable_top_level_reviews" \
     --argjson actionable_top_level_reviews_count "$actionable_top_level_reviews_count" '
-      ($codex_events | length > 0 or $latest_trigger_time != "") as $codex_review_required
+      ([
+          $trigger_reactions[]
+          | select(.content == "eyes")
+          | select(.user.login | test($codex_pattern; "i"))
+        ] | length > 0) as $has_codex_trigger_eyes
+      | ([
+          $pr_reactions[]
+          | select(.content == "eyes")
+          | select(.user.login | test($codex_pattern; "i"))
+        ] | length > 0) as $has_codex_pr_eyes
+      | ($has_codex_trigger_eyes or $has_codex_pr_eyes) as $has_codex_eyes
+      | ($codex_events | length > 0 or $latest_trigger_time != "" or $has_codex_eyes) as $codex_review_required
       | ($latest_trigger_head_oid != "" and $latest_trigger_head_oid == $head_oid) as $latest_trigger_covers_head
       | ([
           $codex_events[]
@@ -360,7 +371,7 @@ state_json() {
           | select((.body // "") | test("(?i)Codex Review: Didn.t find any major issues"))
         ] | length > 0) as $has_codex_clean_comment
       | ($has_codex_pr_thumbs_up and $latest_trigger_covers_head and $has_post_trigger_codex_activity) as $has_current_head_approval
-      | ($pending_review and ($has_current_head_approval | not)) as $effective_pending_review
+      | (($pending_review or $has_codex_eyes) and ($has_current_head_approval | not)) as $effective_pending_review
       | {
         repo: $repo,
         pr: $pr,
@@ -374,15 +385,18 @@ state_json() {
           user: (if $latest_trigger_user == "" then null else $latest_trigger_user end),
           head_oid: (if $latest_trigger_head_oid == "" then null else $latest_trigger_head_oid end),
           reactions_count: ($trigger_reactions | length),
+          has_codex_eyes: $has_codex_trigger_eyes,
           has_codex_clean_comment: $has_codex_clean_comment,
           covers_head: $latest_trigger_covers_head
         },
         pr_description: {
           reactions_count: ($pr_reactions | length),
-          has_codex_thumbs_up: $has_codex_pr_thumbs_up
+          has_codex_thumbs_up: $has_codex_pr_thumbs_up,
+          has_codex_eyes: $has_codex_pr_eyes
         },
         latest_codex_activity_at: (if $latest_codex_event_time == "" then null else $latest_codex_event_time end),
         codex_review_required: $codex_review_required,
+        has_codex_eyes: $has_codex_eyes,
         has_post_trigger_codex_activity: $has_post_trigger_codex_activity,
         main_thread_approved: ((($codex_review_required | not) or $has_current_head_approval)),
         pending_review: $effective_pending_review,
