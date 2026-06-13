@@ -410,20 +410,11 @@ state_json() {
         ] | sort | last // "") as $latest_codex_completion_time
       | (
           ($has_codex_trigger_thumbs_up or $has_codex_pr_thumbs_up)
+          and $current_head_review_started_at != ""
           and (
-            (
-              $current_head_review_started_at != ""
-              and (
-                $latest_codex_thumbs_up_time >= $current_head_review_started_at
-                or ($latest_trigger_covers_head and $has_post_trigger_codex_activity)
-              )
+            $latest_codex_thumbs_up_time >= $current_head_review_started_at
+            or ($latest_trigger_covers_head and $has_post_trigger_codex_activity)
             )
-            or (
-              $current_head_review_started_at == ""
-              and $latest_codex_thumbs_up_time != ""
-              and $latest_codex_thumbs_up_time >= $head_committed_at
-            )
-          )
         ) as $has_current_head_approval
       | (
           $codex_review_started_at != ""
