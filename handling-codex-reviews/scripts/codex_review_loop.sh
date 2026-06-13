@@ -350,6 +350,8 @@ state_json() {
       | ($codex_trigger_eyes_reactions | length > 0) as $has_codex_trigger_eyes
       | ($codex_pr_eyes_reactions | length > 0) as $has_codex_pr_eyes
       | ($has_codex_trigger_eyes or $has_codex_pr_eyes) as $has_codex_eyes
+      | ($codex_trigger_eyes_reactions | sort_by(.created_at) | last.created_at // "") as $latest_codex_trigger_eyes_time
+      | ($codex_pr_eyes_reactions | sort_by(.created_at) | last.created_at // "") as $latest_codex_pr_eyes_time
       | (($codex_trigger_eyes_reactions + $codex_pr_eyes_reactions) | sort_by(.created_at) | last.created_at // "") as $latest_codex_eyes_time
       | ([
           $trigger_reactions[]
@@ -390,15 +392,25 @@ state_json() {
         ] | length > 0) as $has_codex_clean_comment
       | (
           if (
-            $latest_codex_eyes_time != ""
-            and (
-              ($latest_trigger_time == "" and $latest_codex_eyes_time >= $head_committed_at)
-              or ($latest_trigger_covers_head and $latest_codex_eyes_time >= $latest_trigger_time)
-            )
-          ) then $latest_codex_eyes_time
+            $latest_codex_trigger_eyes_time != ""
+            and $latest_trigger_covers_head
+            and $latest_codex_trigger_eyes_time >= $latest_trigger_time
+          ) then $latest_codex_trigger_eyes_time
           else ""
           end
-        ) as $active_codex_eyes_time
+        ) as $active_trigger_eyes_time
+      | (
+          if (
+            $latest_codex_pr_eyes_time != ""
+            and $latest_codex_pr_eyes_time >= $head_committed_at
+          ) then $latest_codex_pr_eyes_time
+          else ""
+          end
+        ) as $active_pr_eyes_time
+      | ([
+          if $active_trigger_eyes_time != "" then $active_trigger_eyes_time else empty end,
+          if $active_pr_eyes_time != "" then $active_pr_eyes_time else empty end
+        ] | sort | last // "") as $active_codex_eyes_time
       | ([
           if $latest_trigger_time != "" then $latest_trigger_time else empty end,
           if $active_codex_eyes_time != "" then $active_codex_eyes_time else empty end
