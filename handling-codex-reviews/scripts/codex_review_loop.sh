@@ -351,6 +351,19 @@ state_json() {
       | ($codex_pr_eyes_reactions | length > 0) as $has_codex_pr_eyes
       | ($has_codex_trigger_eyes or $has_codex_pr_eyes) as $has_codex_eyes
       | (($codex_trigger_eyes_reactions + $codex_pr_eyes_reactions) | sort_by(.created_at) | last.created_at // "") as $latest_codex_eyes_time
+      | ([
+          $trigger_reactions[]
+          | select(.content == "+1")
+          | select(.user.login | test($codex_pattern; "i"))
+        ]) as $codex_trigger_thumbs_up_reactions
+      | ([
+          $pr_reactions[]
+          | select(.content == "+1")
+          | select(.user.login | test($codex_pattern; "i"))
+        ]) as $codex_pr_thumbs_up_reactions
+      | ($codex_trigger_thumbs_up_reactions | length > 0) as $has_codex_trigger_thumbs_up
+      | ($codex_pr_thumbs_up_reactions | length > 0) as $has_codex_pr_thumbs_up
+      | (($codex_trigger_thumbs_up_reactions + $codex_pr_thumbs_up_reactions) | sort_by(.created_at) | last.created_at // "") as $latest_codex_thumbs_up_time
       | ($codex_events | length > 0 or $latest_trigger_time != "" or $has_codex_eyes) as $codex_review_required
       | ($latest_trigger_head_oid != "" and $latest_trigger_head_oid == $head_oid) as $latest_trigger_covers_head
       | ([
@@ -358,11 +371,6 @@ state_json() {
           | select(.created_at >= $latest_trigger_time)
           | select(.user | test($codex_pattern; "i"))
         ] | length > 0) as $has_post_trigger_codex_activity
-      | ([
-          $pr_reactions[]
-          | select(.content == "+1")
-          | select(.user.login | test($codex_pattern; "i"))
-        ] | length > 0) as $has_codex_pr_thumbs_up
       | ([
           $codex_events[]
           | select(.kind == "issue_comment")
@@ -373,8 +381,18 @@ state_json() {
           | select(.id == $comment_id)
           | select((.body // "") | test("(?i)Codex Review: Didn.t find any major issues"))
         ] | length > 0) as $has_codex_clean_comment
-      | ($has_codex_pr_thumbs_up and $latest_trigger_covers_head and $has_post_trigger_codex_activity) as $has_current_head_approval
-      | ($has_codex_eyes and ($latest_codex_event_time == "" or $latest_codex_event_time < $latest_codex_eyes_time)) as $eyes_pending_review
+      | (
+          $latest_codex_thumbs_up_time != ""
+          and (
+            ($latest_trigger_time != "" and $latest_trigger_covers_head and $latest_codex_thumbs_up_time >= $latest_trigger_time)
+            or ($latest_trigger_time == "" and $latest_codex_thumbs_up_time >= $head_committed_at)
+          )
+        ) as $has_current_head_approval
+      | (
+          $has_codex_eyes
+          and ($latest_codex_event_time == "" or $latest_codex_event_time < $latest_codex_eyes_time)
+          and ($latest_codex_thumbs_up_time == "" or $latest_codex_thumbs_up_time < $latest_codex_eyes_time)
+        ) as $eyes_pending_review
       | (($pending_review or $eyes_pending_review) and ($has_current_head_approval | not)) as $effective_pending_review
       | {
         repo: $repo,
@@ -391,12 +409,15 @@ state_json() {
           reactions_count: ($trigger_reactions | length),
           has_codex_eyes: $has_codex_trigger_eyes,
           latest_codex_eyes_at: (if (($codex_trigger_eyes_reactions | sort_by(.created_at) | last.created_at // "") == "") then null else ($codex_trigger_eyes_reactions | sort_by(.created_at) | last.created_at) end),
+          has_codex_thumbs_up: $has_codex_trigger_thumbs_up,
+          latest_codex_thumbs_up_at: (if (($codex_trigger_thumbs_up_reactions | sort_by(.created_at) | last.created_at // "") == "") then null else ($codex_trigger_thumbs_up_reactions | sort_by(.created_at) | last.created_at) end),
           has_codex_clean_comment: $has_codex_clean_comment,
           covers_head: $latest_trigger_covers_head
         },
         pr_description: {
           reactions_count: ($pr_reactions | length),
           has_codex_thumbs_up: $has_codex_pr_thumbs_up,
+          latest_codex_thumbs_up_at: (if (($codex_pr_thumbs_up_reactions | sort_by(.created_at) | last.created_at // "") == "") then null else ($codex_pr_thumbs_up_reactions | sort_by(.created_at) | last.created_at) end),
           has_codex_eyes: $has_codex_pr_eyes,
           latest_codex_eyes_at: (if (($codex_pr_eyes_reactions | sort_by(.created_at) | last.created_at // "") == "") then null else ($codex_pr_eyes_reactions | sort_by(.created_at) | last.created_at) end)
         },
@@ -404,6 +425,8 @@ state_json() {
         codex_review_required: $codex_review_required,
         has_codex_eyes: $has_codex_eyes,
         latest_codex_eyes_at: (if $latest_codex_eyes_time == "" then null else $latest_codex_eyes_time end),
+        has_codex_thumbs_up: ($has_codex_trigger_thumbs_up or $has_codex_pr_thumbs_up),
+        latest_codex_thumbs_up_at: (if $latest_codex_thumbs_up_time == "" then null else $latest_codex_thumbs_up_time end),
         eyes_pending_review: $eyes_pending_review,
         has_post_trigger_codex_activity: $has_post_trigger_codex_activity,
         main_thread_approved: ((($codex_review_required | not) or $has_current_head_approval)),
