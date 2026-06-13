@@ -98,7 +98,7 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
 - `merge_blockers`: concrete blockers to clear before merge.
 - `checks.any_failed=true`: investigate and fix or retry failed checks.
 - `checks.any_pending=true`: wait and re-check.
-- `codex.pending_review=true`: wait for Codex before acting on its feedback; this includes Codex's `eyes` reaction on the PR description or latest review trigger.
+- `codex.pending_review=true`: wait for Codex before acting on its feedback; this includes Codex's `eyes` reaction on the PR description or latest review trigger when there is no newer Codex activity.
 - `codex.has_codex_eyes=true`: Codex has an in-progress `eyes` reaction; use `handling-codex-reviews`.
 - `codex.actionable_diff_comments_count>0`: unresolved Codex inline comments need fixes or explicit replies.
 - `codex.main_thread_approved=false`: delegate to `handling-codex-reviews`; Codex has not added a current-head 👍 reaction to the PR description yet.
