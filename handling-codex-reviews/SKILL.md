@@ -1,6 +1,6 @@
 ---
 name: handling-codex-reviews
-description: Handles Codex GitHub PR review loops by waiting for reviews, fixing actionable feedback, resolving threads, and requiring Codex's main-thread thumbs-up. Use when Codex is a reviewer or a PR has `@codex review` activity.
+description: Handles Codex GitHub PR review loops by waiting for reviews, fixing actionable feedback, resolving threads, and requiring Codex's main-thread thumbs-up. Use when Codex is a reviewer, a PR has `@codex review` activity, or Codex has added an `eyes` reaction to the PR description or latest review trigger.
 ---
 
 # Handling Codex Reviews
