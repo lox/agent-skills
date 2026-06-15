@@ -7,9 +7,11 @@ description: Iteratively review and improve the current PR or branch by running 
 
 Drive a review-fix-validation loop for a current PR or branch. Use `general-code-reviewing` as the review engine; unlike a normal review, act on grounded findings and re-run the review after fixes until confidence is high.
 
-## Required Companion Skill
+## Required Companion Skills
 
-Load and use `general-code-reviewing` for every review pass. Let that skill choose and run its ship-risk and maintainability lenses; `auto-review` owns only the outer loop that fixes findings, validates, and decides whether to run another pass.
+- Load and use `general-code-reviewing` for every review pass. Let that skill choose and run its ship-risk and maintainability lenses; `auto-review` owns only the outer loop that fixes findings, validates, and decides whether to run another pass.
+- When the target is a PR, run `check-pr-description` before reporting `ready` so the PR title and body match the final diff.
+- When the target is a PR or the branch changes durable behavior, run `check-docs-updated` before reporting `ready` so relevant docs, plans, examples, and runbooks are current or explicitly not required.
 
 ## Operating Contract
 
@@ -47,6 +49,8 @@ Stop with `ready` only when all are true:
 - the latest `general-code-reviewing` pass is `approve` or has no material findings after synthesis;
 - relevant validation passes, or any skipped validation is explicitly justified;
 - no unresolved critical, high, or medium findings remain;
+- PR title/body are current when the target is a PR;
+- relevant docs/plans are current or explicitly not required;
 - low-risk follow-ups are either fixed or clearly documented as non-blocking;
 - the final diff has been reviewed after the last edit.
 
