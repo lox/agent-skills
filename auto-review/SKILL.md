@@ -7,6 +7,10 @@ description: Iteratively review and improve the current PR or branch by running 
 
 Drive a review-fix-validation loop for a current PR or branch. Use `general-code-reviewing` as the review engine; unlike a normal review, act on grounded findings and re-run the review after fixes until confidence is high.
 
+## Required Companion Skill
+
+Load and use `general-code-reviewing` for every review pass. Let that skill choose and run its ship-risk and maintainability lenses; `auto-review` owns only the outer loop that fixes findings, validates, and decides whether to run another pass.
+
 ## Operating Contract
 
 - Treat the current PR or branch diff as the target unless the user names a different PR, commit range, or file set.
@@ -19,7 +23,7 @@ Drive a review-fix-validation loop for a current PR or branch. Use `general-code
 ## Target Discovery
 
 1. Read repository instructions and current state: `AGENTS.md`, `git status`, branch name, remotes, and existing PR metadata when available.
-2. Identify the base revision from the PR base when reviewing a PR; otherwise use the upstream default branch or merge-base. Keep the same base through the loop unless the PR base changes.
+2. Identify a fresh base revision. When reviewing a PR, use the PR base SHA from the host, not a possibly stale local branch. Otherwise fetch remote metadata and use the merge-base with `origin/<default-branch>` or the tracked upstream branch. Keep the same base through the loop unless the PR base changes.
 3. Inspect the diff plus changed tests and surrounding call sites. If the target cannot be identified, ask one concise question.
 4. Record pre-existing dirty files before editing so the loop can keep its own changes separate.
 
@@ -62,6 +66,7 @@ Avoid unbounded loops. After three full review-fix cycles, continue only if each
 - Commit and push only when the user asked to update a PR, prepare it for review, or otherwise carry the branch forward. Follow repository commit and signing instructions.
 - Stage only files changed for this loop.
 - If pushing, use the current PR branch and avoid rewriting history unless the user requested it or repository policy permits it.
+- Do not merge a PR unless the user explicitly asks to merge, land, ship, or queue it.
 - If PR review comments or CI are involved, use the repository's existing PR, Codex-review, or CI workflow skills rather than duplicating them.
 
 ## Output
