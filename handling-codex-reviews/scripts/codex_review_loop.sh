@@ -225,23 +225,45 @@ state_json() {
     latest_trigger_head_oid="$(jq -r '(.body | capture("(?im)^Head:[[:space:]]*(?<sha>[0-9a-f]{40})")? // {}).sha // ""' <<<"$latest_trigger")"
   fi
 
+  local codex_unavailable_pattern='To use Codex here,.*create an environment'
+  local codex_unavailable_comments latest_codex_unavailable_time
+  codex_unavailable_comments="$(jq -cn \
+    --argjson issue_comments "$issue_comments" \
+    --arg pattern "$codex_pattern" \
+    --arg unavailable_pattern "$codex_unavailable_pattern" '
+      [
+        $issue_comments[]
+        | select(.user.login | test($pattern; "i"))
+        | select((.body // "") | test($unavailable_pattern; "i"))
+        | {kind:"issue_comment", id, created_at, user: .user.login, body}
+      ]
+      | sort_by(.created_at)
+    ')"
+  latest_codex_unavailable_time="$(jq -r 'last.created_at // empty' <<<"$codex_unavailable_comments")"
+
   local codex_events latest_codex_event_time
   codex_events="$(jq -cn \
     --argjson reviews "$reviews" \
     --argjson issue_comments "$issue_comments" \
     --argjson diff_comments "$diff_comments" \
-    --arg pattern "$codex_pattern" '
+    --arg pattern "$codex_pattern" \
+    --arg unavailable_pattern "$codex_unavailable_pattern" '
       [
         ($reviews[] | select(.user.login | test($pattern; "i")) | {kind:"review", id, created_at: (.submitted_at // .created_at), user: .user.login, state}),
-        ($issue_comments[] | select(.user.login | test($pattern; "i")) | {kind:"issue_comment", id, created_at, user: .user.login}),
+        ($issue_comments[] | select(.user.login | test($pattern; "i")) | select(((.body // "") | test($unavailable_pattern; "i")) | not) | {kind:"issue_comment", id, created_at, user: .user.login}),
         ($diff_comments[] | select(.user.login | test($pattern; "i")) | {kind:"diff_comment", id, created_at, user: .user.login, path, line})
       ]
       | sort_by(.created_at)
     ')"
   latest_codex_event_time="$(jq -r 'last.created_at // empty' <<<"$codex_events")"
 
+  local latest_trigger_unavailable="false"
+  if [[ -n "$latest_trigger_time" && -n "$latest_codex_unavailable_time" && "$latest_codex_unavailable_time" > "$latest_trigger_time" ]]; then
+    latest_trigger_unavailable="true"
+  fi
+
   local pending_review="false"
-  if [[ -n "$latest_trigger_time" ]]; then
+  if [[ -n "$latest_trigger_time" && "$latest_trigger_unavailable" == "false" ]]; then
     if [[ -z "$latest_codex_event_time" ]] || [[ "$latest_codex_event_time" < "$latest_trigger_time" ]]; then
       pending_review="true"
     fi
@@ -327,11 +349,14 @@ state_json() {
     --arg latest_trigger_user "$latest_trigger_user" \
     --arg latest_trigger_head_oid "$latest_trigger_head_oid" \
     --arg latest_codex_event_time "$latest_codex_event_time" \
+    --arg latest_codex_unavailable_time "$latest_codex_unavailable_time" \
     --argjson pending_review "$pending_review" \
+    --argjson latest_trigger_unavailable "$latest_trigger_unavailable" \
     --argjson trigger_reactions "$trigger_reactions" \
     --argjson pr_reactions "$pr_reactions" \
     --argjson issue_comments "$issue_comments" \
     --argjson codex_events "$codex_events" \
+    --argjson codex_unavailable_comments "$codex_unavailable_comments" \
     --argjson actionable_diff_comments "$actionable_diff_roots" \
     --argjson actionable_diff_comments_count "$actionable_diff_count" \
     --argjson codex_top_level_reviews "$top_level_reviews" \
@@ -369,11 +394,12 @@ state_json() {
       | ($codex_pr_thumbs_up_reactions | sort_by(.created_at) | last.created_at // "") as $latest_codex_pr_thumbs_up_time
       | (
           $codex_events | length > 0
-          or $latest_trigger_time != ""
+          or ($latest_trigger_time != "" and ($latest_trigger_unavailable | not))
           or $has_codex_eyes
           or $has_codex_trigger_thumbs_up
           or $has_codex_pr_thumbs_up
         ) as $codex_review_required
+      | (($codex_unavailable_comments | length > 0) and ($codex_review_required | not)) as $codex_review_unavailable
       | ($latest_trigger_head_oid != "" and $latest_trigger_head_oid == $head_oid) as $latest_trigger_covers_head
       | ([
           $codex_events[]
@@ -412,11 +438,11 @@ state_json() {
           if $active_pr_eyes_time != "" then $active_pr_eyes_time else empty end
         ] | sort | last // "") as $active_codex_eyes_time
       | ([
-          if $latest_trigger_time != "" then $latest_trigger_time else empty end,
+          if ($latest_trigger_time != "" and ($latest_trigger_unavailable | not)) then $latest_trigger_time else empty end,
           if $active_codex_eyes_time != "" then $active_codex_eyes_time else empty end
         ] | sort | last // "") as $codex_review_started_at
       | ([
-          if ($latest_trigger_time != "" and $latest_trigger_covers_head) then $latest_trigger_time else empty end,
+          if ($latest_trigger_time != "" and $latest_trigger_covers_head and ($latest_trigger_unavailable | not)) then $latest_trigger_time else empty end,
           if $active_codex_eyes_time != "" then $active_codex_eyes_time else empty end
         ] | sort | last // "") as $current_head_review_started_at
       | ([
@@ -464,6 +490,10 @@ state_json() {
           latest_codex_eyes_at: (if (($codex_pr_eyes_reactions | sort_by(.created_at) | last.created_at // "") == "") then null else ($codex_pr_eyes_reactions | sort_by(.created_at) | last.created_at) end)
         },
         latest_codex_activity_at: (if $latest_codex_event_time == "" then null else $latest_codex_event_time end),
+        latest_codex_unavailable_at: (if $latest_codex_unavailable_time == "" then null else $latest_codex_unavailable_time end),
+        codex_review_unavailable: $codex_review_unavailable,
+        codex_unavailable_comments_count: ($codex_unavailable_comments | length),
+        codex_unavailable_comments: $codex_unavailable_comments,
         codex_review_started_at: (if $codex_review_started_at == "" then null else $codex_review_started_at end),
         current_head_review_started_at: (if $current_head_review_started_at == "" then null else $current_head_review_started_at end),
         active_codex_eyes_at: (if $active_codex_eyes_time == "" then null else $active_codex_eyes_time end),
