@@ -1,0 +1,4 @@
+interface:
+  display_name: "Auto Review"
+  short_description: "Iterate PR review and fixes"
+  default_prompt: "Use $auto-review to review the current PR, fix grounded findings, validate, and repeat until it is ready."
