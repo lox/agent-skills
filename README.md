@@ -8,6 +8,7 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `addressing-pr-reviews`: Workflow for triaging and replying to GitHub PR review comments.
 - `auto-review`: Iterative workflow for reviewing a current PR, fixing grounded findings, validating, and re-reviewing until it is ready or blocked.
 - `babysitting-prs`: Workflow for getting GitHub pull requests through reviews, Codex feedback, Buildkite failures, rebases, merge queues, and final merge.
+- `check-pr-description-docs`: Checks PR descriptions against the actual diff and verifies relevant docs or plans are current.
 - `consulting-librarian`: Guidance for emulating Amp's Librarian workflow inside non-Amp agents to understand repositories outside the current workspace. Installed only for non-Amp agents because Amp already includes Librarian guidance.
 - `drafting-plans`: Guidance for drafting durable engineering plan docs with clear scope, sequencing, validation, decisions, and open questions.
 - `executing-plans`: Workflow for implementing one plan slice through validation, adversarial review, cleanup, PR creation, PR babysitting, and passing CI.

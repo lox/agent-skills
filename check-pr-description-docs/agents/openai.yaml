@@ -1,0 +1,4 @@
+interface:
+  display_name: "Check PR Description and Docs"
+  short_description: "Check PR text and docs drift"
+  default_prompt: "Use $check-pr-description-docs to verify this PR description is current and relevant plans or docs have been updated."
