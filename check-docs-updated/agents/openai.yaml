@@ -1,0 +1,4 @@
+interface:
+  display_name: "Check Docs Updated"
+  short_description: "Check docs and plans are current"
+  default_prompt: "Use $check-docs-updated to verify relevant docs, plans, examples, and runbooks match this change."

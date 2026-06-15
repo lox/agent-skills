@@ -1,0 +1,4 @@
+interface:
+  display_name: "Check PR Description"
+  short_description: "Check PR title and body drift"
+  default_prompt: "Use $check-pr-description to verify this PR title and body match the current diff."
