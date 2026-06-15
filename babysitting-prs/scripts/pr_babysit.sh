@@ -288,7 +288,7 @@ status_json() {
         if $codex.pending_review == true then "pending_codex_review" else empty end,
         if $codex.actionable_diff_comments_count > 0 then "actionable_codex_comments" else empty end,
         if $codex.actionable_top_level_reviews_count > 0 then "actionable_codex_top_level_reviews" else empty end,
-        if (($codex.pending_review | not) and $codex.codex_review_required == true and $codex.main_thread_approved == false) then "codex_thumbs_up_missing" else empty end,
+        if ((($codex.codex_review_unavailable // false) | not) and ($codex.pending_review | not) and $codex.codex_review_required == true and $codex.main_thread_approved == false) then "codex_thumbs_up_missing" else empty end,
         if $checks.any_failed == true then "failed_checks" else empty end,
         if $checks.any_pending == true then "pending_checks" else empty end
       ] as $blockers
