@@ -28,7 +28,7 @@ If `bk auth status` fails, stop immediately and ask the user to run `bk auth log
 ## Companion skills to load as needed
 
 - `addressing-pr-reviews`: use for collecting review comments, replying inline, reacting, requesting re-review, and avoiding Codex task-mode noise.
-- `handling-codex-reviews`: use when Codex is a reviewer, the PR has `@codex review` activity, or Codex has added an `eyes` reaction to the PR description or latest review trigger. Delegate all Codex-specific waiting, fixing, replies, thread resolution, and main-thread thumbs-up approval to this skill.
+- `handling-codex-reviews`: use when the PR is already in a Codex review flow, such as `codex.codex_review_required=true`, `codex.pending_review=true`, actionable Codex feedback, or Codex `eyes` reactions. Delegate Codex-specific waiting, fixing, replies, thread resolution, fresh review triggers, and main-thread thumbs-up approval to this skill.
 - `adversarial-code-reviewing`: use before pushing non-trivial code fixes, especially after rebases or CI-driven changes.
 - `humanizing-text`: use before posting substantial PR comments or human-facing status updates.
 - `buildkite-preflight`: use when local changes should be validated against Buildkite before pushing, or when a repo's workflow expects preflight builds.
@@ -57,9 +57,9 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
    - Stop for user guidance when feedback conflicts, requires product judgement, or cannot be defended from repo evidence.
 
 4. **Handle Codex when present**
-   - If `scripts/pr_babysit.sh status` reports Codex activity, `codex.has_codex_eyes=true`, or any `codex.*` blocker, load and use `handling-codex-reviews`.
+   - If `scripts/pr_babysit.sh status` reports `codex.codex_review_required=true`, `codex.pending_review=true`, actionable Codex feedback, `codex_thumbs_up_missing`, or any active Codex `eyes` state, load and use `handling-codex-reviews`.
    - Treat Codex as incomplete until `handling-codex-reviews` reports no pending review, no actionable feedback, and `main_thread_approved=true` from Codex's 👍 reaction on the PR description or latest review trigger.
-   - Do not post ad hoc Codex replies from this generic skill; delegate the exact reply and fresh `@codex review` rules to `handling-codex-reviews`.
+   - Do not introduce Codex to a PR that is not already using it. If `codex.codex_review_required=false` and there is no Codex feedback, do not post `@codex review`.
 
 5. **Clear CI and Buildkite blockers**
    - Run `scripts/pr_babysit.sh checks --pr <pr> --repo <owner/repo>` and inspect failures.
@@ -72,7 +72,7 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
    - Merge only when the user explicitly asks to merge, land, ship, queue, or get the PR merged.
    - If the user asks for mergeable, green, or ready-for-review state, stop once the PR is merge-ready and report the handoff.
    - If the user only says to babysit a PR without a merge verb, keep the PR merge-ready and ask before the final merge.
-   - Before merging, verify: PR is open and not draft, no unresolved actionable threads, no pending Codex review, required reviews are satisfied, checks are green, and GitHub reports it as mergeable.
+   - Before merging, verify: PR is open and not draft, no unresolved actionable threads, no pending Codex review when Codex is already in use, no actionable Codex feedback, required reviews are satisfied, checks are green, and GitHub reports it as mergeable.
    - Use the repo's expected merge path: merge queue when required, auto-merge when branch protection is waiting, otherwise the repo's normal squash/merge/rebase method.
    - Delete the branch only when it is safe and conventional for the repo.
 
@@ -98,10 +98,12 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
 - `merge_blockers`: concrete blockers to clear before merge.
 - `checks.any_failed=true`: investigate and fix or retry failed checks.
 - `checks.any_pending=true`: wait and re-check.
+- `codex.codex_review_required=true`: this PR is already using Codex; delegate the Codex loop to `handling-codex-reviews`.
 - `codex.pending_review=true`: wait for Codex before acting on its feedback; this includes Codex's `eyes` reaction on the PR description or latest review trigger when there is no newer Codex activity or thumbs-up reaction.
 - `codex.has_codex_eyes=true`: Codex has an in-progress `eyes` reaction; use `handling-codex-reviews`.
 - `codex.actionable_diff_comments_count>0`: unresolved Codex inline comments need fixes or explicit replies.
-- `codex.main_thread_approved=false`: delegate to `handling-codex-reviews`; Codex has not added a current-head 👍 reaction to the PR description or review trigger yet.
+- `codex.actionable_top_level_reviews_count>0`: actionable Codex top-level review feedback needs fixes or explicit replies.
+- `codex.main_thread_approved=false`: when `codex.codex_review_required=true`, delegate to `handling-codex-reviews`; Codex has not added a current-head 👍 reaction to the PR description or review trigger yet.
 
 ## Reply templates
 
@@ -109,7 +111,7 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
 Fixed in <sha>: <concise summary of change>
 ```
 
-For Codex-specific top-level review replies or fresh `@codex review` triggers, use `handling-codex-reviews`.
+For Codex-specific top-level review replies or fresh `@codex review` triggers, use `handling-codex-reviews`. Do not post `@codex review` unless Codex is already part of the PR flow or the user explicitly asks for it.
 
 ## Stop conditions
 
