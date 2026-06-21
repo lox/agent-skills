@@ -20,6 +20,7 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `handling-codex-reviews`: Codex-specific GitHub PR review loop for waiting on reviews, fixing feedback, resolving threads, and requiring Codex's main-thread thumbs-up.
 - `humanizing-text`: Guidance for rewriting AI-sounding text to feel more natural and human.
 - `improve-codebase-architecture`: Guidance for finding codebase architecture deepening opportunities.
+- `land-pr`: Full code-to-merged-PR workflow that auto-reviews, opens or updates a PR, babysits it through CI and reviews, then merges it.
 - `linear`: Command-line workflows for searching and managing Linear issues.
 - `notion`: Command-line workflows for searching and managing Notion pages, databases, and comments.
 - `speak-like-lachlan`: Guidance for drafting or rewriting text in Lachlan's Slack voice and operating style.
