@@ -1,0 +1,4 @@
+interface:
+  display_name: "Work Walkthrough"
+  short_description: "Explain completed work clearly"
+  default_prompt: "Use $work-walkthrough to explain what changed, why it mattered, how to try it, and what should happen next."

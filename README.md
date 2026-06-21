@@ -12,7 +12,7 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `check-pr-description`: Checks PR titles and descriptions against the actual diff and repository PR conventions.
 - `consulting-librarian`: Guidance for emulating Amp's Librarian workflow inside non-Amp agents to understand repositories outside the current workspace. Installed only for non-Amp agents because Amp already includes Librarian guidance.
 - `drafting-plans`: Guidance for drafting durable engineering plan docs with clear scope, sequencing, validation, decisions, and open questions.
-- `executing-plans`: Workflow for implementing one plan slice through validation, adversarial review, cleanup, PR creation, PR babysitting, and passing CI.
+- `executing-plans`: Workflow for executing plan slices locally on a branch through plan review, validation, auto-review cleanup, per-slice commits, and a final walkthrough, with optional PR publication and babysitting when requested.
 - `frontend-design`: Guidance for creating distinctive, production-grade frontend interfaces with a strong visual point of view.
 - `general-code-reviewing`: Orchestrates broad code reviews by running separate ship-risk and maintainability passes, then synthesizing the results.
 - `go-cli-writing`: Guidance for building and reviewing Go CLIs with Kong, charmbracelet/log, and clean command layout.
@@ -25,6 +25,7 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `speak-like-lachlan`: Guidance for drafting or rewriting text in Lachlan's Slack voice and operating style.
 - `slack`: Command-line workflows for reading Slack messages, threads, channels, and users.
 - `thermo-nuclear-code-quality-review`: Extremely strict maintainability review for abstraction quality, file sprawl, and spaghetti-condition growth.
+- `work-walkthrough`: Final handoff workflow for explaining the problem, changes, impact, UX, examples or local demo, validation, surprises, and next steps.
 
 ## Attribution
 
