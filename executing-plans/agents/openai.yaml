@@ -1,4 +1,4 @@
 interface:
   display_name: "Executing Plans"
-  short_description: "Implement plan slices through PR review"
-  default_prompt: "Use $executing-plans to implement the next slice from this plan, validate it, open a ready PR, and drive review plus CI to passing."
+  short_description: "Execute plan slices locally"
+  default_prompt: "Use $executing-plans to iterate on this plan locally in a branch, validate and auto-review each slice, commit completed slices, and finish with a walkthrough."
