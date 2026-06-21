@@ -10,6 +10,7 @@ Drive a review-fix-validation loop for a current PR or branch. Use `general-code
 ## Required Companion Skills
 
 - Load and use `general-code-reviewing` for every review pass. Let that skill choose and run its ship-risk and maintainability lenses; `auto-review` owns only the outer loop that fixes findings, validates, and decides whether to run another pass.
+- If a `ponytail` or `ponytail:ponytail` skill is available, load and use it in each review pass as an extra YAGNI/simplification lens. Treat grounded Ponytail findings as in-scope review findings when they point to code, dependencies, or abstractions that can be deleted or simplified.
 - When the target is a PR, run `check-pr-description` before reporting `ready` so the PR title and body match the final diff.
 - When the target is a PR or the branch changes durable behavior, run `check-docs-updated` before reporting `ready` so relevant docs, plans, examples, and runbooks are current or explicitly not required.
 
@@ -33,11 +34,11 @@ Drive a review-fix-validation loop for a current PR or branch. Use `general-code
 
 Use this sequence:
 
-1. Review: run `general-code-reviewing` over the exact target. Capture findings, checked areas, deferred areas, and verdict.
+1. Review: run `general-code-reviewing` over the exact target, plus Ponytail when available. Capture findings, checked areas, deferred areas, and verdict.
 2. Triage: convert findings into actions. Fix critical, high, and medium findings that are grounded, reachable, and in scope. Fix low findings only when they are cheap or clearly quality-relevant. Defer out-of-scope, pre-existing, or speculative concerns with evidence.
 3. Patch: make narrow edits following repository patterns. Prefer deleting or simplifying code over adding layers.
 4. Validate: run the smallest meaningful tests or lints first, then broader repo validation as needed. Use local project commands such as `mise`, package scripts, and language tooling before inventing new commands.
-5. Re-review: run `general-code-reviewing` again against the updated diff. Do not rely only on passing tests.
+5. Re-review: run `general-code-reviewing` again against the updated diff, plus Ponytail when available. Do not rely only on passing tests.
 6. Repeat while material findings remain and fixes are making progress.
 
 If a fix changes the shape of the diff, re-check affected call sites and tests instead of assuming prior review coverage still applies.
@@ -46,7 +47,7 @@ If a fix changes the shape of the diff, re-check affected call sites and tests i
 
 Stop with `ready` only when all are true:
 
-- the latest `general-code-reviewing` pass is `approve` or has no material findings after synthesis;
+- the latest `general-code-reviewing` pass, and Ponytail pass when available, are `approve` or have no material findings after synthesis;
 - relevant validation passes, or any skipped validation is explicitly justified;
 - no unresolved critical, high, or medium findings remain;
 - PR title/body are current when the target is a PR;
