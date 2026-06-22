@@ -10,6 +10,7 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `babysitting-prs`: Workflow for getting GitHub pull requests through reviews, Codex feedback, Buildkite failures, rebases, merge queues, and final merge.
 - `check-docs-updated`: Checks repository docs, plans, examples, and runbooks against the actual diff.
 - `check-pr-description`: Checks PR titles and descriptions against the actual diff and repository PR conventions.
+- `claude-code-second-opinion`: Uses Claude Code from Codex for an independent read-only review of plans, diffs, architecture choices, or testing strategy.
 - `consulting-librarian`: Guidance for emulating Amp's Librarian workflow inside non-Amp agents to understand repositories outside the current workspace. Installed only for non-Amp agents because Amp already includes Librarian guidance.
 - `drafting-plans`: Guidance for drafting durable engineering plan docs with clear scope, sequencing, validation, decisions, and open questions.
 - `executing-plans`: Workflow for executing plan slices locally on a branch through plan review, validation, auto-review cleanup, per-slice commits, and a final walkthrough, with optional PR publication and babysitting when requested.
