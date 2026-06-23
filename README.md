@@ -19,6 +19,7 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `go-cli-writing`: Guidance for building and reviewing Go CLIs with Kong, charmbracelet/log, and clean command layout.
 - `go-writing`: Guidelines for writing, reviewing, and modernising Go code with version-gated guidance, linting, and toolchain management.
 - `handling-codex-reviews`: Codex-specific GitHub PR review loop for waiting on reviews, fixing feedback, resolving threads, and requiring Codex's main-thread thumbs-up.
+- `high-performance-zig`: Guidance for writing and reviewing fast Zig systems code with measurement, cache-aware layout, comptime specialization, SIMD fast paths, and allocator discipline.
 - `humanizing-text`: Guidance for rewriting AI-sounding text to feel more natural and human.
 - `improve-codebase-architecture`: Guidance for finding codebase architecture deepening opportunities.
 - `land-pr`: Full code-to-merged-PR workflow that auto-reviews, opens or updates a PR, babysits it through CI and reviews, then merges it.

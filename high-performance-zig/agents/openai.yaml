@@ -1,0 +1,4 @@
+interface:
+  display_name: "High Performance Zig"
+  short_description: "Write and review fast Zig systems code"
+  default_prompt: "Use $high-performance-zig to optimize or review Zig code with measurement, memory layout, cache behavior, and Ghostty-style comptime patterns."
