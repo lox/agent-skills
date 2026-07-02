@@ -17,16 +17,16 @@ Use Claude Code as a read-only reviewer. Keep Codex responsible for the final ju
 
 ## Command
 
-Run Claude Code in print mode:
+Run Claude Code in print mode with the fable model:
 
 ```bash
-claude -p --permission-mode plan --no-session-persistence "QUESTION"
+claude -p --permission-mode plan --no-session-persistence --model fable "QUESTION"
 ```
 
 For multi-line prompts:
 
 ```bash
-claude -p --permission-mode plan --no-session-persistence "$(cat <<'EOF'
+claude -p --permission-mode plan --no-session-persistence --model fable "$(cat <<'EOF'
 Context: I am Codex working in this repository. I need an independent second opinion.
 
 Task:
