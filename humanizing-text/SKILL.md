@@ -1,19 +1,22 @@
 ---
 name: humanizing-text
-description: Removes signs of AI-generated writing to make text sound natural and human. Use when editing or reviewing text for AI patterns, humanizing content, or making writing sound less robotic. Detects 24 patterns including inflated symbolism, promotional language, em dash overuse, rule of three, and AI vocabulary words.
+description: Removes signs of AI-generated writing to make text sound natural and human. Use when editing or reviewing text for AI patterns, humanizing content, or making writing sound less robotic. Detects 24 surface wording patterns plus 14 construction patterns (thesis over-restatement, tidy resolution, uniform sections, absent reader address).
 ---
 
 # Humanizing Text
 
-Remove AI writing patterns and add genuine personality to text.
+Remove AI writing patterns and add genuine personality to text. AI tells live in two layers: wording (patterns 1-24 below) and construction, i.e. how the piece is built (patterns 25-38). Fixing only wording is not enough.
 
 ## Task
 
-1. **Identify AI patterns** - Scan for the 24 patterns below
-2. **Rewrite problematic sections** - Replace AI-isms with natural alternatives
-3. **Preserve meaning** - Keep the core message intact
-4. **Maintain voice** - Match the intended tone
-5. **Add soul** - Inject actual personality, not just pattern removal
+1. **Review construction first** - For anything longer than a few paragraphs, read `reference/construction-patterns.md` and check patterns 25-38. Fix structure before polishing wording.
+2. **Identify surface patterns** - Scan for patterns 1-24 below
+3. **Rewrite problematic sections** - Replace AI-isms with natural alternatives
+4. **Preserve meaning** - Keep the core message intact
+5. **Maintain voice** - Match the intended tone
+6. **Add soul** - Inject actual personality, not just pattern removal
+
+These patterns are editorial heuristics for making writing better, not a detector. Never use them to claim a text was AI-written.
 
 ## Adding Soul
 
@@ -155,11 +158,34 @@ Remove: "Great question!", "You're absolutely right!", "That's an excellent poin
 
 ---
 
+## The 14 Construction Patterns
+
+How the piece is built, not how it is worded. Definitions, evidence, and fixes are in `reference/construction-patterns.md`; read it before a construction pass.
+
+- **25. Thesis over-restatement** - the point recapped at the end of every section
+- **26. Explicit significance labeling** - "the key insight is", "this matters because"
+- **27. Total thematic unity** - no tangents or asides; everything serves the thesis
+- **28. Every tension resolved** - no standing tradeoffs or open questions
+- **29. Uniform intensity** - nothing escalates, nothing is throwaway
+- **30. Uniform section shape** - problem → explanation → lesson, repeated
+- **31. Front-loaded revelation everywhere** - nothing discovered en route
+- **32. Strictly linear chronology** - no time jumps or reordering
+- **33. No direct reader address** - writes as though no one is watching
+- **34. No authorial presence** - no "I", no owned judgment or error
+- **35. Emotion by label, not detail** - "this was frustrating" over the 3am page
+- **36. Polarized or neutralized verdicts** - clean or balanced, never mixed
+- **37. Template familiarity** - the default arc: hook, tidy sections, "What we learned", callback ending
+- **38. Over-integrated ending** - every thread resolved; humans exit on a specific
+
+Never inject synthetic humanity: fixes must surface something true. Ask, or leave a `TODO:`, when only the author knows.
+
+---
+
 ## Output
 
-1. The rewritten text
+1. The rewritten text (or, for reviews: verdict, triggered patterns with evidence, and what's already working so edits don't remove it)
 2. Brief summary of changes made (optional)
 
 ## Reference
 
-Based on [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing), maintained by WikiProject AI Cleanup.
+Surface patterns based on [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing). Construction patterns adapted from [StoryScope](https://arxiv.org/abs/2604.03136) (Russell et al., 2026).
