@@ -87,18 +87,17 @@ After the first draft and open-question pass, run an adversarial review before t
 - Strengthen the plan based on the findings: adjust goals/non-goals, narrow public API, add fail-closed behavior, split delivery slices, add verification, or record rejected alternatives.
 - Add a brief `Key Learnings From Pressure-Testing` section to the plan. Keep it concise: summarize the material risks discovered and the plan changes made because of them.
 - Do not leave the adversarial pass as a separate critique if the plan can be improved directly. Patch the plan first, then summarize what changed.
+- If the user asks for Amp/Fable, run `amp --mode claude-fable-5 -x "Read-only; no edits. Review <plan-path> against repo evidence. Return gaps, simpler first slice, risks, blockers."` and verify claims before patching.
 
 ## Good Plan Qualities
 
-- It starts from the real current behavior, not an idealized architecture.
-- It names the smallest useful first slice and the order of follow-up slices.
-- It includes concrete CLI, YAML, proto, API, data model, or command examples when those examples clarify the contract.
-- It explains why the public surface is shaped the way it is, including rejected alternatives when that prevents future churn.
+- It starts from real current behavior and names the smallest useful first slice plus follow-ups.
+- It includes concrete CLI, YAML, proto, API, data model, or command examples when they clarify the contract.
+- It explains public surface choices, including rejected alternatives when that prevents churn.
 - It makes ownership boundaries explicit: user-facing policy versus runtime config, control plane versus backend, host service versus guest behavior, transport cache versus environment cache.
 - It has fail-closed behavior for unsupported or partially implemented backends instead of silent widening or best-effort semantics.
 - It distinguishes exact implementation work from optional later convenience features.
-- It defines validation at the same level as the risk: schema validation for docs/examples, unit tests for pure policy or planning helpers, integration tests for cross-component behavior, and real host smoke tests for runtime/platform claims.
-- It records decisions and open questions near the end so the plan remains useful after the first PR lands.
+- It defines risk-matched validation and records decisions/open questions near the end.
 
 ## Delivery Slices
 
