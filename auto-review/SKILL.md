@@ -43,6 +43,22 @@ Use this sequence:
 
 If a fix changes the shape of the diff, re-check affected call sites and tests instead of assuming prior review coverage still applies.
 
+## Optional Amp Fable Review
+
+When the user asks to include Amp/Fable in auto-review, run Amp's review command against the same discovered target as the main review:
+
+```bash
+amp --mode claude-fable-5 review "<fresh-base-sha>...HEAD" --thinking high
+```
+
+If the target has dirty or untracked files before any pass, or after fixes in the loop, include the working tree and untracked files:
+
+```bash
+amp --mode claude-fable-5 review "working tree against <fresh-base-sha>, including untracked files from git ls-files --others --exclude-standard" --thinking high
+```
+
+Treat grounded Fable findings like other review findings: fix critical, high, and medium issues in scope, validate, and re-run review after the final edit.
+
 ## Stop Conditions
 
 Stop with `ready` only when all are true:
