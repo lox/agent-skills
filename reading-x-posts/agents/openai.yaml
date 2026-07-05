@@ -1,0 +1,4 @@
+interface:
+  display_name: "Read X Posts"
+  short_description: "Read x.com posts through xurl"
+  default_prompt: "Use $reading-x-posts to read this x.com post or Twitter URL through xurl."
