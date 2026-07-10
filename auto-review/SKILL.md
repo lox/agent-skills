@@ -23,6 +23,12 @@ Drive a review-fix-validation loop for a current PR or branch. Use `general-code
 - Respect user work: inspect `git status` before editing, do not revert unrelated changes, and do not absorb unrelated dirty files into commits.
 - Do not claim high confidence while validation is failing or material findings remain unresolved.
 
+## GitHub Codex Review Boundary
+
+- Perform review passes locally through `general-code-reviewing` and the other companion skills.
+- Do not post an initial `@codex review` comment or otherwise introduce GitHub Codex review to a PR.
+- Continue an existing GitHub Codex review loop only when the PR already has an `@codex review` comment or a Codex-authored `eyes` reaction. In that case, use `handling-codex-reviews` for the existing external loop without replacing the required local review passes.
+
 ## Target Discovery
 
 1. Read repository instructions and current state: `AGENTS.md`, `git status`, branch name, remotes, and existing PR metadata when available.
@@ -42,22 +48,6 @@ Use this sequence:
 6. Repeat while material findings remain and fixes are making progress.
 
 If a fix changes the shape of the diff, re-check affected call sites and tests instead of assuming prior review coverage still applies.
-
-## Optional Amp Fable Review
-
-When the user asks to include Amp/Fable in auto-review, run Amp's review command against the same discovered target as the main review:
-
-```bash
-amp --mode claude-fable-5 review "<fresh-base-sha>...HEAD" --thinking high
-```
-
-If the target has dirty or untracked files before any pass, or after fixes in the loop, include the working tree and untracked files:
-
-```bash
-amp --mode claude-fable-5 review "working tree against <fresh-base-sha>, including untracked files from git ls-files --others --exclude-standard" --thinking high
-```
-
-Treat grounded Fable findings like other review findings: fix critical, high, and medium issues in scope, validate, and re-run review after the final edit.
 
 ## Stop Conditions
 
@@ -88,7 +78,7 @@ Avoid unbounded loops. After three full review-fix cycles, continue only if each
 - Stage only files changed for this loop.
 - If pushing, use the current PR branch and avoid rewriting history unless the user requested it or repository policy permits it.
 - Do not merge a PR unless the user explicitly asks to merge, land, ship, or queue it.
-- If PR review comments or CI are involved, use the repository's existing PR, Codex-review, or CI workflow skills rather than duplicating them.
+- If PR review comments or CI are involved, use the repository's existing PR or CI workflow skills rather than duplicating them. Use `handling-codex-reviews` only within the GitHub Codex review boundary above.
 
 ## Output
 
