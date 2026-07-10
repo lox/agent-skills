@@ -87,7 +87,6 @@ After the first draft and open-question pass, run an adversarial review before t
 - Strengthen the plan based on the findings: adjust goals/non-goals, narrow public API, add fail-closed behavior, split delivery slices, add verification, or record rejected alternatives.
 - Add a brief `Key Learnings From Pressure-Testing` section to the plan. Keep it concise: summarize the material risks discovered and the plan changes made because of them.
 - Do not leave the adversarial pass as a separate critique if the plan can be improved directly. Patch the plan first, then summarize what changed.
-- If the user asks for Amp/Fable, run `amp --mode claude-fable-5 -x "Read-only; no edits. Review <plan-path> against repo evidence. Return gaps, simpler first slice, risks, blockers."` and verify claims before patching.
 
 ## Good Plan Qualities
 

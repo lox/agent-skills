@@ -14,6 +14,12 @@ Land means merged, not just merge-ready. Use this as the outer workflow; load co
 - If a new PR is opened after auto-review, run `check-pr-description` before babysitting so the title and body match the final diff.
 - Use `humanizing-text` for substantial PR bodies or public-facing PR comments when available.
 
+## GitHub Codex Review Boundary
+
+- Use `auto-review` and its local companion skills as the review mechanism for every PR.
+- Do not post an initial `@codex review` comment or otherwise introduce GitHub Codex review while landing a PR.
+- Continue an existing GitHub Codex review loop only when the PR already has an `@codex review` comment or a Codex-authored `eyes` reaction. Pass this boundary to `babysitting-prs`; a bare landing request is not authorization to start GitHub Codex review.
+
 ## Workflow
 
 1. Resolve the target.
@@ -38,8 +44,8 @@ Land means merged, not just merge-ready. Use this as the outer workflow; load co
    - Re-fetch the PR number, URL, head SHA, and merge state after publishing.
 
 5. Babysit and merge.
-   - Hand the PR to `babysitting-prs`; the desired end state is merged, not merely ready.
-   - Let babysitting clear stale base, review feedback, Codex feedback, CI, Buildkite, merge queue, and final merge blockers.
+   - Hand the PR to `babysitting-prs` with the GitHub Codex review boundary above; the desired end state is merged, not merely ready.
+   - Let babysitting clear stale base, review feedback, any already-active Codex feedback, CI, Buildkite, merge queue, and final merge blockers.
    - If babysitting requires non-trivial code fixes, batch narrow fixes, validate, commit, push, and run `auto-review` again before final merge.
 
 ## Stop Conditions
