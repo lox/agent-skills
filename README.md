@@ -14,7 +14,6 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `consulting-librarian`: Guidance for emulating Amp's Librarian workflow inside non-Amp agents to understand repositories outside the current workspace. Installed only for non-Amp agents because Amp already includes Librarian guidance.
 - `drafting-plans`: Guidance for drafting durable engineering plan docs with clear scope, sequencing, validation, decisions, and open questions.
 - `executing-plans`: Workflow for executing plan slices locally on a branch through plan review, validation, auto-review cleanup, per-slice commits, and a final walkthrough, with optional PR publication and babysitting when requested.
-- `frontend-design`: Guidance for creating distinctive, production-grade frontend interfaces with a strong visual point of view.
 - `general-code-reviewing`: Orchestrates broad code reviews by running separate ship-risk and maintainability passes, then synthesizing the results.
 - `go-cli-writing`: Guidance for building and reviewing Go CLIs with Kong, charmbracelet/log, and clean command layout.
 - `go-writing`: Guidelines for writing, reviewing, and modernising Go code with version-gated guidance, linting, and toolchain management.
