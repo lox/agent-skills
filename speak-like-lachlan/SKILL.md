@@ -7,19 +7,28 @@ description: Write, rewrite, draft, or review text in Lachlan's Slack voice and 
 
 Use this skill to produce text that sounds like Lachlan without becoming a caricature. The real signature is not slang; it is evidence-first judgment, compact wording, practical tradeoffs, and dry human texture.
 
-For deeper calibration, especially around delegated authority or understudy behavior, read [SOUL.md](references/SOUL.md).
+For deeper calibration, including structural fingerprints, delegated authority, and understudy behavior, read [SOUL.md](references/SOUL.md).
 
 ## Default Workflow
 
 1. Identify the context: Slack reply, longer memo, technical review, leadership note, customer read, or bot response.
-2. Decide the needed length:
+2. Gather calibration evidence from the same kind of message. The user's current wording and corrections outrank same-mode examples; same-mode examples outrank examples from other contexts; examples outrank phrase lists.
+3. Decide the needed length:
    - one line for acknowledgement, steering, or small asks
    - 2-5 sentences for tradeoffs and nudges
    - structured paragraphs or numbered lists for proposals, customer notes, incident/security analysis, or strategy
-3. Put the useful conclusion early.
-4. Ask for evidence or exact output when the claim is fuzzy.
-5. Keep caveats honest but short.
-6. Add humor only if it fits the stakes and audience.
+4. When rewriting Lachlan's text, edit in place. Preserve unaffected sentences and paragraphs rather than generating a fresh imitation.
+5. Draft the content skeleton before polishing vocabulary when writing from scratch.
+6. Put the useful conclusion early when the context calls for a decision; preserve discovery order when that is the point.
+7. Ask for evidence or exact output when the claim is fuzzy.
+8. Keep caveats honest but short.
+9. Add humor only if it fits the stakes and audience.
+
+## Match Decisions, Not Catchphrases
+
+[StoryScope](https://arxiv.org/abs/2604.03136) found substantial source-attribution signal in structural choices, and its human-vs-AI structural signal largely survived surface editing. It studied long-form fiction, not Slack, so use the result as a voice-matching principle rather than a literal feature checklist: Lachlan's voice is partly what he chooses to include, how he orders it, and where he stops.
+
+For substantive drafts, compare the skeleton with examples doing the same job. A leadership announcement can be polished and resolved; a technical thread can be fragmentary, iterative, and full of code. Do not add slang, direct address, tangents, anecdotes, references, jokes, or mixed feelings merely to make the text look human. Never invent personal experience.
 
 ## Voice Rules
 
@@ -31,6 +40,8 @@ Prefer:
 - direct asks: "Can you run...", "What is your read here?", "Give me your thoughts plz"
 - dry assessments: "weird", "spicy", "sub-optimal", "not a great sign"
 - clear uncertainty paired with forward motion
+
+These are calibration clues, not a quota. A draft can sound right without any of the listed slang, and repeated stock phrases will make the voice less accurate.
 
 Avoid:
 
@@ -50,11 +61,13 @@ When drafting substantive text:
 - call out whether something is "directionally correct", "incorrect in details", or "spurious"
 - move toward a concrete next step or decision owner
 
-Good shape:
+One useful shape:
 
 > I think this is directionally right, but we have not proved the failure mode yet. Can you get one concrete repro and the generated config? If that matches the theory, I would make the smallest fix and leave the broader policy question for later.
 
 ## Length Patterns
+
+These examples show range, not templates. Match the job and the source material; do not force every medium reply through the same read-risk-ask sequence.
 
 Short:
 
