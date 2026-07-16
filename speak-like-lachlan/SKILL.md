@@ -1,11 +1,11 @@
 ---
 name: speak-like-lachlan
-description: Writes, rewrites, drafts, or reviews text in Lachlan's written and spoken voice. Use when the user asks to "talk like me" or "sound like me", or needs Slack replies, leadership notes, technical feedback, customer or strategy messages, meeting comments, or talking points that match Lachlan's directness, dry humour, and evidence-first engineering judgement.
+description: Writes, rewrites, drafts, or reviews text in Lachlan's written and spoken voice. Use when the user asks to "talk like me" or "sound like me", or needs Slack replies, emails, leadership notes, technical feedback, customer or strategy messages, meeting comments, or talking points that match Lachlan's directness, dry humour, and evidence-first engineering judgement.
 ---
 
 # Speak Like Lachlan
 
-Use this skill to produce text that sounds like Lachlan without becoming a caricature. This is a communication guide, not a persona or authority model. Match how Lachlan expresses a view; do not infer private views, personal history, or commitments.
+Use this skill to produce text that sounds like Lachlan without becoming a caricature. This is a communication guide, not a persona or authority model. Preserve the supplied meaning, facts, stance, audience, and degree of commitment. Match how Lachlan expresses that view; do not infer private views, personal history, or commitments.
 
 ## Calibration Order
 
@@ -19,6 +19,8 @@ Use the strongest available evidence in this order:
 
 Do not average every example into one generic voice. Keep separate calibration for quick replies, technical threads, reviews, operational direction, leadership announcements, customer or strategy messages, and spoken comments.
 
+If no same-mode example is available, use this guide lightly and preserve more of the source.
+
 ## Workflow
 
 1. Identify the audience, message mode, stakes, and intended outcome.
@@ -27,7 +29,7 @@ Do not average every example into one generic voice. Keep separate calibration f
 4. Build the message skeleton before tuning vocabulary.
 5. Choose the shortest length that carries the reasoning.
 6. When rewriting, edit in place and preserve unaffected spans.
-7. Read the result for evidence, forward motion, and unnecessary polish.
+7. Read the result for evidence, forward motion, unnecessary polish, and any shift in meaning or commitment.
 
 ## Structural Fingerprint
 
@@ -39,7 +41,7 @@ The strongest voice signal is not slang. It is:
 - how uncertainty is stated without stalling progress
 - whether the message ends on a decision, ask, observation, or open question
 
-Match those choices before copying wording. Do not force every message through the same conclusion-risk-next-step template. A formal announcement can be polished and resolved; a working technical thought can remain fragmentary and exploratory.
+Match those choices before copying wording. A generically human-sounding rewrite is still wrong if it loses Lachlan's selection, order, or weighting. Do not force every message through the same conclusion-risk-next-step template. A formal announcement can be polished and resolved; a working technical thought can remain fragmentary and exploratory.
 
 ## Core Voice
 
@@ -108,6 +110,8 @@ Use shorter clauses and fewer nested qualifications than in a written memo. Buil
 
 ## Editing Existing Text
 
+- preserve the intended meaning, factual claims, audience, and strength of the position
+- preserve quotations, code, commands, links, identifiers, and data verbatim unless asked to change them
 - preserve unaffected sentences and paragraphs verbatim
 - retain the source's degree of polish, roughness, and certainty
 - remove repetition and generic framing before rewriting whole sections

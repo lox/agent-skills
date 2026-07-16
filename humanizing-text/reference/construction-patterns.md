@@ -1,6 +1,6 @@
-# Construction Patterns (25-38)
+# Construction Review (25-38)
 
-AI writing patterns in how a piece is built, not how it is worded. They combine narrative findings from [StoryScope](https://arxiv.org/abs/2604.03136), cautious nonfiction adaptations, and independent editorial heuristics. The study found that source-attribution signal in long-form fiction largely survived surface editing.
+Structural patterns worth reviewing when a piece feels generic, over-integrated, or generated. They combine narrative findings from [StoryScope](https://arxiv.org/abs/2604.03136), cautious nonfiction adaptations, and independent editorial heuristics. The study found that source-attribution signal in long-form fiction largely survived surface editing.
 
 That evidence is specific to long-form fiction and a particular corpus, model set, extraction pipeline, and classifier. It does not validate these heuristics as a detector for nonfiction, technical prose, or short workplace messages. The study reports population-level tendencies with substantial overlap, not requirements for individual human texts.
 
@@ -93,7 +93,7 @@ The conclusion is wholly positive, wholly negative, or mechanically balanced int
 **36. Uniform section shape**
 Every section runs problem → explanation → lesson at similar length under parallel headings.
 - Evidence: **Editorial heuristic**, not tested directly by the study.
-- Fix: vary deliberately. Let one section be two sentences. Merge sections that exist only for symmetry.
+- Fix: merge or compress sections that exist only for symmetry. Vary the shape only when the material or the author's established style calls for it.
 
 ## Convergence
 
@@ -109,6 +109,6 @@ The ending resolves every thread, restates the thesis, and closes on a general l
 
 ## What not to do
 
-Never inject synthetic humanity. No fake anecdotes, named references, invented ambivalence, decorative asides, time jumps, or reader address the author did not choose. Every fix must surface something true that the drafting process suppressed. Where a fix requires facts only the author has, ask instead of inventing, or leave a specific placeholder: `TODO: what did you actually try first here?`
+Never inject synthetic humanity. No fake anecdotes, named references, invented ambivalence, decorative asides, time jumps, or reader address the author did not choose. Every fix must surface something true that the drafting process suppressed. Where a fix requires facts only the author has, ask instead of inventing; leave a specific placeholder only when the user wants a draft with gaps marked.
 
 Structure serves the piece. A changelog entry or reference doc is allowed to be tidy and linear; don't force war stories into it.
