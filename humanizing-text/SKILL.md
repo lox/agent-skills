@@ -1,47 +1,44 @@
 ---
 name: humanizing-text
-description: Removes signs of AI-generated writing to make text sound natural and human. Use when editing or reviewing text for AI patterns, humanizing content, or making writing sound less robotic. Detects 24 surface wording patterns plus 14 construction patterns (thesis over-restatement, tidy resolution, uniform sections, absent reader address).
+description: Removes signs of AI-generated writing to make text sound natural and human. Use when editing or reviewing text for AI patterns, humanizing content, or making writing sound less robotic. Reviews 24 surface wording patterns plus 14 construction patterns (thesis over-restatement, tidy resolution, uniform sections, absent reader address).
 ---
 
 # Humanizing Text
 
-Remove AI writing patterns and add genuine personality to text. AI tells live in two layers: wording (patterns 1-24 below) and construction, i.e. how the piece is built (patterns 25-38). Fixing only wording is not enough.
+Remove AI writing patterns and recover genuine personality. AI tells can appear in two layers: wording (patterns 1-24 below) and construction, i.e. how the piece is built (patterns 25-38). Fixing only wording is not enough.
+
+StoryScope studied long-form fiction averaging roughly 4,750 words. Its findings motivate the construction pass, but they do not establish a detector for nonfiction, technical writing, or short messages. Treat every pattern as an editorial question, not a rule that human writing must satisfy.
 
 ## Task
 
-1. **Review construction first** - For anything longer than a few paragraphs, read `reference/construction-patterns.md` and check patterns 25-38. Fix structure before polishing wording.
-2. **Identify surface patterns** - Scan for patterns 1-24 below
-3. **Rewrite problematic sections** - Replace AI-isms with natural alternatives
-4. **Preserve meaning** - Keep the core message intact
-5. **Maintain voice** - Match the intended tone
-6. **Add soul** - Inject actual personality, not just pattern removal
+1. **Calibrate to the author** - If source samples exist, identify their recurring choices before editing: what they include, how they order it, where they address the reader, how they handle uncertainty, and where they stop.
+2. **Review construction first** - For anything longer than a few paragraphs, read `reference/construction-patterns.md` and check patterns 25-38. Fix structure before polishing wording.
+3. **Identify surface patterns** - Scan for patterns 1-24 below.
+4. **Edit surgically** - Keep unaffected spans verbatim. Prefer deletion, movement, and local rewriting over regenerating the whole piece.
+5. **Preserve meaning and fingerprint** - Keep the message, format, and the author's characteristic choices intact, including useful irregularities.
+6. **Recover soul** - Surface real personality or experience that the draft flattened. Never invent it.
 
 These patterns are editorial heuristics for making writing better, not a detector. Never use them to claim a text was AI-written.
 
+## Preserve the Author's Fingerprint
+
+StoryScope found greater structural variety in human stories and tighter clustering among the five AI sources. There is no single structure that makes prose human. When author samples exist:
+
+- compare outlines, not just sentences
+- preserve the author's selection, order, specificity, directness, and ending shape
+- treat the author's corrections as stronger evidence than generic rules
+
+Do not add direct reader address, time jumps, references, anecdotes, jokes, or ambivalence merely because they were more common in the paper's human fiction. If a fix needs a fact, opinion, or memory that is not present, ask for it or leave a specific `TODO:`.
+
 ## Adding Soul
 
-Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as obvious.
+Avoiding AI patterns is only half the job. Recover what the author actually thinks and notices:
 
-### Signs of soulless writing:
-- Every sentence is the same length and structure
-- No opinions, just neutral reporting
-- No acknowledgment of uncertainty or mixed feelings
-- No first-person perspective when appropriate
-- No humor, no edge, no personality
-
-### How to add voice:
-
-**Have opinions.** React to facts. "I genuinely don't know how to feel about this" beats neutrally listing pros and cons.
-
-**Vary rhythm.** Short punchy sentences. Then longer ones that take their time.
-
-**Acknowledge complexity.** "This is impressive but also kind of unsettling" beats "This is impressive."
-
-**Use "I" when it fits.** "I keep coming back to..." signals a real person thinking.
-
-**Let some mess in.** Tangents, asides, and half-formed thoughts are human.
-
-**Be specific about feelings.** Not "this is concerning" but "there's something unsettling about agents churning away at 3am."
+- own opinions and uncertainty when the source supports them
+- vary rhythm instead of making every sentence the same shape
+- use first person when the author's judgment matters
+- preserve genuine asides, abrupt endings, and uneven emphasis; do not manufacture mess
+- ground feelings in available detail: "The page went off at 3am, again. It was frustrating" beats invented cinematic imagery
 
 ---
 
@@ -160,24 +157,11 @@ Remove: "Great question!", "You're absolutely right!", "That's an excellent poin
 
 ## The 14 Construction Patterns
 
-How the piece is built, not how it is worded. Definitions, evidence, and fixes are in `reference/construction-patterns.md`; read it before a construction pass.
-
-- **25. Thesis over-restatement** - the point recapped at the end of every section
-- **26. Explicit significance labeling** - "the key insight is", "this matters because"
-- **27. Total thematic unity** - no tangents or asides; everything serves the thesis
-- **28. Every tension resolved** - no standing tradeoffs or open questions
-- **29. Uniform intensity** - nothing escalates, nothing is throwaway
-- **30. Uniform section shape** - problem → explanation → lesson, repeated
-- **31. Front-loaded revelation everywhere** - nothing discovered en route
-- **32. Strictly linear chronology** - no time jumps or reordering
-- **33. No direct reader address** - writes as though no one is watching
-- **34. No authorial presence** - no "I", no owned judgment or error
-- **35. Emotion by label, not detail** - "this was frustrating" over the 3am page
-- **36. Polarized or neutralized verdicts** - clean or balanced, never mixed
-- **37. Template familiarity** - the default arc: hook, tidy sections, "What we learned", callback ending
-- **38. Over-integrated ending** - every thread resolved; humans exit on a specific
+Construction is how the piece is built, not how it is worded. For definitions, evidence levels, and fixes, read `reference/construction-patterns.md`. It distinguishes direct StoryScope findings from nonfiction adaptations and broader editorial heuristics.
 
 Never inject synthetic humanity: fixes must surface something true. Ask, or leave a `TODO:`, when only the author knows.
+
+If an AI detector is used, compare matched text boundaries, formats, and window-level results. Treat its output as one diagnostic signal, never the editing objective or evidence of authorship. Do not add artefacts to chase a score.
 
 ---
 
