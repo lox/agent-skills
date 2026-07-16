@@ -1,16 +1,16 @@
 # Construction Patterns (25-38)
 
-AI writing patterns in how a piece is built, not how it is worded. StoryScope ([arXiv 2604.03136](https://arxiv.org/abs/2604.03136)) studied 61,608 works of fiction averaging roughly 4,750 words. A classifier using 257 non-style narrative features reached 93.2% macro-F1 on human-vs-AI classification, compared with 96.0% when style features were included. On 278 Gemini stories edited with LAMP, its score fell from 95.5% to 93.9%. Surface cleanup did not remove the structural signal.
+AI writing patterns in how a piece is built, not how it is worded. They combine narrative findings from [StoryScope](https://arxiv.org/abs/2604.03136), cautious nonfiction adaptations, and independent editorial heuristics. The study found that source-attribution signal in long-form fiction largely survived surface editing.
 
-That evidence is specific to long-form fiction and a particular corpus, model set, extraction pipeline, and classifier. It does not validate these heuristics as a detector for nonfiction, technical prose, or short workplace messages. The paper also reports population-level tendencies with substantial overlap, not requirements for individual human texts.
+That evidence is specific to long-form fiction and a particular corpus, model set, extraction pipeline, and classifier. It does not validate these heuristics as a detector for nonfiction, technical prose, or short workplace messages. The study reports population-level tendencies with substantial overlap, not requirements for individual human texts.
 
-Labels below distinguish **StoryScope finding** from **nonfiction adaptation** and **editorial heuristic**. The adaptations are useful questions, not claims made or tested by the paper.
+Labels below distinguish **research finding** from **nonfiction adaptation** and **editorial heuristic**. The adaptations are useful questions, not claims tested by the study.
 
 Work from a structural template of the piece, not the prose. For each section note: what it does (setup, evidence, resolution, lesson), where the thesis appears, what tension is raised and whether it resolves, time structure, and every author/reader appearance.
 
 ## Calibrate before correcting
 
-StoryScope found that human stories were more dispersed in narrative feature space, while the five AI sources clustered together. The implication is not to chase whatever was statistically human-leaning. It is to avoid convergence and preserve the target author's own recurring choices.
+In the fiction corpus, human stories were more dispersed in narrative feature space, while the five AI sources clustered together. The implication is not to chase whatever was statistically human-leaning. It is to avoid convergence and preserve the target author's own recurring choices.
 
 Before applying the patterns:
 
@@ -23,7 +23,7 @@ Before applying the patterns:
 
 **25. Thesis over-restatement**
 The point is re-stated at the end of every section, and again in the conclusion.
-- Evidence: **Nonfiction adaptation** of StoryScope's thematic explicitness, moralising, and narratorial thematic commentary findings.
+- Evidence: **Nonfiction adaptation** of thematic explicitness, moralising, and narratorial thematic commentary findings in fiction.
 - Fix: cut section-ending recaps; let one strong statement carry.
 
 **26. Explicit significance labeling**
@@ -33,7 +33,7 @@ The point is re-stated at the end of every section, and again in the conclusion.
 
 **27. Total thematic unity**
 Every paragraph serves the thesis with suspicious efficiency; no observation survives unless it resolves into the main lesson.
-- Evidence: **StoryScope finding** in fiction (higher thematic unity in AI), cautiously adapted to nonfiction.
+- Evidence: **Research finding** in fiction (higher thematic unity in AI), cautiously adapted to nonfiction.
 - Fix: do not insert a decorative tangent. Restore parallel material only when it is true, useful, and characteristic of the author. Otherwise leave the clean structure alone.
 
 ## Structural streamlining
@@ -54,31 +54,31 @@ Objections are raised only to be immediately answered; tradeoffs are stated then
 
 **30. Sensory and embodied performance**
 Emotion is routinely rendered through tightening chests, caught breath, cold sweat, weather, light, or scenery, even when plain language would fit better.
-- Evidence: **StoryScope finding** in fiction. AI used embodied emotion more often (81% vs. 38%), while human stories used explicit emotion labels more often (29% vs. 8%). AI also had denser sensory description and more olfactory imagery.
+- Evidence: **Research finding** in fiction. AI used embodied emotion more often (81% vs. 38%), while human stories used explicit emotion labels more often (29% vs. 8%). AI also had denser sensory description and more olfactory imagery.
 - Fix: match the author's real register. Prefer a plain emotion label or a concrete event when that is what happened. Do not strip legitimate sensory writing, and do not replace it with generic abstraction.
 
 **31. Vague external references**
 The piece invokes unnamed research, familiar wisdom, or diffuse cultural echoes where a specific source would establish what it means.
-- Evidence: **StoryScope finding** in fiction. Human stories used explicit named references more often; AI stories favoured implicit echoes.
+- Evidence: **Research finding** in fiction. Human stories used explicit named references more often; AI stories favoured implicit echoes.
 - Fix: name the real source, system, person, document, or incident when supported. Otherwise remove the allusion or ask. Never manufacture a reference.
 
 ## Time and revelation
 
 **32. Strictly linear chronology**
 The piece proceeds from first event to last even when the author's decision, the surprising failure, or the current constraint is the natural entry point.
-- Evidence: **StoryScope finding** in fiction. Human stories had more chronological discontinuity, anachrony, and nonlinear framing for delayed disclosure.
+- Evidence: **Research finding** in fiction. Human stories had more chronological discontinuity, anachrony, and nonlinear framing for delayed disclosure.
 - Fix: reorder only when it improves the piece or matches the author. A status update, procedure, or reference document may need strict chronology.
 
 ## Reader and author relationship
 
 **33. No reader relationship**
 The text never acknowledges what this audience knows, objects to, needs, or can do next.
-- Evidence: **StoryScope finding** in fiction (more direct reader address and fourth-wall permeability in human stories), adapted beyond fiction.
+- Evidence: **Research finding** in fiction (more direct reader address and fourth-wall permeability in human stories), adapted beyond fiction.
 - Fix: address the audience where their role is real. Do not sprinkle "you" into prose mechanically.
 
 **34. No authorial presence**
 Judgment calls, uncertainty, and mistakes are laundered into an impersonal account even when the author's position matters.
-- Evidence: **Editorial heuristic**, not a StoryScope core finding.
+- Evidence: **Editorial heuristic**, not a core research finding.
 - Fix: restore first person at genuine points of judgment or error, using the author's normal degree of self-reference.
 
 ## Ambivalence
@@ -92,19 +92,19 @@ The conclusion is wholly positive, wholly negative, or mechanically balanced int
 
 **36. Uniform section shape**
 Every section runs problem → explanation → lesson at similar length under parallel headings.
-- Evidence: **Editorial heuristic**, not tested directly by StoryScope.
+- Evidence: **Editorial heuristic**, not tested directly by the study.
 - Fix: vary deliberately. Let one section be two sentences. Merge sections that exist only for symmetry.
 
 ## Convergence
 
 **37. Template familiarity**
 The piece has a familiar generated arc: hook, tidy parallel sections, lesson, callback ending. More importantly, its skeleton repeats across unrelated pieces.
-- Evidence: **Nonfiction adaptation** of StoryScope's finding that five AI sources clustered in narrative space while human stories were more dispersed. The paper did not identify this exact nonfiction template.
+- Evidence: **Nonfiction adaptation** of the finding that five AI sources clustered in narrative space while human stories were more dispersed. The study did not identify this exact nonfiction template.
 - Fix: compare against the author's work and the needs of this piece. If the skeleton repeats without purpose, restructure around the strongest material. Do not make the draft unusual for novelty's sake.
 
 **38. Over-integrated ending**
 The ending resolves every thread, restates the thesis, and closes on a general lesson or uplift.
-- Evidence: **Nonfiction adaptation** of AI fiction's stronger internal resolution. StoryScope found especially tidy endings as a Gemini fingerprint, not a universal AI feature.
+- Evidence: **Nonfiction adaptation** of AI fiction's stronger internal resolution. Especially tidy endings were a model-specific fingerprint, not a universal AI feature.
 - Fix: use the ending the author and format call for: a decision, concrete next action, specific observation, real open question, or simply the final fact. Often this means ending one beat earlier.
 
 ## What not to do

@@ -7,8 +7,6 @@ description: Removes signs of AI-generated writing to make text sound natural an
 
 Remove AI writing patterns and recover genuine personality. AI tells can appear in two layers: wording (patterns 1-24 below) and construction, i.e. how the piece is built (patterns 25-38). Fixing only wording is not enough.
 
-StoryScope studied long-form fiction averaging roughly 4,750 words. Its findings motivate the construction pass, but they do not establish a detector for nonfiction, technical writing, or short messages. Treat every pattern as an editorial question, not a rule that human writing must satisfy.
-
 ## Task
 
 1. **Calibrate to the author** - If source samples exist, identify their recurring choices before editing: what they include, how they order it, where they address the reader, how they handle uncertainty, and where they stop.
@@ -22,13 +20,13 @@ These patterns are editorial heuristics for making writing better, not a detecto
 
 ## Preserve the Author's Fingerprint
 
-StoryScope found greater structural variety in human stories and tighter clustering among the five AI sources. There is no single structure that makes prose human. When author samples exist:
+There is no single structure that makes prose human. When author samples exist:
 
 - compare outlines, not just sentences
 - preserve the author's selection, order, specificity, directness, and ending shape
 - treat the author's corrections as stronger evidence than generic rules
 
-Do not add direct reader address, time jumps, references, anecdotes, jokes, or ambivalence merely because they were more common in the paper's human fiction. If a fix needs a fact, opinion, or memory that is not present, ask for it or leave a specific `TODO:`.
+Do not add direct reader address, time jumps, references, anecdotes, jokes, or ambivalence merely to make the text look human. If a fix needs a fact, opinion, or memory that is not present, ask for it or leave a specific `TODO:`.
 
 ## Adding Soul
 
@@ -157,7 +155,7 @@ Remove: "Great question!", "You're absolutely right!", "That's an excellent poin
 
 ## The 14 Construction Patterns
 
-Construction is how the piece is built, not how it is worded. For definitions, evidence levels, and fixes, read `reference/construction-patterns.md`. It distinguishes direct StoryScope findings from nonfiction adaptations and broader editorial heuristics.
+Construction is how the piece is built, not how it is worded. For definitions, evidence levels, and fixes, read `reference/construction-patterns.md`. It distinguishes research findings from nonfiction adaptations and broader editorial heuristics.
 
 Never inject synthetic humanity: fixes must surface something true. Ask, or leave a `TODO:`, when only the author knows.
 
@@ -172,4 +170,4 @@ If an AI detector is used, compare matched text boundaries, formats, and window-
 
 ## Reference
 
-Surface patterns based on [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing). Construction patterns adapted from [StoryScope](https://arxiv.org/abs/2604.03136) (Russell et al., 2026).
+Surface patterns based on [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing). Construction-pattern evidence and provenance are documented in `reference/construction-patterns.md`.

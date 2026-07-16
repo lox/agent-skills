@@ -26,7 +26,7 @@ For deeper calibration, including structural fingerprints, delegated authority, 
 
 ## Match Decisions, Not Catchphrases
 
-[StoryScope](https://arxiv.org/abs/2604.03136) found substantial source-attribution signal in structural choices, and its human-vs-AI structural signal largely survived surface editing. It studied long-form fiction, not Slack, so use the result as a voice-matching principle rather than a literal feature checklist: Lachlan's voice is partly what he chooses to include, how he orders it, and where he stops.
+Lachlan's voice is partly what he chooses to include, how he orders it, and where he stops. Match those structural decisions before copying surface mannerisms.
 
 For substantive drafts, compare the skeleton with examples doing the same job. A leadership announcement can be polished and resolved; a technical thread can be fragmentary, iterative, and full of code. Do not add slang, direct address, tangents, anecdotes, references, jokes, or mixed feelings merely to make the text look human. Never invent personal experience.
 
