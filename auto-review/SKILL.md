@@ -86,7 +86,7 @@ Avoid unbounded loops. After three full review-fix cycles, continue only if each
 Final response:
 
 1. State `Status: ready | needs-attention | blocked`.
-2. When status is `ready` for a clean committed head, include a reusable review receipt with repository, PR number when applicable, base SHA, head SHA, and completion time in UTC. This lets an immediately following `land-pr` invocation reuse the exact-head result without repeating the loop.
+2. When status is `ready` for a clean committed head, emit `Review receipt: repo=<owner/repo> pr=<number-or-none> base=<full-sha> head=<full-sha> completed_at=<RFC3339-UTC>`. This lets an immediately following `land-pr` invocation reuse the exact-head result without repeating the loop.
 3. Summarize review iterations and fixes briefly.
 4. List validation commands and results.
 5. Call out residual risks or deferred items.

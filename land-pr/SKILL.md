@@ -34,7 +34,7 @@ Non-required checks, external review builds, and advisory reviewers are signals,
    - If there is no existing PR and no local branch or diff to land, stop with `blocked`.
 
 2. Satisfy auto-review.
-   - Run `auto-review` against the exact branch or PR diff unless a reusable `Status: ready` receipt is already available in the current task context or a clearly attributable handoff.
+   - Run `auto-review` against the exact branch or PR diff unless a reusable `Status: ready` `Review receipt:` line is already available in the current task context or a clearly attributable handoff.
    - Reuse a receipt only when it names the same repository, PR base SHA, and committed head SHA now reported by the host; was completed within the last 30 minutes; and the worktree has no changes affecting the reviewed diff. Re-check the host SHAs immediately before accepting it.
    - Rerun `auto-review` when the head or base changed, a commit or rebase happened after review, the worktree is relevantly dirty, the receipt is older than 30 minutes, or any part of its provenance or verdict is unclear. Advisory analysis such as Deep Analysis can supplement this receipt but does not replace it.
    - When reusing a receipt, do not repeat its local review or validation solely because `land-pr` was invoked; continue with publication and live merge gates.
