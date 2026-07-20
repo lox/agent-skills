@@ -160,50 +160,74 @@ resolve_threads() {
   jq -cn --argjson resolved "$resolved" '{resolved_count: $resolved}'
 }
 
-checks_json() {
+load_checks_json() {
   local repo="$1"
   local pr="$2"
+  local required_only="$3"
 
-  local checks
+  local args=(pr checks "$pr" --repo "$repo" --json name,state,bucket,link,workflow)
+  if [[ "$required_only" == "true" ]]; then
+    args+=(--required)
+  fi
+
   local checks_output
   local checks_exit
   set +e
-  checks_output="$(gh pr checks "$pr" --repo "$repo" --json name,state,bucket,link,workflow 2>&1)"
+  checks_output="$(gh "${args[@]}" 2>&1)"
   checks_exit=$?
   set -e
   if jq -e type >/dev/null 2>&1 <<<"$checks_output"; then
-    checks="$checks_output"
-  elif [[ "$checks_output" == no\ checks\ reported* ]]; then
-    checks='[]'
+    echo "$checks_output"
+  elif [[ "$checks_output" == no\ checks\ reported* || "$checks_output" == no\ required\ checks\ reported* ]]; then
+    echo '[]'
   else
     echo "$checks_output" >&2
     exit "$checks_exit"
   fi
-  if [[ -z "$checks" ]]; then
-    checks='[]'
-  fi
+}
 
-  local all_passed
-  all_passed="$(jq '[.[] | .bucket == "pass" or .bucket == "skipping"] | all' <<<"$checks")"
-
-  local any_failed
-  any_failed="$(jq '[.[] | .bucket == "fail" or .bucket == "cancel"] | any' <<<"$checks")"
-
-  local any_pending
-  any_pending="$(jq '[.[] | .bucket == "pending"] | any' <<<"$checks")"
+checks_summary_json() {
+  local all_checks="$1"
+  local required_checks="$2"
 
   jq -cn \
-    --argjson checks "$checks" \
-    --argjson all_passed "$all_passed" \
-    --argjson any_failed "$any_failed" \
-    --argjson any_pending "$any_pending" '
-      {
-        all_passed: $all_passed,
-        any_failed: $any_failed,
-        any_pending: $any_pending,
-        checks: $checks
-      }
+    --argjson all_checks "${all_checks:-[]}" \
+    --argjson required_checks "${required_checks:-[]}" '
+      def summary($checks):
+        {
+          all_passed: ([ $checks[] | .bucket == "pass" or .bucket == "skipping" ] | all),
+          any_failed: ([ $checks[] | .bucket == "fail" or .bucket == "cancel" ] | any),
+          any_pending: ([ $checks[] | .bucket == "pending" ] | any),
+          checks: $checks
+        };
+
+      [
+        $all_checks[] as $check
+        | select(($required_checks | index($check)) == null)
+        | $check
+      ] as $advisory_checks
+      | summary($required_checks) as $required
+      | summary($advisory_checks) as $advisory
+      | {
+          all_passed: $required.all_passed,
+          any_failed: $required.any_failed,
+          any_pending: $required.any_pending,
+          checks: $all_checks,
+          required: $required,
+          advisory: $advisory
+        }
     '
+}
+
+checks_json() {
+  local repo="$1"
+  local pr="$2"
+
+  local all_checks required_checks
+  all_checks="$(load_checks_json "$repo" "$pr" false)"
+  required_checks="$(load_checks_json "$repo" "$pr" true)"
+
+  checks_summary_json "$all_checks" "$required_checks"
 }
 
 review_threads_json() {
@@ -257,16 +281,11 @@ codex_json() {
   local codex_pattern="$3"
   "$(codex_helper_path)" state --repo "$repo" --pr "$pr" --codex-pattern "$codex_pattern"
 }
-status_json() {
-  local repo="$1"
-  local pr="$2"
-  local codex_pattern="$3"
-
-  local pr_meta checks threads codex
-  pr_meta="$(gh pr view "$pr" --repo "$repo" --json number,url,title,state,isDraft,headRefName,baseRefName,headRefOid,mergeable,mergeStateStatus,reviewDecision,reviewRequests,latestReviews,author)"
-  checks="$(checks_json "$repo" "$pr")"
-  threads="$(review_threads_json "$repo" "$pr")"
-  codex="$(codex_json "$repo" "$pr" "$codex_pattern")"
+status_summary_json() {
+  local pr_meta="$1"
+  local checks="$2"
+  local threads="$3"
+  local codex="$4"
 
   jq -cn \
     --argjson pr "$pr_meta" \
@@ -302,6 +321,20 @@ status_json() {
           ready_to_merge: (($blockers | length) == 0)
         }
     '
+}
+
+status_json() {
+  local repo="$1"
+  local pr="$2"
+  local codex_pattern="$3"
+
+  local pr_meta checks threads codex
+  pr_meta="$(gh pr view "$pr" --repo "$repo" --json number,url,title,state,isDraft,headRefName,baseRefName,headRefOid,mergeable,mergeStateStatus,reviewDecision,reviewRequests,latestReviews,author)"
+  checks="$(checks_json "$repo" "$pr")"
+  threads="$(review_threads_json "$repo" "$pr")"
+  codex="$(codex_json "$repo" "$pr" "$codex_pattern")"
+
+  status_summary_json "$pr_meta" "$checks" "$threads" "$codex"
 }
 
 main() {
@@ -419,4 +452,6 @@ main() {
   esac
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
+fi

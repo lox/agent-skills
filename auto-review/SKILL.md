@@ -35,6 +35,7 @@ Drive a review-fix-validation loop for a current PR or branch. Use `general-code
 2. Identify a fresh base revision. When reviewing a PR, use the PR base SHA from the host, not a possibly stale local branch. Otherwise fetch remote metadata and use the merge-base with `origin/<default-branch>` or the tracked upstream branch. Keep the same base through the loop unless the PR base changes.
 3. Inspect the diff plus changed tests and surrounding call sites. If the target cannot be identified, ask one concise question.
 4. Record pre-existing dirty files before editing so the loop can keep its own changes separate.
+5. Record the repository, base SHA, head SHA, and start time. A head SHA identifies the reviewed diff only when the relevant worktree is clean and the head is committed.
 
 ## Review-Fix Loop
 
@@ -85,7 +86,10 @@ Avoid unbounded loops. After three full review-fix cycles, continue only if each
 Final response:
 
 1. State `Status: ready | needs-attention | blocked`.
-2. Summarize review iterations and fixes briefly.
-3. List validation commands and results.
-4. Call out residual risks or deferred items.
-5. Include branch, commit, and PR details when commits or pushes were made.
+2. When status is `ready` for a clean committed head, emit `Review receipt: repo=<owner/repo> pr=<number-or-none> base=<full-sha> head=<full-sha> completed_at=<RFC3339-UTC>`. This lets an immediately following `land-pr` invocation reuse the exact-head result without repeating the loop.
+3. Summarize review iterations and fixes briefly.
+4. List validation commands and results.
+5. Call out residual risks or deferred items.
+6. Include branch, commit, and PR details when commits or pushes were made.
+
+The receipt is evidence for only that exact base/head pair. Do not issue one for an uncommitted or relevantly dirty diff, and do not imply that it remains valid after a commit, push with new content, rebase, base change, or later edit.
