@@ -7,13 +7,6 @@ description: Babysits GitHub pull requests through review comments, Codex feedba
 
 Drive a GitHub pull request from its current state to merged, handling reviewers, Codex, stale branches, and CI along the way.
 
-## Use this when
-
-- The user asks to babysit, shepherd, land, or merge a PR.
-- A PR needs review feedback fixed, whether from Codex, another bot, or a human reviewer.
-- A PR is blocked on failing checks, Buildkite failures, merge conflicts, stale base branch, or merge queue state.
-- Another workflow asks you to keep a PR green and mergeable. In that case, obey any explicit "do not merge" instruction from that workflow.
-
 ## Required gate: Buildkite auth
 
 Before doing PR work, verify both GitHub and Buildkite authentication.
@@ -24,6 +17,12 @@ bk auth status >/dev/null
 ```
 
 If `bk auth status` fails, stop immediately and ask the user to run `bk auth login`. This is the hard blocker. Do not spend time triaging reviews, rebasing, or CI until Buildkite auth is available.
+
+## Required gates and advisory signals
+
+Hard gates are open/non-draft state, GitHub branch protection and rulesets, required checks and approvals, conflicts, unresolved actionable threads, explicit repository policy, and an already-active required Codex review. An external check is hard-gated only when GitHub or repository policy requires it.
+
+Everything else is advisory. Inspect findings already posted, but do not wait for advisory work to start or finish when hard gates and `ready_to_merge` are clear. Once it reports no actionable findings, ignore its annotation, artifact, and cleanup jobs.
 
 ## Companion skills to load as needed
 
@@ -64,16 +63,18 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
 
 5. **Clear CI and Buildkite blockers**
    - Run `scripts/pr_babysit.sh checks --pr <pr> --repo <owner/repo>` and inspect failures.
+   - Use `checks.required` as the automated gate. `checks.advisory` remains visible but does not affect `ready_to_merge`.
    - For Buildkite checks, use Buildkite logs, annotations, failed jobs, and artefacts to find the real failure. Prefer Buildkite MCP tools when available; use `bk` or linked logs otherwise.
-   - If a failure is caused by the branch, fix it, run the narrowest relevant local validation, commit, push, and re-check.
-   - If a failure is flaky or external, retry the failed job/build once and record the evidence.
-   - Do not mark a PR ready because GitHub checks are green if Buildkite is still failed, blocked, or pending.
+   - Fix branch-caused required failures; retry a flaky or external required failure once. Validate, commit, push, and re-check as needed.
+   - Inspect advisory failures for findings, but do not retry or wait merely to make them green.
+   - Do not mark a PR ready while required Buildkite or repository-policy checks are failed, blocked, or pending.
 
 6. **Merge or hand off**
    - Merge only when the user explicitly asks to merge, land, ship, queue, or get the PR merged.
    - If the user asks for mergeable, green, or ready-for-review state, stop once the PR is merge-ready and report the handoff.
    - If the user only says to babysit a PR without a merge verb, keep the PR merge-ready and ask before the final merge.
    - Before merging, verify: PR is open and not draft, no unresolved actionable threads, no pending/actionable Codex work when Codex is in use, required reviews are satisfied, checks are green, and GitHub reports mergeable.
+   - When `ready_to_merge=true` and those hard gates agree, merge promptly instead of waiting for advisory automation.
    - Use the repo's expected merge path: merge queue when required, auto-merge when branch protection is waiting, otherwise the repo's normal squash/merge/rebase method.
    - Delete the branch only when it is safe and conventional for the repo.
 
@@ -95,10 +96,11 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
 
 ## State interpretation
 
-- `ready_to_merge=true`: the helper found no obvious local blockers. Still apply judgement before merging.
+- `ready_to_merge=true`: the helper found no hard blockers. Still enforce explicit repository policy before merging, but do not wait for advisory automation.
 - `merge_blockers`: concrete blockers to clear before merge.
-- `checks.any_failed=true`: investigate and fix or retry failed checks.
-- `checks.any_pending=true`: wait and re-check.
+- `checks.required`: GitHub-required checks; failures and pending runs block.
+- `checks.advisory`: non-required checks; inspect findings without blocking on their lifecycle.
+- `checks.any_failed` and `checks.any_pending`: compatibility aliases for the corresponding `checks.required` fields.
 - `codex.codex_review_required=true`: this PR is already using Codex; use `handling-codex-reviews`.
 - `codex.codex_review_unavailable=true`: Codex review is not enabled; do not post `@codex review` or block on a Codex thumbs-up.
 - `codex.pending_review=true`: wait for Codex before acting on its feedback.
