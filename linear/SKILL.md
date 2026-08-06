@@ -1,11 +1,18 @@
 ---
 name: linear
-description: "Search and manage Linear issues. Use for listing issues, creating/updating issues, changing status, viewing issue details, or any Linear workflow."
+description: "Searches and manages Linear issues with the external linear CLI. Use when asked to find, view, create, update, assign, or change the status of Linear issues."
 ---
 
 # Linear CLI
 
 Manage Linear issues from the command line using `linear` CLI.
+
+## Requirements And Safety
+
+- Verify `command -v linear`, `linear --help`, and the CLI's authenticated workspace before relying on examples or mutating issues. Do not start login or print an auth token unless the user asks for authentication help.
+- Discover team keys, project names, workflow states, and the authenticated user's identity with the installed CLI; do not assume `ENG`, `TC-*`, or a fixed assignee.
+- Read the target issue before updating it. Search for an existing issue before creating a likely duplicate.
+- A request to manage a specific issue authorizes the narrow described update. Confirm before bulk edits, reassignment to another person, destructive operations, or status transitions with material workflow consequences.
 
 ## Quick Reference
 
@@ -28,7 +35,7 @@ linear issue create -t "Bug" -l "bug" -a self --priority 1
 
 # Update issue
 linear issue update TC-123 -s "In Progress"
-linear issue update TC-123 -a lachlan
+linear issue update TC-123 -a self
 linear issue update TC-123 --priority 2
 
 # Search (via list filters)
@@ -82,7 +89,7 @@ linear issue view TC-123 --no-comments
 
 ## Direct GraphQL API
 
-For queries not covered by CLI, use the API directly:
+For read-only queries not covered by the CLI, use the API directly only when necessary. Prefer CLI mutation commands so their confirmation and validation behavior remains intact.
 
 ```bash
 # Write schema to temp file for reference

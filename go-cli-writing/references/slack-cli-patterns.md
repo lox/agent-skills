@@ -1,10 +1,10 @@
 # Slack CLI Patterns
 
-Use this reference when building a Go CLI that should follow the same shape as `/Users/lachlan/Develop/lox/slack-cli`.
+Use this reference when building a Go CLI that should follow the same shape as [`lox/slack-cli`](https://github.com/lox/slack-cli). Inspect the current repository source when exact implementation details matter; the paths below are repository-relative examples, not machine paths.
 
 ## Entry Point
 
-- `/Users/lachlan/Develop/lox/slack-cli/main.go` keeps startup thin:
+- `main.go` keeps startup thin:
   - create the root `cmd.CLI`
   - parse with `kong.Parse(...)`
   - load config once
@@ -13,13 +13,13 @@ Use this reference when building a Go CLI that should follow the same shape as `
 
 ## Command Tree
 
-- `/Users/lachlan/Develop/lox/slack-cli/cmd/root.go` keeps:
+- `cmd/root.go` keeps:
   - the shared runtime `Context`
   - global flags such as `--workspace`
   - the root `CLI` struct with subcommands as fields
   - a leaf `VersionCmd` with `Run(*Context) error`
-- `/Users/lachlan/Develop/lox/slack-cli/cmd/channel.go` shows one cohesive command family per file: parent command plus leaf commands with Kong tags and direct orchestration.
-- `/Users/lachlan/Develop/lox/slack-cli/cmd/view.go` shows how to keep parsing and rendering helpers near the command when they are only used there.
+- `cmd/channel.go` shows one cohesive command family per file: parent command plus leaf commands with Kong tags and direct orchestration.
+- `cmd/view.go` shows how to keep parsing and rendering helpers near the command when they are only used there.
 
 ## Package Boundaries
 
@@ -36,8 +36,8 @@ Use this reference when building a Go CLI that should follow the same shape as `
 
 ## Testing Pattern
 
-- `/Users/lachlan/Develop/lox/slack-cli/cmd/root_test.go` tests command context behavior directly instead of spawning a process.
-- `/Users/lachlan/Develop/lox/slack-cli/cmd/workspace_hint_test.go` and `/Users/lachlan/Develop/lox/slack-cli/internal/slack/url_test.go` show focused behavior tests around parsing and user guidance.
+- `cmd/root_test.go` tests command context behavior directly instead of spawning a process.
+- `cmd/workspace_hint_test.go` and `internal/slack/url_test.go` show focused behavior tests around parsing and user guidance.
 - Prefer narrow package tests first, then broader `go test ./...` coverage.
 
 ## Design Cues Worth Reusing

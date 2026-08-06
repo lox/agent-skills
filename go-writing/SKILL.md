@@ -1,6 +1,6 @@
 ---
 name: go-writing
-description: Write, review, and refactor Go code with idiomatic package design, naming, error handling, concurrency, performance, testing, linting, and toolchain management. Use when Codex is implementing or reviewing `.go` changes, adding Go tests or benchmarks, setting up lint or version tooling, reshaping package APIs, choosing between Go patterns, or applying current version-gated Go guidance while respecting the repository's actual toolchain and conventions.
+description: Writes, reviews, and refactors Go code with idiomatic package design, error handling, concurrency, performance, tests, linting, and toolchain awareness. Use when implementing or reviewing `.go` changes, tests, benchmarks, package APIs, or version-gated Go modernization.
 ---
 
 # Go Writing
@@ -14,7 +14,7 @@ Keep Go code boring, explicit, version-aware, and easy to verify. Start from rep
 - Check `toolchain` directives, `mise` config, CI or container toolchains, and deployment/runtime constraints before suggesting tool invocations or standard-library APIs that may depend on the actual Go toolchain in use.
 - Follow repository conventions before generic advice.
 - Prefer small, local changes. Add abstractions only after the concrete shape is clear.
-- Prefer `mise` for pinning Go and related tool versions in new or modernized repositories unless the repository already standardized on another version manager.
+- Use the repository's existing version manager. Prefer `mise` only for new or deliberately modernized repositories with no established alternative.
 - Open [references/official-go-guidance.md](references/official-go-guidance.md) when the repository is ambiguous or the design tradeoff is language-level rather than project-specific.
 - Open [references/go-1.26-modernization.md](references/go-1.26-modernization.md) when the user asks for the latest Go patterns, when the repo already targets Go 1.26+, or when planning a toolchain upgrade.
 - Open [../go-cli-writing/SKILL.md](../go-cli-writing/SKILL.md) when the work is primarily about CLI structure, subcommands, flag UX, or command output.
@@ -97,11 +97,11 @@ Keep Go code boring, explicit, version-aware, and easy to verify. Start from rep
 ## Verify Before Finishing
 
 - Run the narrowest useful package test loop while iterating, then run the repository's broader verification path.
-- Use repository tooling if it exists. Otherwise default to `gofmt -w`, `go test ./...`, `go vet ./...`, `golangci-lint run`, `go test -race ./...` for concurrency changes, and `go mod tidy` when dependencies change.
+- Use repository tooling if it exists. Otherwise default to `gofmt -w`, `go test ./...`, and `go vet ./...`; add `go test -race ./...` for concurrency changes and `go mod tidy` when dependencies change.
 - After a Go toolchain upgrade or modernization pass, consider `go fix ./...` before manual cleanup.
 - Regenerate generated files instead of hand-editing them unless the repository explicitly treats them as maintained sources.
 - Keep imports and module metadata consistent with the repository workflow.
-- If the repository lacks linting, recommend adding `golangci-lint` instead of treating lint as optional.
+- If the repository lacks linting, recommend an appropriate lint path rather than introducing tooling as part of unrelated work.
 
 ## Output Expectations
 

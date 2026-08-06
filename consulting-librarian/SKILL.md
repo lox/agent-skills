@@ -1,12 +1,11 @@
 ---
 name: consulting-librarian
-description: Uses an Amp-style Librarian workflow to explain repositories outside the current workspace. Use when tracing dependency internals, comparing implementations across GitHub repositories, reading remote commit history, or understanding external architecture from a non-Amp agent.
-compatibility: Best for non-Amp agents such as Codex. This skill teaches the host agent to emulate Amp's Librarian behavior with its native remote-repository, web, and shell tools, so it should not be installed in Amp itself.
+description: Emulates repository-librarian research in hosts without a native Librarian. Use in non-Amp agents when tracing dependency internals, comparing remote repositories, reading commit history, or explaining external architecture.
 ---
 
 # Consulting Librarian
 
-Use an Amp-style Librarian workflow for deep understanding of code outside the current workspace. In non-Amp agents, this skill is the librarian behavior. Do not look for or call a tool literally named `librarian`.
+Use this only in hosts without a native remote-repository research tool. Use the strongest native repository, connector, web, or shell tools available; do not look for a tool literally named `librarian`.
 
 ## Use This Skill When
 

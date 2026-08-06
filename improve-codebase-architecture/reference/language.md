@@ -1,6 +1,6 @@
 # Language
 
-Shared vocabulary for every suggestion this skill makes. Use these terms exactly — don't substitute "component," "service," "API," or "boundary." Consistent language is the whole point.
+Shared vocabulary for architecture suggestions. Use these terms consistently so comparisons retain their meaning.
 
 ## Terms
 

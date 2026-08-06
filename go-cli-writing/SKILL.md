@@ -1,6 +1,6 @@
 ---
 name: go-cli-writing
-description: Build and review Go command-line applications with idiomatic package layout, Kong command parsing, charmbracelet/log logging, config loading, stdout and stderr behavior, linting, tool version management, and behavior-first tests. Use when Codex is creating or refactoring `main.go`, `cmd/` command trees, global flags, subcommands, help text, config handling, or CLI UX in Go.
+description: Builds and reviews Go command-line applications with idiomatic package layout, command parsing, logging, config loading, scriptable output, and behavior-first tests. Use when creating or refactoring `main.go`, command trees, flags, subcommands, help text, config handling, or CLI UX in Go.
 ---
 
 # Go CLI Writing
@@ -10,9 +10,9 @@ Keep Go CLIs predictable, scriptable, and easy to extend. Favor a thin `main`, a
 ## Start With Local Context
 
 - Read `go.mod`, `main.go`, the `cmd/` package, config loading, adjacent tests, and `mise.toml`, `.mise.toml`, or `.tool-versions` when present before changing structure.
-- Check whether the repository already standardizes on `github.com/alecthomas/kong` and `github.com/charmbracelet/log`. Follow local conventions if they differ, but use those packages by default for new CLIs.
-- Prefer `mise` for pinning Go, `golangci-lint`, and related CLI tool versions in new or modernized repositories unless the repository already standardized on another version manager.
-- Open [references/slack-cli-patterns.md](references/slack-cli-patterns.md) when you need concrete examples based on `/Users/lachlan/Develop/lox/slack-cli`.
+- Follow the repository's parser, logger, version manager, and lint setup when present. For a small new command, consider the standard library before adding dependencies.
+- For a new multi-command CLI with no established stack, prefer `github.com/alecthomas/kong`, `github.com/charmbracelet/log`, `mise`, and `golangci-lint`; these are intentional defaults, not reasons to replace a working repository convention.
+- Open [references/slack-cli-patterns.md](references/slack-cli-patterns.md) when a concrete lox CLI example would help.
 - Keep CLI-specific structure here. Use broader Go package guidance only for non-CLI design questions.
 
 ## Work In This Order
@@ -32,9 +32,9 @@ Keep Go CLIs predictable, scriptable, and easy to extend. Favor a thin `main`, a
 - Split command files by cohesive command family, not arbitrary line counts.
 - Put config, API clients, parsers, renderers, and persistence under `internal/`. Keep `cmd/` focused on argument handling and orchestration.
 
-## Use Kong Deliberately
+## Use Kong Deliberately When Chosen
 
-- Use `github.com/alecthomas/kong` for command parsing in new Go CLIs.
+- Use `github.com/alecthomas/kong` for new multi-command Go CLIs when the repository has not selected another parser.
 - Define the CLI as nested structs with explicit Kong tags such as `cmd:""`, `arg:""`, `help`, `default`, and `short`.
 - Keep flag names, defaults, and help text stable and explicit. Optimize for discoverability in `--help`.
 - Pass parser options in `main.go`, typically `kong.Name`, `kong.Description`, `kong.UsageOnError()`, and `kong.Vars` for version wiring when needed.
@@ -42,7 +42,7 @@ Keep Go CLIs predictable, scriptable, and easy to extend. Favor a thin `main`, a
 
 ## Logging And Output
 
-- Use `github.com/charmbracelet/log` for diagnostics, warnings, retries, and operational logging. Do not introduce the standard-library `log` package in new CLI code.
+- When Charm is the chosen or existing logger, use `github.com/charmbracelet/log` for diagnostics, warnings, retries, and operational logging. Otherwise follow the repository's logger; do not add a second logging stack.
 - Keep normal command results on stdout with `fmt` or a dedicated output package so the CLI remains script-friendly.
 - Return errors with context instead of logging and returning the same error.
 - Do not use `panic` for normal user-facing failures.
@@ -66,9 +66,9 @@ Keep Go CLIs predictable, scriptable, and easy to extend. Favor a thin `main`, a
 ## Verify Before Finishing
 
 - Run the narrowest useful package tests while iterating.
-- Finish with `gofmt -w`, `go test ./...`, `go vet ./...`, `golangci-lint run`, and a CLI smoke check such as `go run . --help` or the repository's build script.
+- Finish with the repository's normal formatter, tests, vet/lint checks, and a CLI smoke check such as `go run . --help` or its build script. When no workflow exists, use `gofmt -w`, `go test ./...`, and `go vet ./...`; run `golangci-lint` when configured.
 - If dependencies change, keep `go.mod` and `go.sum` tidy and call out the new package choice explicitly.
-- If the repository lacks linting, recommend adding `golangci-lint` instead of treating lint as optional.
+- If a new or modernized repository lacks linting, recommend `golangci-lint` without introducing it as part of an unrelated command change.
 
 ## Output Expectations
 

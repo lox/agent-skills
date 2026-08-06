@@ -1,6 +1,6 @@
 ---
 name: reading-x-posts
-description: Read x.com/twitter.com posts, tweets, quote tweets, and user-provided post URLs through the authenticated xurl CLI, with Birdclaw as the local cache and research fallback. Use when asked to read, summarize, inspect, quote, fetch, or explain an X/Twitter post URL or status ID; when the user says to use their Twitter account; or when read-only Twitter/X context should come from xurl or Birdclaw instead of web search.
+description: Reads x.com/twitter.com posts, quote posts, replies, and user-provided status IDs through the authenticated xurl CLI, with Birdclaw as an optional local fallback. Use when asked to read, summarize, inspect, quote, fetch, or explain an X/Twitter post or use authenticated X context.
 ---
 
 # Reading X Posts
@@ -18,8 +18,9 @@ xurl auth status
 xurl whoami
 ```
 
-For this user's account, expect `xurl whoami` to show username `lox`. If another
-account is active, report that before reading account-sensitive data.
+Use `xurl whoami` as the source of truth for the authenticated account. Before
+reading account-sensitive data, report a surprising account mismatch without
+assuming a fixed username.
 
 Read a provided post URL or status ID directly:
 
@@ -28,7 +29,7 @@ xurl read "https://x.com/user/status/1234567890"
 xurl read 1234567890
 ```
 
-Use Birdclaw only when the request needs cached/local context such as bookmarks,
+Use Birdclaw only when it is installed and the request needs cached/local context such as bookmarks,
 likes, mentions, timelines, DMs, imported archive data, or research briefs:
 
 ```bash
@@ -53,6 +54,9 @@ mute, bookmark, or DM unless the user explicitly asks for that action.
 - Include the author, handle, timestamp, post URL or ID, and post text or a
   faithful summary.
 - Include quoted, replied-to, linked, or media context when the tool returns it.
+- Distinguish original posts, replies, quote posts, and reposts when that context is available.
 - Say whether the result came from live `xurl` or local `birdclaw`.
 - If live auth, rate limit, or access fails, report the exact command and error,
   then try local Birdclaw cache only when it helps the request.
+- If neither live nor cached access returns the post, say it could not be fetched;
+  do not infer or invent its contents from surrounding context.

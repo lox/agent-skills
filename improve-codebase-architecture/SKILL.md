@@ -1,6 +1,6 @@
 ---
 name: improve-codebase-architecture
-description: Find deepening opportunities in a codebase, informed by engineering plans in docs/plans/. Use when the user wants to improve architecture, find refactoring opportunities, consolidate tightly-coupled modules, or make a codebase more testable and AI-navigable.
+description: Finds evidence-backed deepening opportunities that improve module leverage, locality, and testability. Use when asked to improve architecture, consolidate tightly coupled modules, reduce shallow abstractions, or explore a selected interface design.
 ---
 
 # Improve Codebase Architecture
@@ -9,7 +9,7 @@ Surface architectural friction and propose **deepening opportunities** — refac
 
 ## Glossary
 
-Use these terms exactly in every suggestion. Consistent language is the point — don't drift into "component," "service," "API," or "boundary." Full definitions in [LANGUAGE.md](LANGUAGE.md).
+Use these terms consistently in architecture suggestions. Full definitions are in [reference/language.md](reference/language.md).
 
 - **Module** — anything with an interface and an implementation (function, class, package, slice).
 - **Interface** — everything a caller must know to use the module: types, invariants, error modes, ordering, config. Not just the type signature.
@@ -20,19 +20,19 @@ Use these terms exactly in every suggestion. Consistent language is the point �
 - **Leverage** — what callers get from depth.
 - **Locality** — what maintainers get from depth: change, bugs, knowledge concentrated in one place.
 
-Key principles (see [LANGUAGE.md](LANGUAGE.md) for the full list):
+Key principles (see [reference/language.md](reference/language.md) for the full list):
 
 - **Deletion test**: imagine deleting the module. If complexity vanishes, it was a pass-through. If complexity reappears across N callers, it was earning its keep.
 - **The interface is the test surface.**
 - **One adapter = hypothetical seam. Two adapters = real seam.**
 
-This skill is informed by the project's engineering plans. Existing plans give names to important seams, record decisions the skill should not re-litigate, and show which constraints matter in this codebase. Treat plans as implementation maps: resumable, sequenced, and explicit about boundaries.
+When relevant engineering plans exist, use them to identify important seams, settled decisions, and codebase constraints. Do not assume every repository has `docs/plans/` or require a plan for architecture analysis.
 
 ## Process
 
 ### 1. Explore
 
-Read relevant engineering plans in `docs/plans/` first. Prefer recent, active, similar-domain, and compact plans when the directory is large.
+Read relevant engineering plans first when they exist. Prefer recent, active, and similar-domain plans when there are many.
 
 Use the plan docs the same way `drafting-plans` does:
 
@@ -42,7 +42,7 @@ Use the plan docs the same way `drafting-plans` does:
 - Notice plan status (`proposed`, `active`, `paused`, `landed`, `superseded`) and avoid re-litigating landed or superseded decisions unless current code friction makes the revisit worthwhile.
 - Pull forward the plan's goals, non-goals, invariants, delivery slices, verification strategy, and open questions when evaluating architecture candidates.
 
-Then use the Agent tool with `subagent_type=Explore` to walk the codebase. Don't follow rigid heuristics — explore organically and note where you experience friction:
+Inspect the codebase with the host's normal semantic search, exact search, and file-reading tools. Explore organically and note where understanding creates friction:
 
 - Where does understanding one concept require bouncing between many small modules?
 - Where are modules **shallow** — interface nearly as complex as the implementation?
@@ -63,7 +63,7 @@ Present a numbered list of deepening opportunities. For each candidate:
 - **Benefits** — explained in terms of locality and leverage, and also in how tests and plan verification would improve
 - **First slice** — the smallest boring, useful step if the user chooses to explore it
 
-**Use `docs/plans/` vocabulary for the product or system domain, and [LANGUAGE.md](LANGUAGE.md) vocabulary for the architecture.** If plans define a concept such as "Order intake," use that name consistently instead of falling back to incidental implementation names.
+**Use plan vocabulary for the product or system domain when plans exist, and [reference/language.md](reference/language.md) vocabulary for the architecture.** If plans define a concept such as "Order intake," use that name consistently instead of falling back to incidental implementation names.
 
 **Plan conflicts**: if a candidate contradicts an existing plan decision, only surface it when the friction is real enough to warrant revisiting the plan. Mark it clearly (e.g. _"contradicts `docs/plans/example.md` — but worth reopening because…"_). Don't list every theoretical refactor a plan rules out.
 
@@ -73,7 +73,9 @@ Do NOT propose interfaces yet. Ask the user: "Which of these would you like to e
 
 Once the user picks a candidate, drop into a grilling conversation. Walk the design tree with them — constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive.
 
-Side effects happen inline as decisions crystallize:
+Update an existing plan only when the user asked to revise the plan or the architecture work is part of an authorized implementation workflow. Otherwise recommend the durable update in the handoff.
+
+As decisions crystallize:
 
 - **Naming a deepened module after a concept that belongs in an existing plan?** Update the relevant `docs/plans/` document with the term, ownership seam, or decision.
 - **Sharpening a fuzzy term during the conversation?** Record the clarified terminology in the relevant plan when it will help future architecture work.
@@ -83,4 +85,4 @@ Side effects happen inline as decisions crystallize:
 - **Updating a plan with YAML frontmatter?** Update `last_reviewed` after material revisions or revalidation, and change `status` only for lifecycle changes.
 - **User rejects the candidate with a load-bearing reason?** Offer to record the reason in the relevant plan so future architecture reviews don't re-suggest it. Only offer when the reason would actually be needed by a future explorer — skip ephemeral reasons ("not worth it right now") and self-evident ones.
 - **No relevant plan exists, but the candidate becomes real work?** Offer to draft a new `docs/plans/` plan using the repository's plan conventions. Do not create one just to record a casual idea.
-- **Want to explore alternative interfaces for the deepened module?** See [INTERFACE-DESIGN.md](INTERFACE-DESIGN.md).
+- **Want to explore alternative interfaces for the deepened module?** See [reference/interface-design.md](reference/interface-design.md).

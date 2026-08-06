@@ -1,6 +1,6 @@
 ---
 name: babysitting-prs
-description: Babysits GitHub pull requests through review comments, Codex feedback, rebases, Buildkite failures, merge queues, and final merge. Use when asked to babysit a PR, get a PR merged, fix PR feedback, or keep working until a PR is mergeable.
+description: Babysits GitHub pull requests through review feedback, rebases, CI or Buildkite failures, Codex review when already active, and optional merge. Use when asked to babysit a PR, fix PR feedback, make a PR mergeable, or get it merged.
 ---
 
 # Babysitting PRs
@@ -14,16 +14,16 @@ Drive a GitHub pull request from its current state to merged, handling reviewers
 - A PR is blocked on failing checks, Buildkite failures, merge conflicts, stale base branch, or merge queue state.
 - Another workflow asks you to keep a PR green and mergeable. In that case, obey any explicit "do not merge" instruction from that workflow.
 
-## Required gate: Buildkite auth
+## Requirements
 
-Before doing PR work, verify both GitHub and Buildkite authentication.
+The helper requires `gh` and `jq`, plus authenticated GitHub access:
 
 ```bash
+command -v gh jq
 gh auth status
-bk auth status >/dev/null
 ```
 
-If `bk auth status` fails, stop immediately and ask the user to run `bk auth login`. This is the hard blocker. Do not spend time triaging reviews, rebasing, or CI until Buildkite auth is available.
+Use GitHub's check rollup first. Only require `bk` authentication when the PR actually has Buildkite checks and linked GitHub output is insufficient for the diagnosis or control the task needs. If so, verify `command -v bk` and `bk auth status` before using Buildkite-specific logs, artefacts, retries, or controls. Missing Buildkite access blocks only that diagnosis, not review triage or unrelated PR work.
 
 ## Companion skills to load as needed
 
@@ -64,7 +64,7 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
 
 5. **Clear CI and Buildkite blockers**
    - Run `scripts/pr_babysit.sh checks --pr <pr> --repo <owner/repo>` and inspect failures.
-   - For Buildkite checks, use Buildkite logs, annotations, failed jobs, and artefacts to find the real failure. Prefer Buildkite MCP tools when available; use `bk` or linked logs otherwise.
+   - For Buildkite checks, inspect GitHub's linked details first. If more detail or control is needed, use available Buildkite tools or `bk` after verifying its authentication.
    - If a failure is caused by the branch, fix it, run the narrowest relevant local validation, commit, push, and re-check.
    - If a failure is flaky or external, retry the failed job/build once and record the evidence.
    - Do not mark a PR ready because GitHub checks are green if Buildkite is still failed, blocked, or pending.
@@ -74,23 +74,24 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
    - If the user asks for mergeable, green, or ready-for-review state, stop once the PR is merge-ready and report the handoff.
    - If the user only says to babysit a PR without a merge verb, keep the PR merge-ready and ask before the final merge.
    - Before merging, verify: PR is open and not draft, no unresolved actionable threads, no pending/actionable Codex work when Codex is in use, required reviews are satisfied, checks are green, and GitHub reports mergeable.
+   - Immediately before merging, re-fetch the PR head SHA and check state. Merge only if they still match the reviewed, green head.
    - Use the repo's expected merge path: merge queue when required, auto-merge when branch protection is waiting, otherwise the repo's normal squash/merge/rebase method.
-   - Delete the branch only when it is safe and conventional for the repo.
+   - Delete the branch only when the user requested it or repository configuration makes deletion the established merge behavior.
 
 ## Commands
 
 ```bash
-# Full PR state summary, including Buildkite auth gate, checks, reviews, and Codex state
-~/.config/agents/skills/babysitting-prs/scripts/pr_babysit.sh status --pr 32 --repo owner/repo
+# Full PR state summary: run from the loaded skill directory
+scripts/pr_babysit.sh status --pr 32 --repo owner/repo
 
 # Resolve review threads for addressed diff comments
-~/.config/agents/skills/babysitting-prs/scripts/pr_babysit.sh resolve --pr 32 --repo owner/repo --comment-ids 12345,67890
+scripts/pr_babysit.sh resolve --pr 32 --repo owner/repo --comment-ids 12345,67890
 
 # Check PR CI status from GitHub's check rollup
-~/.config/agents/skills/babysitting-prs/scripts/pr_babysit.sh checks --pr 32 --repo owner/repo
+scripts/pr_babysit.sh checks --pr 32 --repo owner/repo
 
 # Auto-detect PR from the current branch
-~/.config/agents/skills/babysitting-prs/scripts/pr_babysit.sh status
+scripts/pr_babysit.sh status
 ```
 
 ## State interpretation
@@ -119,7 +120,7 @@ For Codex top-level replies or fresh `@codex review` triggers, use `handling-cod
 
 Stop and report the exact blocker only when:
 
-- `bk auth status` fails.
+- Required GitHub access is unavailable, or Buildkite access is unavailable when Buildkite-only diagnostics are necessary.
 - Required human approval, security sign-off, product judgement, or credentials are unavailable.
 - Merge permissions or branch protection prevent you from queueing, auto-merging, or merging.
 - The same CI failure persists after two evidence-based fix attempts or one justified flaky retry.

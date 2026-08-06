@@ -1,6 +1,6 @@
 ---
 name: check-docs-updated
-description: Check whether repository docs, plans, examples, runbooks, changelogs, generated docs, or other durable written artifacts are updated for a code or configuration change. Use when asked to verify docs or plans are current, prevent documentation drift before review or merge, update docs after implementation, or check whether a PR needs documentation changes.
+description: Checks whether repository docs, plans, examples, runbooks, changelogs, generated docs, or other durable written artifacts match a code or configuration change. Use when asked to verify or update docs, prevent documentation drift, or check whether a PR needs documentation changes.
 ---
 
 # Check Docs Updated

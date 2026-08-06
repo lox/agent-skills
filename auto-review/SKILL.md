@@ -1,6 +1,6 @@
 ---
 name: auto-review
-description: Iteratively review and improve the current PR or branch by running general-code-reviewing, fixing grounded issues, validating, and re-reviewing until the change is merge-ready or a blocker remains. Use when asked to auto-review, self-review and fix, harden, polish, get a PR ready, or iterate on code quality rather than only return review comments.
+description: Iteratively reviews and improves the current PR or branch by running general-code-reviewing, fixing grounded issues, validating, and re-reviewing until the change is merge-ready or blocked. Use when asked to auto-review, self-review and fix, harden, polish, or get a PR ready.
 ---
 
 # Auto Review

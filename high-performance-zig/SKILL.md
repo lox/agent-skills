@@ -1,6 +1,6 @@
 ---
 name: high-performance-zig
-description: Write, review, and optimize high-performance Zig codebases with measurement-first workflow, Ghostty and Mitchell Hashimoto-inspired patterns, cache-aware struct layout, allocator and pool design, comptime specialization, SIMD/scalar fast paths, C ABI boundaries, and regression checks. Use when Codex is working on `.zig` changes where throughput, latency, startup time, memory use, cache behavior, parser/rendering loops, atomics, allocators, binary size, or layout-sensitive code matter.
+description: Writes, reviews, and optimizes high-performance Zig code with a measurement-first workflow, cache-aware layout, allocator discipline, comptime specialization, SIMD/scalar paths, and regression checks. Use for `.zig` changes where latency, throughput, memory, startup, binary size, or layout-sensitive code matters.
 ---
 
 # High Performance Zig
@@ -19,6 +19,8 @@ Read [references/performance-patterns.md](references/performance-patterns.md) be
 4. Trace data movement before editing: allocations, ownership, pointer stability, hot/cold fields, cache-line sharing, branch shape, Unicode/protocol edge cases, syscalls, locks, and C API lifetime transfer.
 5. Apply one targeted optimization at a time, preferring existing repo helpers and Zig standard library facilities over new infrastructure.
 6. Prove the result with the repo's normal checks plus a focused benchmark, size assertion, leak check, fuzz/synthetic input, or before/after profile as appropriate.
+
+Record the Zig version, release mode, target, workload, baseline, and relevant machine assumptions with benchmark results. Compare like with like, and do not present numbers from an unrepresentative debug build as production evidence.
 
 ## Optimization Priorities
 

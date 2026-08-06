@@ -7,6 +7,8 @@ description: Responds to PR review comments. Use when addressing reviewer feedba
 
 Reply to PR review comments from human reviewers or automated bots.
 
+Checking comments is read-only. A request to address review feedback authorizes the necessary in-scope code changes and review replies, but commit, push, reaction, resolution, reviewer-request, and `@codex review` actions must also be part of the requested PR workflow. Re-fetch review state after remote writes.
+
 ## Check for Review Comments
 
 ```bash
@@ -29,7 +31,7 @@ gh api repos/{owner}/{repo}/pulls/{pr}/reviews/{review_id} --jq '.body'
 
 ## Reply to Diff Comments
 
-Always reply inline to the specific comment.
+When replying to a diff comment, reply inline to the specific comment unless the thread is already resolved or outdated.
 
 For all reviewers (human or bot), use a normal inline reply without `@codex`:
 ```bash

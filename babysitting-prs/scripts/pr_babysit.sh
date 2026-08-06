@@ -30,13 +30,6 @@ require_cmd() {
   fi
 }
 
-require_bk_auth() {
-  if ! bk auth status >/dev/null 2>&1; then
-    echo "bk auth is not logged in; run: bk auth login" >&2
-    exit 42
-  fi
-}
-
 now_epoch() {
   date +%s
 }
@@ -236,7 +229,6 @@ codex_helper_path() {
 
   local candidates=(
     "${script_dir}/../../handling-codex-reviews/scripts/codex_review_loop.sh"
-    "${HOME}/.config/agents/skills/handling-codex-reviews/scripts/codex_review_loop.sh"
   )
 
   local candidate
@@ -293,7 +285,6 @@ status_json() {
         if $checks.any_pending == true then "pending_checks" else empty end
       ] as $blockers
       | {
-          bk_auth: true,
           pr: $pr,
           checks: $checks,
           review_threads: $threads,
@@ -365,8 +356,6 @@ main() {
 
   require_cmd gh
   require_cmd jq
-  require_cmd bk
-  require_bk_auth
 
   repo="$(resolve_repo "$repo")"
   pr="$(resolve_pr "$pr")"
