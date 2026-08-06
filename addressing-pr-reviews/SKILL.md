@@ -40,7 +40,7 @@ gh api repos/{owner}/{repo}/pulls/{pr}/comments \
   -F in_reply_to={comment_id}
 ```
 
-Use `@codex` only when you explicitly want to trigger a Codex action.
+Do not mention `@codex` in routine replies. Request Codex only when current PR activity proves Codex is already participating in that PR.
 
 ## Reply to Top-Level Reviews
 
@@ -68,17 +68,21 @@ gh api repos/{owner}/{repo}/pulls/comments/{comment_id}/reactions \
 
 ## Request Re-review
 
+Re-request the reviewer already participating in the PR. Inspect current review requests, reviews, comments, checks, and reactions before choosing the mechanism; do not introduce a different review bot.
+
 For human reviewers:
 ```bash
 gh pr edit {pr} --add-reviewer {username}
 ```
 
-For Codex, trigger exactly one explicit review request after batching fixes:
+For an automated reviewer other than Codex, use that bot's established re-review mechanism from the current PR or repository configuration. Reply to or mention that bot when its integration expects a comment; use its check or app control when that is the established mechanism. Do not substitute Codex merely because its command is known.
+
+For Codex, first verify that the PR already contains Codex-authored review activity, a prior `@codex review` request, or a Codex reaction. Only then trigger exactly one review request after batching fixes:
 ```bash
 gh pr comment {pr} --body "@codex review"
 ```
 
-Note: reviewer account names can vary by setup; do not hard-code a single bot username.
+If no reviewer is already participating, do not introduce a review bot unless a separate workflow explicitly owns reviewer selection. Reviewer account names and invocation mechanisms vary by setup; discover them from current PR and repository evidence rather than hard-coding a bot username.
 
 ## Known Failure Mode (Codex Task-Mode Noise)
 
@@ -100,7 +104,7 @@ Use this instead for routine updates:
 Fixed in {commit}: {explanation}
 ```
 
-Then, after batching fixes, post exactly one:
+Then, only when Codex was already participating, post exactly one after batching fixes:
 
 ```text
 @codex review
@@ -113,7 +117,8 @@ Then, after batching fixes, post exactly one:
 3. **Commit & push**: Include the fix
 4. **Reply inline**: Reference the commit hash in your reply
 5. **React**: Add 👍 to acknowledge the feedback
-6. **Request re-review**: Add reviewer back or post a single `@codex review`
-7. **Avoid task-mode noise**: Never use `@codex` in routine "fixed" replies
+6. **Request re-review**: Re-engage the human or bot already participating, using that reviewer's established mechanism
+7. **Keep Codex conditional**: Post one `@codex review` only when Codex was already part of the PR
+8. **Avoid task-mode noise**: Never use `@codex` in routine "fixed" replies
 
 **Important**: Don't amend commits after replying - the referenced commit hash becomes invalid.
