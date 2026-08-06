@@ -1,6 +1,6 @@
 ---
 name: executing-plans
-description: Execute engineering plans locally, slice by slice. Use when asked to implement, continue, or iterate on an existing plan by reading/updating it, working in a local branch, validating, running auto-review, committing slices, and only publishing or babysitting a PR when requested.
+description: Executes engineering plans locally, slice by slice. Use when asked to implement, continue, or iterate on an existing plan through focused changes, validation, review, plan updates, and an optional commit or PR workflow.
 ---
 
 # Executing Plans
@@ -36,11 +36,11 @@ Load these only when the workflow needs them:
 - Treat the plan as the working map, not a suggestion list. Do not reopen broad design unless repo evidence proves the plan is wrong.
 - Work locally on a branch by default. Do not push, publish a PR, request PR review, or babysit a PR unless the user asks for that.
 - Prefer the next incomplete slice in the plan's own order unless the user names a specific slice or slice set.
-- If the user asks for one slice, stop after that slice is committed. If they ask to execute or continue the plan generally, keep taking the next incomplete slice after each commit until done, blocked, or out of scope.
-- Keep each commit slice-sized. Do not bundle unrelated cleanup or later phases.
+- If the user asks for one slice, stop after that slice is complete. If they ask to execute or continue the plan generally, keep taking the next incomplete slice until done, blocked, or out of scope.
+- Follow the repository's commit policy. Commit each completed slice only when the user or repository workflow expects slice commits; otherwise keep logical slice boundaries in the diff and handoff.
 - Verify cheap drift-prone facts against the current repo, branch, docs, schema loaders, and any PR or CI state that is already in scope.
 - Preserve user changes in dirty worktrees. Work with them unless they make the requested slice impossible.
-- Commit completed slices locally before moving to the next slice.
+- Pause before destructive migrations, credential-dependent work, unexplained scope growth, or choices whose product or operational consequences cannot be resolved from repository evidence.
 
 ## Workflow
 
@@ -53,7 +53,7 @@ Load these only when the workflow needs them:
 2. Select the target slice set.
    - If the user names specific slices, implement only those slices.
    - If the user asks for the next, first, or a named slice, implement only that slice.
-   - If the user asks to execute or continue the plan without narrowing the target, start with the next incomplete slice and continue after each local commit.
+   - If the user asks to execute or continue the plan without narrowing the target, start with the next incomplete slice and continue after each completed slice.
    - Write down the current slice boundary for yourself: files likely touched, user-visible behavior, tests, docs, and commit scope.
    - Resolve blocking open questions with repo evidence first. Ask the user only when their judgment is required.
 
@@ -68,21 +68,20 @@ Load these only when the workflow needs them:
    - Fix failures before starting review.
 
 5. Run `auto-review`.
-   - Use `auto-review` against the uncommitted current-slice diff since the last slice commit. Use a branch-wide target only before an explicitly requested PR, handoff, or readiness check.
+   - Use `auto-review` against the current-slice diff. Use a branch-wide target only before an explicitly requested PR, handoff, or readiness check.
    - Fix grounded findings inside the slice boundary, rerun relevant validation, and let `auto-review` re-review after the last edit.
    - If any fix changes the plan, docs, tests, or examples, rerun the affected validation and keep `auto-review` in the loop until the final diff has been reviewed.
    - Do not spend time on style while correctness, failure modes, security, data integrity, or maintainability concerns remain.
    - Stop for guidance if review feedback conflicts, requires a product decision, or cannot be defended from the code.
 
-6. Update the plan and commit the slice.
+6. Update the plan and finish the slice.
    - Update the plan's progress, validation notes, decisions, or next-slice sequencing when the implementation changes them, but do this before the final `auto-review` pass when possible.
    - If a plan update is made after `auto-review` reports ready, rerun relevant validation and `auto-review` before committing.
-   - Review the final diff and stage only files belonging to the slice.
-   - Follow repository git identity, signing, and commit-message instructions. Prefer a conventional commit message.
-   - Commit the completed slice locally before starting the next slice.
+   - Review the final diff and keep only files belonging to the slice.
+   - When commits are expected, stage only the slice, follow repository git identity, signing, and commit-message instructions, and use the repository's message convention.
 
 7. Continue or stop.
-   - If the user requested a specific slice or slice set, stop when that target is committed.
+   - If the user requested a specific slice or slice set, stop when that target is complete and committed when required.
    - If the user requested general plan execution, return to step 2 for the next incomplete slice.
    - Stop when no actionable slices remain, validation or `auto-review` is blocked, the next slice needs user judgment, or continuing would broaden beyond the plan.
 
@@ -101,7 +100,7 @@ Load these only when the workflow needs them:
 10. Produce the walkthrough.
    - Use `work-walkthrough` after the requested slice set, plan segment, or optional PR follow-through reaches its stop condition.
    - Include the problem being solved, what changed, impact, validation, hard or unexpected parts, UX changes, how to try it, and next suggested steps.
-   - For CLI changes, include example commands. For web UI changes, start the available local server when practical and provide the local URL.
+   - For CLI changes, include example commands. For web UI changes in a remote agent environment, use the host's supervised service and URL-forwarding mechanism, then provide the returned public URL rather than a loopback URL.
    - If work stops blocked instead of done, use `work-walkthrough` to explain what was completed, what is blocked, and the next concrete action.
 
 ## Definition of Done
@@ -111,7 +110,7 @@ The default local workflow is done only when:
 - The target slice set, or the current executable plan segment, is implemented and validated.
 - The plan reflects any material scope, validation, or progress changes.
 - `auto-review` reports ready, or any remaining blocker is concrete and reported.
-- Each completed slice is committed locally on the work branch.
+- Each completed slice has a clear boundary and is committed locally when the repository or user expects slice commits.
 - The final response uses `work-walkthrough` to explain the completed work and next suggested steps.
 
 If the user asked for PR publication, the PR must be open or updated and describe the problem, change, examples, and plan slice clearly.
@@ -124,7 +123,7 @@ Do not push, publish a PR, request PR review, babysit, merge, or land unless the
 
 Report:
 
-- Branch and commit(s).
+- Branch and commit(s), when commits were requested or required.
 - Slice(s) implemented.
 - Validation run and results.
 - `auto-review` status and any fixes made from it.

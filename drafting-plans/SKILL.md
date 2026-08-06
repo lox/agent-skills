@@ -1,6 +1,6 @@
 ---
 name: drafting-plans
-description: Draft and revise durable engineering plans. Use for `docs/plans`, architecture, rollout, design docs, first-slice selection, open-question resolution, adversarial pressure-testing, and plan maintenance during implementation.
+description: Drafts and revises durable engineering plans. Use for `docs/plans`, architecture, rollout, design docs, first-slice selection, open-question resolution, adversarial pressure-testing, or plan maintenance during implementation.
 ---
 
 # Drafting Plans

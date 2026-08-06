@@ -1,12 +1,12 @@
 [tools]
 node = "lts"
-"npm:@haasstefan/skills-lint" = "latest"
+"npm:@haasstefan/skills-lint" = "0.1.2"
 
 [tasks.install]
 description = "Subscribe Codex and Amp to these skills with skillyard"
 run = [
   "skillyard subscribe github:lox/agent-skills --include '*' --target codex --force",
-  "skillyard subscribe github:lox/agent-skills --include '*' --exclude consulting-librarian --target amp --force",
+  "skillyard subscribe github:lox/agent-skills --include '*' --exclude consulting-librarian --exclude slack --target amp --force",
 ]
 
 [tasks.lint]

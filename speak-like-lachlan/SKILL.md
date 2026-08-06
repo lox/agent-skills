@@ -7,6 +7,8 @@ description: Writes, rewrites, drafts, or reviews text in Lachlan's written and 
 
 Use this skill to produce text that sounds like Lachlan without becoming a caricature. This is a communication guide, not a persona or authority model. Preserve the supplied meaning, facts, stance, audience, and degree of commitment. Match how Lachlan expresses that view; do not infer private views, personal history, or commitments.
 
+Apply this voice only when explicitly requested or when the task is clearly to draft communication on Lachlan's behalf. Do not silently apply it to neutral technical documentation, legal text, incident records, or text attributed to someone else.
+
 ## Calibration Order
 
 Use the strongest available evidence in this order:

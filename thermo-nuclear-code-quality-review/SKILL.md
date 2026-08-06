@@ -1,6 +1,6 @@
 ---
 name: thermo-nuclear-code-quality-review
-description: Run an extremely strict maintainability review for abstraction quality, giant files, and spaghetti-condition growth. Use for a thermo-nuclear code quality review, thermonuclear review, deep code quality audit, or especially harsh maintainability review.
+description: Runs an opt-in, extremely strict maintainability review for abstraction quality, giant files, and spaghetti-condition growth. Use when explicitly asked for a thermo-nuclear, thermonuclear, deep code quality, or especially harsh maintainability review.
 ---
 
 # Thermo-Nuclear Code Quality Review
@@ -17,11 +17,11 @@ Above all, push for ambitious structural simplification. Do not stop at local cl
 - Prefer direct, boring, maintainable code over hacky, magical, generic, or cast-heavy code.
 - Prefer a small set of high-conviction structural findings over a long list of cosmetic nits.
 
-## Presumptive Blockers
+## Strong Review Signals
 
 Push back hard when a change:
 
-- pushes a file from below 1k lines to above 1k lines without a strong structural reason
+- pushes a file from below 1k lines to above 1k lines without a strong structural reason; treat the threshold as a signal to inspect cohesion, not an automatic defect
 - adds ad-hoc conditionals, one-off booleans, nullable modes, or scattered feature checks into unrelated flows
 - leaks feature-specific logic into shared modules or the wrong package/layer
 - introduces thin wrappers, identity abstractions, pass-through helpers, or generic magic that hide a simpler data shape
@@ -64,3 +64,5 @@ Findings must explain:
 3. what concrete simplification or decomposition should replace it
 
 Be direct and demanding about quality without being rude. Do not approve merely because behavior appears correct. Avoid style-only feedback unless there are no larger structural concerns.
+
+Separate correctness or ship blockers from maintainability preferences. Do not recommend a major rewrite without grounding it in the repository's ownership, tests, and change patterns, and do not carry the skill's intentionally severe language into public review comments unless the user requests that tone.

@@ -1,6 +1,6 @@
 ---
 name: general-code-reviewing
-description: Orchestrate a broad code review by running ship-risk and maintainability review passes, then synthesizing both. Supports sub-agent delegation only when the user explicitly asks for sub-agents, delegation, or parallel review work. Use for general PR reviews, diff reviews, code reviews, or broad review requests when the user did not ask for only one narrower review lens.
+description: Orchestrates a broad code review with separate ship-risk and maintainability passes, then synthesizes both. Use for general PR, diff, or code reviews when the user did not request only one narrower review lens; delegates only when explicitly requested.
 ---
 
 # General Code Reviewing
@@ -28,7 +28,7 @@ Do not ask either pass to cover the other's job. Overlap is useful evidence, but
 
 Default to running both review passes sequentially in the current agent. A normal request like "review this PR" or "review this diff" does not authorize spawning sub-agents.
 
-Use sub-agents only when the current user request explicitly asks for sub-agents, delegation, parallel agents, or parallel review work. When that permission is present and multi-agent tools are available, spawn both review passes as sub-agents in parallel. If spawn tools are not already available, search for multi-agent or sub-agent tools before falling back to local sequential review.
+Use delegation only when the current user request explicitly asks for sub-agents, delegation, parallel agents, or parallel review work. When that permission is present and supported delegation tools are available, run both review passes in parallel. Otherwise run them sequentially in the current agent.
 
 Before running either pass, identify the exact target:
 

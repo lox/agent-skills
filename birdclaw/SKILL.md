@@ -1,11 +1,18 @@
 ---
 name: birdclaw
-description: Operate Birdclaw, the local-first Twitter/X memory CLI and web app backed by SQLite, plus xurl for direct X API reads. Use when asked to read x.com/twitter.com post URLs or post IDs, set up or troubleshoot Birdclaw, inspect its local store, sync or read bookmarks/likes/mentions/timelines/DMs, use xurl or bird transports, import a Twitter archive, start the local Birdclaw UI, or build bookmark research briefs.
+description: Operates Birdclaw, the local-first Twitter/X memory CLI and web app backed by SQLite, plus xurl for direct X API reads. Use when asked to inspect or sync a Birdclaw store, import an X archive, build bookmark research briefs, troubleshoot Birdclaw, or run its web UI.
 ---
 
 # Birdclaw
 
 Birdclaw is a local-first Twitter/X workspace. Prefer local reads from its SQLite cache; use live X reads only when the user asks to sync or refresh data.
+
+## Environment And State
+
+- Birdclaw requires the `birdclaw` CLI and a readable local SQLite store. Live reads also require `xurl`, valid X credentials, and available API credits.
+- Treat the expected Birdclaw store as user data. If it is absent, stop rather than silently initializing a new store.
+- A persistent workstation or runner can hold the user's Birdclaw state. An isolated remote agent environment may be ephemeral; use it only when the required store and credentials are deliberately available there.
+- Never copy credentials, archives, DMs, or the SQLite store between environments unless the user explicitly asks.
 
 ## First Checks
 
@@ -80,26 +87,13 @@ Use `--refresh` only when deliberately spending live reads. For repeated syncs, 
 
 ## Web UI
 
-Start the local app:
+Birdclaw is a long-running service. Configure the execution environment's supervised service mechanism to run `birdclaw serve` so it survives agent reconnects, updates, and pauses. Do not use ad hoc backgrounding such as `nohup`, `&`, or an unmanaged shell session.
 
-```bash
-birdclaw serve
-```
+Determine the listening port from the command output or supervisor logs, then use the environment's URL forwarding, tunnel, or portal mechanism to expose it when the user needs access.
 
-The installed app commonly serves `http://localhost:3000`. If the command does not print a URL, find it:
+Share the returned public or forwarded HTTPS URL, never a loopback URL from a remote environment. Append routes such as `/bookmarks`, `/likes`, `/mentions`, or `/dms` to that URL. If the host cannot expose the service, report that the UI is not user-accessible instead of presenting a local address.
 
-```bash
-lsof -nP -iTCP -sTCP:LISTEN | rg 'birdclaw|node|vite'
-```
-
-Useful routes:
-
-```text
-http://localhost:3000/bookmarks
-http://localhost:3000/likes
-http://localhost:3000/mentions
-http://localhost:3000/dms
-```
+Report the supervisor service name and how to inspect or stop it when leaving it running for the user.
 
 ## Archive Import
 
@@ -119,7 +113,7 @@ birdclaw import hydrate-profiles --json
 
 ## Local Store
 
-Default paths:
+Common default paths, subject to the installed version and `BIRDCLAW_HOME`:
 
 ```text
 ~/.birdclaw/birdclaw.sqlite
@@ -132,6 +126,8 @@ Override the root only when the task calls for isolated state:
 ```bash
 export BIRDCLAW_HOME=/path/to/root
 ```
+
+Before relying on these paths, inspect the current environment and `birdclaw --help`. Do not assume state from a user's machine exists inside an isolated remote environment.
 
 Before manual SQLite edits, copy the DB:
 

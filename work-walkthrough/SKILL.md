@@ -1,6 +1,6 @@
 ---
 name: work-walkthrough
-description: Produce a concrete end-of-work walkthrough after implementation, plan execution, PR preparation, or a completed local branch slice. Use when the user asks for a walkthrough, demo, handoff, summary of completed work, what changed and why, UX or CLI examples, local web showcase, impact, unexpected difficulty, or next suggested steps; also use as the final handoff step from executing-plans.
+description: Produces a concrete end-of-work walkthrough grounded in observed behavior and validation. Use when asked for a demo, handoff, implementation summary, UX or CLI examples, web showcase, impact, limitations, or next steps; also use after executing a plan.
 ---
 
 # Work Walkthrough
@@ -17,10 +17,13 @@ Create a clear handoff that explains the work from the user's point of view.
 ## Demo The Change
 
 - For CLI changes, include copyable commands with realistic arguments and note the expected result. Run harmless examples when practical; use dry-run, help, fixture, or read-only commands when real operations would mutate user data.
-- For web UI changes, start the existing local dev server when the repo provides one and it is safe to run. Use the repo's normal command, choose an available port if needed, and provide the local URL. When browser automation is available, open the page and verify the changed UI is visible.
+- Distinguish a code walkthrough, automated validation, recorded artifact, and live demo. Do not imply one was performed when only another was available.
+- For web UI changes in a remote agent environment, use the repository's declared services or the host's supervised service mechanism. Expose the listening service with the host's URL-forwarding, tunnel, or portal capability and share that public URL, never a loopback URL.
+- On a persistent workstation or runner, follow its existing service management. Do not assume local state, credentials, or ports also exist in an isolated remote environment.
+- When browser automation is available, open the accessible page and verify the changed UI is visible. If URL forwarding or verification fails, report the exact limitation rather than claiming a live showcase.
 - For API or service changes, include representative `curl`, config, payload, or log examples when they are safe and useful.
 - If no local showcase is practical, explain the concrete blocker and provide the closest useful command, test, screenshot path, or manual verification route.
-- Do not leave unnecessary servers running unless the user needs the URL to keep testing. If a server remains running, say which command/session is running and how to stop it.
+- Do not leave unnecessary servers running unless the user needs the URL to keep testing. If a supervised service remains running, name it and explain how to stop it.
 
 ## Output Shape
 
@@ -29,7 +32,7 @@ Use this structure unless the user requested a different format:
 1. Problem: what the work was trying to solve and why it mattered.
 2. What changed: the concrete behavior, files, commands, UI, schema, or workflow changes.
 3. Impact: what users, developers, or operators can now do, and what risks were reduced.
-4. How to try it: CLI commands, local URL, API examples, or validation commands with expected outcomes.
+4. How to try it: CLI commands, public demo URL, API examples, artifact, or validation commands with expected outcomes.
 5. UX changes: user-visible behavior, CLI output, flags, errors, screens, or interaction changes. Say "None" only when that is accurate.
 6. Hard or unexpected: friction, design changes, bugs found, validation surprises, or tradeoffs discovered.
 7. Validation: checks run and whether they passed, failed, or were skipped with reason.

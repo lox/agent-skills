@@ -1,6 +1,6 @@
 ---
 name: check-pr-description
-description: Check whether a pull request title and body still match the actual diff, current scope, reviewer-relevant impact, and repository PR-description conventions. Use when asked to check, update, rewrite, or refresh a PR description or title; verify PR metadata before review or merge; or fix stale PR text after commits changed the branch.
+description: Checks whether a pull request title and body match the actual diff, reviewer-relevant impact, and repository conventions. Use when asked to check, update, rewrite, or refresh PR metadata, or fix stale PR text after a branch changes.
 ---
 
 # Check PR Description

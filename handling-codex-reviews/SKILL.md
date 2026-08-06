@@ -7,6 +7,12 @@ description: Handles Codex GitHub PR review loops by waiting for reviews, fixing
 
 Drive the Codex-specific review loop for a GitHub pull request.
 
+## Requirements And Authorization
+
+- This skill requires `gh`, `jq`, authenticated GitHub access, and permission to update the PR branch and post review activity.
+- Verify the actual review author and repository's Codex integration from current PR activity. The helper's `--codex-pattern` is configurable because bot identities vary.
+- Inspecting review state is read-only. Fixing code, pushing, reacting, replying, resolving threads, or posting a new `@codex review` trigger must be within the user's request to address or complete the Codex review loop.
+
 ## Use this when
 
 - A PR has `@codex review` activity.
@@ -19,15 +25,15 @@ Drive the Codex-specific review loop for a GitHub pull request.
 1. Resolve PR context (`owner/repo`, PR number, branch).
 2. Run `scripts/codex_review_loop.sh state --pr <pr> --repo <owner/repo>`.
 3. If `pending_review=true`, run `scripts/codex_review_loop.sh wait --pr <pr> --repo <owner/repo>`. A clean Codex pass may complete as a 👍 reaction on the PR description or latest trigger instead of a review comment.
-4. Fix all actionable Codex feedback in one batch:
+4. Classify each item as actionable, already addressed, inaccurate, or requiring user judgement. Fix actionable Codex feedback in one batch:
    - inline diff comments from `actionable_diff_comments`
    - actionable top-level review bodies from `actionable_top_level_reviews`
 5. Run relevant tests.
 6. Commit and push.
 7. Reply to each addressed inline diff comment with `Fixed in <sha>: <what changed>`.
 8. For top-level review feedback, post a normal PR comment that includes the Codex review ID: `Fixed in <sha> for review <review-id>: <what changed>`.
-9. Add 👍 reactions to addressed Codex comments.
-10. Resolve addressed review threads: `scripts/codex_review_loop.sh resolve --pr <pr> --repo <owner/repo> --comment-ids <id1,id2,...>`.
+9. Add 👍 reactions only to feedback that was acknowledged or addressed.
+10. Resolve threads only after the change and reply are visible on GitHub: `scripts/codex_review_loop.sh resolve --pr <pr> --repo <owner/repo> --comment-ids <id1,id2,...>`.
 11. Check CI status: `scripts/codex_review_loop.sh checks --pr <pr> --repo <owner/repo>`.
 12. If there is no review in progress and Codex has not approved the latest trigger for the current head, post exactly one fresh review trigger that includes the current head SHA:
     ```text
@@ -44,25 +50,25 @@ Drive the Codex-specific review loop for a GitHub pull request.
 - Do not consider Codex complete until `main_thread_approved=true`.
 - Use a bounded loop. Stop and ask for guidance if feedback is conflicting, unclear, or requires product judgement.
 - Do not amend commits after posting `Fixed in <sha>` replies.
-- Always resolve conversations after addressing feedback and replying.
+- Resolve conversations only after addressing feedback, replying, and verifying the remote state.
 
 ## Commands
 
 ```bash
-# Show Codex state for a PR
-~/.config/agents/skills/handling-codex-reviews/scripts/codex_review_loop.sh state --pr 32 --repo owner/repo
+# Run these from the loaded skill directory. Show Codex state for a PR
+scripts/codex_review_loop.sh state --pr 32 --repo owner/repo
 
 # Wait for pending Codex review to finish
-~/.config/agents/skills/handling-codex-reviews/scripts/codex_review_loop.sh wait --pr 32 --repo owner/repo --timeout 900 --interval 20
+scripts/codex_review_loop.sh wait --pr 32 --repo owner/repo --timeout 900 --interval 20
 
 # Resolve review threads for addressed comments
-~/.config/agents/skills/handling-codex-reviews/scripts/codex_review_loop.sh resolve --pr 32 --repo owner/repo --comment-ids 12345,67890
+scripts/codex_review_loop.sh resolve --pr 32 --repo owner/repo --comment-ids 12345,67890
 
 # Check PR CI status from GitHub's check rollup
-~/.config/agents/skills/handling-codex-reviews/scripts/codex_review_loop.sh checks --pr 32 --repo owner/repo
+scripts/codex_review_loop.sh checks --pr 32 --repo owner/repo
 
 # Auto-detect PR from current branch
-~/.config/agents/skills/handling-codex-reviews/scripts/codex_review_loop.sh state
+scripts/codex_review_loop.sh state
 ```
 
 ## State interpretation

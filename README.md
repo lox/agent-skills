@@ -11,9 +11,9 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `birdclaw`: Command-line workflows for reading X posts and syncing, reading, and troubleshooting local Twitter/X memory in Birdclaw.
 - `check-docs-updated`: Checks repository docs, plans, examples, and runbooks against the actual diff.
 - `check-pr-description`: Checks PR titles and descriptions against the actual diff and repository PR conventions.
-- `consulting-librarian`: Guidance for emulating Amp's Librarian workflow inside non-Amp agents to understand repositories outside the current workspace. Installed only for non-Amp agents because Amp already includes Librarian guidance.
+- `consulting-librarian`: Non-Amp fallback for emulating repository-librarian research where the host has no native equivalent.
 - `drafting-plans`: Guidance for drafting durable engineering plan docs with clear scope, sequencing, validation, decisions, and open questions.
-- `executing-plans`: Workflow for executing plan slices locally on a branch through plan review, validation, auto-review cleanup, per-slice commits, and a final walkthrough, with optional PR publication and babysitting when requested.
+- `executing-plans`: Workflow for executing plan slices locally through plan review, validation, auto-review cleanup, repository-aware commits, and a final walkthrough, with optional PR publication and babysitting when requested.
 - `general-code-reviewing`: Orchestrates broad code reviews by running separate ship-risk and maintainability passes, then synthesizing the results.
 - `go-cli-writing`: Guidance for building and reviewing Go CLIs with Kong, charmbracelet/log, and clean command layout.
 - `go-writing`: Guidelines for writing, reviewing, and modernising Go code with version-gated guidance, linting, and toolchain management.
@@ -26,7 +26,7 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `notion`: Command-line workflows for searching and managing Notion pages, databases, and comments.
 - `reading-x-posts`: Read x.com and twitter.com posts through xurl, with Birdclaw as the local cache and research fallback.
 - `speak-like-lachlan`: Guidance for drafting or rewriting text in Lachlan's written and spoken voice.
-- `slack`: Command-line workflows for reading Slack messages, threads, channels, and users.
+- `slack`: Non-Amp CLI fallback for reading Slack messages, threads, channels, and users when native Slack tools are unavailable.
 - `thermo-nuclear-code-quality-review`: Extremely strict maintainability review for abstraction quality, file sprawl, and spaghetti-condition growth.
 - `work-walkthrough`: Final handoff workflow for explaining the problem, changes, impact, UX, examples or local demo, validation, surprises, and next steps.
 
@@ -49,12 +49,12 @@ Use `skillyard` to subscribe Codex and Amp to the published repo:
 ```bash
 skillyard setup
 skillyard subscribe github:lox/agent-skills --include '*' --target codex --force
-skillyard subscribe github:lox/agent-skills --include '*' --exclude consulting-librarian --target amp --force
+skillyard subscribe github:lox/agent-skills --include '*' --exclude consulting-librarian --exclude slack --target amp --force
 ```
 
 `mise run install` runs the two `subscribe` commands. The `--force` flag is useful when migrating old repo-owned symlinks; omit it if you want `skillyard` to stop instead of replacing unmanaged links.
 
-`consulting-librarian` is Codex-only because Amp already includes Librarian guidance.
+`consulting-librarian` and `slack` are excluded from Amp because Amp already provides native Librarian and Slack tools. They remain upstream as explicit fallbacks for hosts without those capabilities.
 
 After the subscription exists, use `skillyard sync github:lox/agent-skills` to reconcile installed links with the current locked source state.
 
