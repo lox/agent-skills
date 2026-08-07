@@ -9,25 +9,51 @@ Reply to PR review comments from human reviewers or automated bots.
 
 Checking comments is read-only. A request to address review feedback authorizes the necessary in-scope code changes and review replies, but commit, push, reaction, resolution, reviewer-request, and `@codex review` actions must also be part of the requested PR workflow. Re-fetch review state after remote writes.
 
-## Check for Review Comments
+## Build The Worklist
+
+Use unresolved GitHub review threads as the source of truth for inline feedback. REST pull-request comments include replies and resolved conversations, so do not treat that endpoint as the worklist.
 
 ```bash
-# List diff comments (inline on code)
-gh api repos/{owner}/{repo}/pulls/{pr}/comments \
+# List every unresolved review thread with full cursor pagination
+gh api graphql \
   --paginate \
-  --jq '.[] | {id, user: .user.login, path, line, body: .body[0:100]}'
+  -F owner='{owner}' \
+  -F name='{repo}' \
+  -F pr={pr} \
+  -f query='
+    query($owner: String!, $name: String!, $pr: Int!, $endCursor: String) {
+      repository(owner: $owner, name: $name) {
+        pullRequest(number: $pr) {
+          reviewThreads(first: 100, after: $endCursor) {
+            nodes {
+              id
+              isResolved
+              isOutdated
+              comments(first: 100) {
+                nodes { databaseId author { login } body path line url }
+              }
+            }
+            pageInfo { hasNextPage endCursor }
+          }
+        }
+      }
+    }' \
+  --jq '.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false)'
+```
 
-# Get full diff comment body
-gh api repos/{owner}/{repo}/pulls/comments/{comment_id} --jq '.body'
+Use the first comment as the root finding and later comments as conversation context. An outdated thread may still describe a real issue, but verify it against the current diff before acting.
 
-# List top-level review comments (not on specific lines)
+If the root author is Codex, hand the thread to `handling-codex-reviews`. Keep human and other-bot threads in this workflow, including mixed-reviewer PRs.
+
+Top-level review bodies have no thread-resolution state. Exclude withdrawn or unsubmitted reviews and skip reviews already acknowledged by a durable PR comment:
+
+```bash
 gh api repos/{owner}/{repo}/pulls/{pr}/reviews \
   --paginate \
-  --jq '.[] | select(.body != "") | {id, user: .user.login, state, body: .body[0:200]}'
-
-# Get full review body
-gh api repos/{owner}/{repo}/pulls/{pr}/reviews/{review_id} --jq '.body'
+  --jq '.[] | select(.state != "DISMISSED" and .state != "PENDING" and (.body // "") != "") | {id, user: .user.login, state, body}'
 ```
+
+Before acting on review `<review-id>`, search PR issue comments for `Fixed in <sha> for review <review-id>:`. Treat a matching marker as already handled.
 
 ## Reply to Diff Comments
 
@@ -44,10 +70,10 @@ Do not mention `@codex` in routine replies. Request Codex only when current PR a
 
 ## Reply to Top-Level Reviews
 
-For top-level review comments (not on specific lines), use a normal PR comment:
+For an addressed top-level review, use a normal PR comment carrying the review ID so later runs can correlate it:
 
 ```bash
-gh pr comment {pr} --body "Fixed in {commit}: {explanation}"
+gh pr comment {pr} --body "Fixed in {commit} for review {review_id}: {explanation}"
 ```
 
 ## Add Reactions
@@ -84,6 +110,22 @@ gh pr comment {pr} --body "@codex review"
 
 If no reviewer is already participating, do not introduce a review bot unless a separate workflow explicitly owns reviewer selection. Reviewer account names and invocation mechanisms vary by setup; discover them from current PR and repository evidence rather than hard-coding a bot username.
 
+## Resolve And Verify
+
+After the fix is pushed and the inline reply is visible, resolve the corresponding review thread:
+
+```bash
+gh api graphql \
+  -f threadId='{thread-node-id}' \
+  -f query='mutation($threadId: ID!) {
+    resolveReviewThread(input: {threadId: $threadId}) {
+      thread { id isResolved }
+    }
+  }'
+```
+
+Re-run the unresolved-thread query after all remote writes. Do not report review feedback complete while an actionable human or non-Codex thread remains. Codex threads are complete only when `handling-codex-reviews` reports its own terminal state.
+
 ## Known Failure Mode (Codex Task-Mode Noise)
 
 Codex GitHub behaviour is:
@@ -112,13 +154,15 @@ Then, only when Codex was already participating, post exactly one after batching
 
 ## Workflow
 
-1. **Check comments**: List unaddressed review comments
-2. **Fix each issue**: Make code changes
-3. **Commit & push**: Include the fix
-4. **Reply inline**: Reference the commit hash in your reply
-5. **React**: Add 👍 to acknowledge the feedback
-6. **Request re-review**: Re-engage the human or bot already participating, using that reviewer's established mechanism
-7. **Keep Codex conditional**: Post one `@codex review` only when Codex was already part of the PR
-8. **Avoid task-mode noise**: Never use `@codex` in routine "fixed" replies
+1. **Build the worklist**: Query unresolved threads and unacknowledged submitted top-level reviews
+2. **Route Codex**: Send existing Codex feedback to `handling-codex-reviews`; keep other reviewers here
+3. **Fix and validate**: Address each grounded issue and run relevant checks
+4. **Commit and push**: Publish an immutable fix commit
+5. **Reply and acknowledge**: Reference the commit SHA inline or use the top-level review marker
+6. **Resolve threads**: Resolve only after the pushed fix and reply are visible
+7. **Request re-review**: Re-engage the human or bot already participating, using that reviewer's established mechanism
+8. **Verify completion**: Re-query threads and top-level acknowledgement markers
+9. **Keep Codex conditional**: Post one `@codex review` only when Codex was already part of the PR
+10. **Avoid task-mode noise**: Never use `@codex` in routine "fixed" replies
 
 **Important**: Don't amend commits after replying - the referenced commit hash becomes invalid.
