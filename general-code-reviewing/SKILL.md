@@ -1,26 +1,28 @@
 ---
 name: general-code-reviewing
-description: Orchestrates a broad code review with separate ship-risk and maintainability passes, then synthesizes both. Use for general PR, diff, or code reviews when the user did not request only one narrower review lens; delegates only when explicitly requested.
+description: Orchestrates a broad code review with separate ship-risk and simplicity passes, then synthesizes both. Use for general PR, diff, or code reviews when the user did not request only one narrower review lens; delegates only when explicitly requested.
 ---
 
 # General Code Reviewing
 
-Run a broad review without flattening distinct review lenses into mush. Run separate passes for ship risk and structural maintainability, then synthesize the results into one findings-first review.
+Run a broad review without flattening distinct review lenses into mush. Run separate passes for ship risk and simplicity, then synthesize the results into one findings-first review.
 
 ## Use This When
 
 - The user asks for a general code review, PR review, diff review, or broad review.
-- The user wants an overall merge/readiness opinion and did not explicitly request only adversarial, security, maintainability, or thermonuclear review.
+- The user wants an overall merge/readiness opinion and did not explicitly request only adversarial, security, simplicity, or thermonuclear review.
 - The change is large enough that independent review lenses are likely to catch different classes of problems.
 
-If the user explicitly asks for an adversarial, ship/no-ship, security, or production-risk review, use `adversarial-code-reviewing` directly. If they explicitly ask for a thermonuclear, maintainability, code-quality, abstraction, or structural review, use `thermo-nuclear-code-quality-review` directly.
+Use a narrower skill directly only when the user requested only that lens. A focus or emphasis within a broad review does not suppress the other pass.
+
+For a narrow request, use `adversarial-code-reviewing` for adversarial, ship/no-ship, security, or production-risk review. Use `simplicity-review` for simplicity, YAGNI, minimalism, maintainability, over-engineering, abstraction, or structural review. Reserve `thermo-nuclear-code-quality-review` for explicit thermo-nuclear, thermonuclear, especially harsh, or deep code-quality requests.
 
 ## Review Lenses
 
 Use two independent passes:
 
 - `adversarial-code-reviewing`: ship risk, correctness, regressions, data integrity, security, migrations, rollback, concurrency, performance, and observability gaps.
-- `thermo-nuclear-code-quality-review`: structural code quality, abstraction quality, file sprawl, special-case branching, wrong-layer logic, unnecessary indirection, and maintainability regressions.
+- `simplicity-review`: unnecessary code, speculative generality, avoidable dependencies, wrong-layer fixes, abstraction quality, and whether structure reduces or increases conceptual load.
 
 Do not ask either pass to cover the other's job. Overlap is useful evidence, but separate perspectives are the point.
 
@@ -62,13 +64,13 @@ Use `adversarial-code-reviewing` and return:
 }
 ```
 
-### Thermonuclear Pass Contract
+### Simplicity Pass Contract
 
-Use `thermo-nuclear-code-quality-review` and return:
+Use `simplicity-review` and return:
 
 ```json
 {
-  "lens": "maintainability",
+  "lens": "simplicity",
   "verdict": "approve | needs-attention",
   "findings": [
     {
@@ -77,7 +79,9 @@ Use `thermo-nuclear-code-quality-review` and return:
       "file": "string",
       "line_start": 1,
       "line_end": 1,
-      "body": "what structural quality regressed, why it matters, and concrete simplification or decomposition",
+      "body": "what does not need to exist or what structural quality regressed, and why it matters",
+      "remedy_rung": "delete | reuse | stdlib | native-platform | existing-dependency | idiom | direct-code | new-structure",
+      "replacement": "the concrete smaller implementation",
       "confidence": 0.0
     }
   ],
@@ -92,11 +96,11 @@ If the user explicitly requested sub-agents but they are unavailable, run both s
 
 Read both results before writing the final review. Do not average the verdicts.
 
-Deduplicate findings that point to the same root cause, but keep both lenses visible when they add different evidence. A finding can be both a ship risk and a maintainability risk.
+Deduplicate findings that point to the same root cause, but keep both lenses visible when they add different evidence. A finding can be both a ship risk and a simplicity risk.
 
 Classify the final verdict as:
 
-- `no-ship`: at least one critical/high ship-risk finding, or a severe maintainability regression that should block merge before it hardens into the codebase.
+- `no-ship`: at least one critical/high ship-risk finding, or severe unnecessary complexity that should block merge before it hardens into the codebase.
 - `needs-attention`: material findings exist, but they are not clear no-ship blockers.
 - `approve`: neither pass produced a substantive finding that survives synthesis.
 
@@ -126,5 +130,5 @@ If there are no findings, say that clearly and mention the main residual risk or
 
 - Every final finding must be defensible from repository context, diff context, tool output, or a sub-agent result.
 - Resolve conflicts between sub-agents by checking the code yourself before reporting the finding.
-- Downgrade or omit speculative findings that cannot be tied to a reachable path or concrete maintainability regression.
+- Downgrade or omit speculative findings that cannot be tied to a reachable path or concrete simplicity regression.
 - Preserve a dissenting sub-agent concern in deferred notes when it seems plausible but cannot be verified in the current review budget.

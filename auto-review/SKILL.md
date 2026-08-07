@@ -5,12 +5,11 @@ description: Iteratively reviews and improves the current PR or branch by runnin
 
 # Auto Review
 
-Drive a review-fix-validation loop for a current PR or branch. Use `general-code-reviewing` as the review engine; unlike a normal review, act on grounded findings and re-run the review after fixes until confidence is high.
+Drive a review-fix-validation loop for a current PR or branch. Use `general-code-reviewing` as the review engine; unlike a normal review, act on grounded ship-risk and simplicity findings and re-check fixes until confidence is high.
 
 ## Review Engine
 
-- Load and use `general-code-reviewing` for each full review pass. Let that skill choose and run its ship-risk and maintainability lenses; `auto-review` owns the bounded outer loop, fixes, validation, and targeted rechecks.
-- If a `ponytail` or `ponytail:ponytail` skill is available, load and use it in each review pass as an extra YAGNI/simplification lens. Treat grounded Ponytail findings as in-scope review findings when they point to code, dependencies, or abstractions that can be deleted or simplified.
+- Load and use `general-code-reviewing` for each full review pass. Let that skill run its ship-risk and simplicity lenses; `auto-review` owns the bounded outer loop, fixes, validation, and targeted rechecks.
 
 Keep final-readiness checks lazy:
 
@@ -43,7 +42,7 @@ Keep final-readiness checks lazy:
 
 Use at most two full review passes. Within each full pass, use at most two fix-and-targeted-recheck rounds.
 
-1. Full review: run `general-code-reviewing` over the exact target, plus Ponytail when available. Capture findings, checked areas, deferred areas, and verdict.
+1. Full review: run `general-code-reviewing` over the exact target. Capture ship-risk and simplicity findings, checked areas, deferred areas, and verdict.
 2. Triage: convert findings into actions. Fix critical, high, and medium findings that are grounded, reachable, and in scope. Fix low findings only when they are cheap or clearly quality-relevant. Defer out-of-scope, pre-existing, or speculative concerns with evidence.
 3. Patch: make narrow edits following repository patterns. Prefer deleting or simplifying code over adding layers.
 4. Validate: run the smallest meaningful tests or lints first, then broader repo validation as needed. Use local project commands such as `mise`, package scripts, and language tooling before inventing new commands.
@@ -57,7 +56,7 @@ Each recheck must be fresh and read-only. Passing tests alone is not a recheck. 
 
 Stop with `ready` only when all are true:
 
-- the latest applicable full review and targeted recheck, plus Ponytail when used, have no material findings after synthesis;
+- the latest applicable full review and targeted recheck have no material findings after synthesis;
 - relevant validation passes, or any skipped validation is explicitly justified;
 - no unresolved critical, high, or medium findings remain;
 - PR title/body are current when the target is a PR;
