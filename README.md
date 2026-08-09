@@ -12,7 +12,6 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `check-docs-updated`: Checks repository docs, plans, examples, and runbooks against the actual diff.
 - `consulting-librarian`: Non-Amp fallback for emulating repository-librarian research where the host has no native equivalent.
 - `drafting-plans`: Guidance for drafting durable engineering plan docs with clear scope, sequencing, validation, decisions, and open questions.
-- `executing-plans`: Workflow for executing plan slices locally through plan review, validation, auto-review cleanup, repository-aware commits, and a concise handoff, with optional PR publication and babysitting when requested.
 - `general-code-reviewing`: Orchestrates broad code reviews by running separate ship-risk and simplicity passes, then synthesizing the results.
 - `go-cli-writing`: Guidance for building and reviewing Go CLIs with Kong, charmbracelet/log, and clean command layout.
 - `go-writing`: Guidelines for writing, reviewing, and modernising Go code with version-gated guidance, linting, and toolchain management.
