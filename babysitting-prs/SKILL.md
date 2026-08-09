@@ -1,126 +1,75 @@
 ---
 name: babysitting-prs
-description: Babysits GitHub pull requests through review feedback, rebases, CI or Buildkite failures, Codex review when already active, and optional merge. Use when asked to babysit a PR, fix PR feedback, make a PR mergeable, or get it merged.
+description: Opens, updates, and carries GitHub pull requests through review feedback, rebases, CI or Buildkite failures, existing Codex review, and optional merge. Use when asked to publish a branch, address PR feedback, babysit or prepare a PR, make it mergeable, land it, or merge it.
 ---
 
 # Babysitting PRs
 
-Drive a GitHub pull request from its current state to merged, handling reviewers, Codex, stale branches, and CI along the way.
+Drive a branch or GitHub pull request to the end state the user requested: published, updated, merge-ready, or merged.
 
-## Use this when
+## Authorization And Scope
 
-- The user asks to babysit, shepherd, land, or merge a PR.
-- A PR needs review feedback fixed, whether from Codex, another bot, or a human reviewer.
-- A PR is blocked on failing checks, Buildkite failures, merge conflicts, stale base branch, or merge queue state.
-- Another workflow asks you to keep a PR green and mergeable. In that case, obey any explicit "do not merge" instruction from that workflow.
+- Inspecting local or PR state is read-only. A request to publish, update, address feedback, prepare, land, or merge authorizes the corresponding branch and PR writes; preserve unrelated work and avoid rewriting remote history unless explicitly authorized.
+- Merge only when the user explicitly asks to merge, land, ship, queue, or get the PR merged. “Prepare to land,” “babysit,” “make mergeable,” and “ready for review” mean merge-ready only. Ambiguous follow-ups such as “looks good” do not grant new merge permission.
+- Do not introduce GitHub Codex review. Continue it only when the PR already has Codex review activity or the user explicitly asks for it.
 
-## Requirements
+## Companion Skills
 
-The helper requires `gh` and `jq`, plus authenticated GitHub access:
+- Use `writing-pr-descriptions` before creating a PR and after material changes to an existing PR.
+- Use `auto-review` when the user asks for it or the diff is materially risky: behavior, public contracts, data, security, concurrency, migrations, or cross-cutting structure. For small docs, metadata, configuration, or mechanical changes, use focused inspection and risk-matched validation instead of a mandatory full review loop.
+- Use `handling-codex-reviews` only for an already-active or explicitly requested Codex loop.
 
-```bash
-command -v gh jq
-gh auth status
-```
+## Workflow
 
-Use GitHub's check rollup first. Only require `bk` authentication when the PR actually has Buildkite checks and linked GitHub output is insufficient for the diagnosis or control the task needs. If so, verify `command -v bk` and `bk auth status` before using Buildkite-specific logs, artefacts, retries, or controls. Missing Buildkite access blocks only that diagnosis, not review triage or unrelated PR work.
+Use a bounded loop, normally no more than three fix cycles. Batch related fixes before pushing.
 
-## Companion skills to load as needed
+1. **Resolve the target and requested end state**
+   - Read repository instructions, `git status`, branch, remotes, and existing PR metadata.
+   - Identify the base and current head SHA. Preserve unrelated dirty files.
+   - If no PR exists and publication is in scope, use the repository’s branch convention, commit only intended changes, and push the branch. Do not create a PR when the user asked only for local work.
 
-- `addressing-pr-reviews`: use for collecting review comments, replying inline, reacting, requesting re-review, and avoiding Codex task-mode noise.
-- `handling-codex-reviews`: use when the PR is already in a Codex flow: `codex.codex_review_required=true`, pending review, actionable feedback, or Codex `eyes`. Delegate Codex-specific waiting, fixes, replies, thread resolution, fresh triggers, and thumbs-up approval.
-- `adversarial-code-reviewing`: use before pushing non-trivial code fixes, especially after rebases or CI-driven changes.
-- `writing-pr-descriptions`: use after material code changes to keep the title, body, and UI screenshots aligned with the final head.
+2. **Review and publish when needed**
+   - Apply the risk rule above rather than running `auto-review` by rote.
+   - Use `writing-pr-descriptions` against the final base-to-head diff and applicable template, then create or update a non-draft PR unless the user requested a draft.
+   - Re-fetch the PR number, URL, head SHA, and merge state after publishing.
 
-If a companion skill is unavailable, follow the same workflow manually and mention the missing skill only if it changes the outcome.
+3. **Read current PR state**
+   - Run `scripts/pr_babysit.sh status --pr <pr> --repo <owner/repo>`.
+   - Treat unresolved review threads as the source of truth for inline feedback. Include submitted top-level reviews, but ignore withdrawn, pending, already acknowledged, or stale feedback that no longer applies to the current diff.
 
-## Core loop
+4. **Clear branch and review blockers**
+   - Rebase or merge the base according to repository convention and resolve conflicts with the smallest correct change.
+   - Classify feedback as actionable, already addressed, inaccurate, or requiring user judgement. Fix grounded items in one batch and run focused validation.
+   - Commit and push before replying. Reply inline with `Fixed in <sha>: <what changed>`; for top-level reviews include the review ID so later runs can correlate it.
+   - Add reactions only when they accurately acknowledge the feedback. Resolve a thread only after the pushed fix and reply are visible, then re-query unresolved threads.
+   - Do not amend a commit after publishing replies that cite its SHA. Re-request only reviewers already participating, using their established mechanism; do not substitute or introduce a different bot.
 
-Use a bounded loop, usually three fix cycles. Each cycle should batch related fixes before pushing.
+5. **Handle Codex only when present**
+   - If status reports existing Codex activity, pending review, actionable Codex feedback, or active `eyes`, use `handling-codex-reviews`.
+   - If Codex is unavailable, continue with non-Codex blockers. Do not post another trigger or block on approval unless completing Codex review was explicitly requested.
 
-1. **Resolve context**
-   - Identify `owner/repo`, PR number, branch, base branch, and whether the user expects final merge or only merge-ready state.
-   - Check `git status`; preserve unrelated user or agent changes.
-   - Run `scripts/pr_babysit.sh status --pr <pr> --repo <owner/repo>` for a quick PR state summary.
+6. **Clear CI blockers**
+   - Run `scripts/pr_babysit.sh checks --pr <pr> --repo <owner/repo>` and inspect failures through GitHub first.
+   - Use Buildkite-specific tools only when the PR has Buildkite checks and linked GitHub output is insufficient. Missing Buildkite access blocks only that diagnosis.
+   - Fix branch-caused failures and retry one evidenced flaky or external failure once. Stop after two serious attempts at the same branch-caused failure.
 
-2. **Clear branch blockers**
-   - If the branch is stale, conflicted, or behind a required base, rebase or merge the base branch using the repo's normal convention.
-   - Resolve conflicts with the smallest correct change.
-   - Run focused validation before pushing.
+7. **Refresh metadata and finish**
+   - If code, behavior, scope, or evidence changed materially, run `writing-pr-descriptions` against the final head.
+   - Before merge or handoff, re-fetch head SHA, reviews, unresolved threads, checks, and merge state. Never merge a head different from the reviewed green head.
+   - Use the repository’s merge queue, auto-merge, or normal merge method. Delete the branch only when requested or established repository configuration does so.
 
-3. **Clear review blockers**
-   - Gather unresolved review threads, latest reviews, and top-level comments.
-   - For every actionable human or bot comment: fix the issue, commit, push, reply inline with `Fixed in <sha>: <what changed>`, add 👍, and resolve the thread when allowed.
-   - If feedback is wrong, explain why briefly, add the appropriate reaction, and resolve only when it is clearly settled.
-   - Stop for user guidance when feedback conflicts, requires product judgement, or cannot be defended from repo evidence.
-
-4. **Handle Codex when present**
-   - If status reports `codex.codex_review_unavailable=true`, continue with non-Codex blockers; do not post `@codex review` or wait unless the user asks to set up Codex.
-   - If status reports `codex.codex_review_required=true`, `codex.pending_review=true`, actionable Codex feedback, `codex_thumbs_up_missing`, or active Codex `eyes`, use `handling-codex-reviews`.
-   - Treat Codex as incomplete until there is no pending review, no actionable feedback, and `main_thread_approved=true`.
-   - Do not introduce Codex to a PR that is not already using it.
-
-5. **Clear CI and Buildkite blockers**
-   - Run `scripts/pr_babysit.sh checks --pr <pr> --repo <owner/repo>` and inspect failures.
-   - For Buildkite checks, inspect GitHub's linked details first. If more detail or control is needed, use available Buildkite tools or `bk` after verifying its authentication.
-   - If a failure is caused by the branch, fix it, run the narrowest relevant local validation, commit, push, and re-check.
-   - If a failure is flaky or external, retry the failed job/build once and record the evidence.
-   - Do not mark a PR ready because GitHub checks are green if Buildkite is still failed, blocked, or pending.
-
-6. **Merge or hand off**
-   - Merge only when the user explicitly asks to merge, land, ship, queue, or get the PR merged.
-   - If the user asks for mergeable, green, or ready-for-review state, stop once the PR is merge-ready and report the handoff.
-   - If the user only says to babysit a PR without a merge verb, keep the PR merge-ready and ask before the final merge.
-   - If this workflow materially changed code, behavior, scope, evidence, or the base-to-head diff, run `writing-pr-descriptions` against the final head before declaring the PR ready.
-   - Before merging, verify: PR is open and not draft, no unresolved actionable threads, no pending/actionable Codex work when Codex is in use, required reviews are satisfied, checks are green, and GitHub reports mergeable.
-   - Immediately before merging, re-fetch the PR head SHA and check state. Merge only if they still match the reviewed, green head.
-   - Use the repo's expected merge path: merge queue when required, auto-merge when branch protection is waiting, otherwise the repo's normal squash/merge/rebase method.
-   - Delete the branch only when the user requested it or repository configuration makes deletion the established merge behavior.
-
-## Commands
+## Helper Commands
 
 ```bash
-# Full PR state summary: run from the loaded skill directory
 scripts/pr_babysit.sh status --pr 32 --repo owner/repo
-
-# Resolve review threads for addressed diff comments
 scripts/pr_babysit.sh resolve --pr 32 --repo owner/repo --comment-ids 12345,67890
-
-# Check PR CI status from GitHub's check rollup
 scripts/pr_babysit.sh checks --pr 32 --repo owner/repo
-
-# Auto-detect PR from the current branch
-scripts/pr_babysit.sh status
 ```
 
-## State interpretation
+The status result includes `merge_blockers`, `ready_to_merge`, unresolved review threads, check state, and Codex state. It is a fast summary, not a substitute for judgement.
 
-- `ready_to_merge=true`: the helper found no obvious local blockers. Still apply judgement before merging.
-- `merge_blockers`: concrete blockers to clear before merge.
-- `checks.any_failed=true`: investigate and fix or retry failed checks.
-- `checks.any_pending=true`: wait and re-check.
-- `codex.codex_review_required=true`: this PR is already using Codex; use `handling-codex-reviews`.
-- `codex.codex_review_unavailable=true`: Codex review is not enabled; do not post `@codex review` or block on a Codex thumbs-up.
-- `codex.pending_review=true`: wait for Codex before acting on its feedback.
-- `codex.has_codex_eyes=true`: Codex has an in-progress `eyes` reaction; use `handling-codex-reviews`.
-- `codex.actionable_diff_comments_count>0`: unresolved Codex inline comments need fixes or explicit replies.
-- `codex.actionable_top_level_reviews_count>0`: actionable Codex top-level review feedback needs fixes or explicit replies.
-- `codex.main_thread_approved=false`: when Codex is required, use `handling-codex-reviews`.
+## Stop And Report
 
-## Reply templates
+Stop for missing authorization, contradictory feedback, required human or product judgement, unavailable essential credentials, branch protection, or a repeated blocker that evidence-based fixes did not clear.
 
-```text
-Fixed in <sha>: <concise summary of change>
-```
-
-For Codex top-level replies or fresh `@codex review` triggers, use `handling-codex-reviews`. Do not post `@codex review` unless Codex is already in the PR flow or the user asks for it.
-
-## Stop conditions
-
-Stop and report the exact blocker only when:
-
-- Required GitHub access is unavailable, or Buildkite access is unavailable when Buildkite-only diagnostics are necessary.
-- Required human approval, security sign-off, product judgement, or credentials are unavailable.
-- Merge permissions or branch protection prevent you from queueing, auto-merging, or merging.
-- The same CI failure persists after two evidence-based fix attempts or one justified flaky retry.
-- Review feedback is contradictory or impossible to satisfy without changing the intended scope.
+Report the achieved state, PR URL, and exact blocker when unfinished. Mention commits or validation only when they materially help the handoff.

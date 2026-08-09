@@ -5,20 +5,18 @@ Reusable Amp/Codex skills managed with `skillyard`.
 ## Included Skills
 
 - `adversarial-code-reviewing`: Guidance for skeptical, high-signal code reviews that look for material ship blockers and subtle production risks.
-- `addressing-pr-reviews`: Workflow for triaging and replying to GitHub PR review comments.
 - `auto-review`: Iterative workflow for reviewing a current PR, fixing grounded findings, validating, and re-reviewing until it is ready or blocked.
-- `babysitting-prs`: Workflow for getting GitHub pull requests through reviews, Codex feedback, Buildkite failures, rebases, merge queues, and final merge.
+- `babysitting-prs`: Full branch-to-PR workflow for publication, review feedback, Codex, CI, rebases, merge queues, and optional final merge.
 - `check-docs-updated`: Checks repository docs, plans, examples, and runbooks against the actual diff.
 - `consulting-librarian`: Non-Amp fallback for emulating repository-librarian research where the host has no native equivalent.
-- `drafting-plans`: Guidance for drafting durable engineering plan docs with clear scope, sequencing, validation, decisions, and open questions.
-- `general-code-reviewing`: Orchestrates broad code reviews by running separate ship-risk and simplicity passes, then synthesizing the results.
+- `drafting-plans`: Guidance for drafting concise engineering plans with clear problems, approaches, scope, delivery slices, and material decisions.
+- `general-code-reviewing`: Runs separate ship-risk and simplicity review lenses, then synthesizes grounded findings.
 - `go-cli-writing`: Guidance for building and reviewing Go CLIs with Kong, charmbracelet/log, and clean command layout.
 - `go-writing`: Guidelines for writing, reviewing, and modernising Go code with version-gated guidance, linting, and toolchain management.
 - `handling-codex-reviews`: Codex-specific GitHub PR review loop for waiting on reviews, fixing feedback, resolving threads, and requiring Codex's main-thread thumbs-up.
 - `high-performance-zig`: Guidance for writing and reviewing fast Zig systems code with measurement, cache-aware layout, comptime specialization, SIMD fast paths, and allocator discipline.
 - `humanizing-text`: Guidance for rewriting AI-sounding text to feel more natural and human.
 - `improve-codebase-architecture`: Guidance for finding codebase architecture deepening opportunities.
-- `land-pr`: Full code-to-merged-PR workflow that auto-reviews, opens or updates a PR, babysits it through CI and reviews, then merges it.
 - `linear`: Command-line workflows for searching and managing Linear issues.
 - `notion`: Command-line workflows for searching and managing Notion pages, databases, and comments.
 - `reading-x-posts`: Read x.com and twitter.com posts through xurl, with Birdclaw as the local cache and research fallback.

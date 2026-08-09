@@ -1,97 +1,46 @@
 ---
 name: handling-codex-reviews
-description: Handles Codex GitHub PR review loops by waiting for reviews, fixing actionable feedback, resolving threads, and requiring Codex's main-thread thumbs-up. Use when Codex is a reviewer, a PR has `@codex review` activity, or Codex has added an `eyes` reaction to the PR description or latest review trigger.
+description: Handles Codex GitHub PR review loops by waiting for reviews, fixing actionable feedback, resolving threads, and requiring Codex's main-thread thumbs-up. Use when Codex is already reviewing a PR, the PR has `@codex review` activity, or Codex has added an `eyes` reaction.
 ---
 
 # Handling Codex Reviews
 
-Drive the Codex-specific review loop for a GitHub pull request.
+Drive an existing or explicitly requested Codex review loop to completion. Do not introduce Codex merely because this skill is available.
 
-## Requirements And Authorization
+Inspecting state is read-only. Fixing code, pushing, replying, reacting, resolving threads, or posting `@codex review` must be within the user’s requested PR workflow.
 
-- This skill requires `gh`, `jq`, authenticated GitHub access, and permission to update the PR branch and post review activity.
-- Verify the actual review author and repository's Codex integration from current PR activity. The helper's `--codex-pattern` is configurable because bot identities vary.
-- Inspecting review state is read-only. Fixing code, pushing, reacting, replying, resolving threads, or posting a new `@codex review` trigger must be within the user's request to address or complete the Codex review loop.
+## Shared Helper
 
-## Use this when
-
-- A PR has `@codex review` activity.
-- Codex has added an `eyes` reaction to the PR description or latest review trigger.
-- Codex has left inline diff comments or top-level review feedback.
-- Another skill, such as `babysitting-prs`, detects Codex as a reviewer and needs the Codex loop completed.
-
-## Core workflow
-
-1. Resolve PR context (`owner/repo`, PR number, branch).
-2. Run `scripts/codex_review_loop.sh state --pr <pr> --repo <owner/repo>`.
-3. If `pending_review=true`, run `scripts/codex_review_loop.sh wait --pr <pr> --repo <owner/repo>`. A clean Codex pass may complete as a 👍 reaction on the PR description or latest trigger instead of a review comment.
-4. Classify each item as actionable, already addressed, inaccurate, or requiring user judgement. Fix actionable Codex feedback in one batch:
-   - inline diff comments from `actionable_diff_comments`
-   - actionable top-level review bodies from `actionable_top_level_reviews`
-5. Run relevant tests.
-6. Commit and push.
-7. Reply to each addressed inline diff comment with `Fixed in <sha>: <what changed>`.
-8. For top-level review feedback, post a normal PR comment that includes the Codex review ID: `Fixed in <sha> for review <review-id>: <what changed>`.
-9. Add 👍 reactions only to feedback that was acknowledged or addressed.
-10. Resolve threads only after the change and reply are visible on GitHub: `scripts/codex_review_loop.sh resolve --pr <pr> --repo <owner/repo> --comment-ids <id1,id2,...>`.
-11. Check CI status: `scripts/codex_review_loop.sh checks --pr <pr> --repo <owner/repo>`.
-12. If there is no review in progress and Codex has not approved the latest trigger for the current head, post exactly one fresh review trigger that includes the current head SHA:
-    ```text
-    @codex review
-
-    Head: <40-character-head-sha>
-    ```
-13. Repeat until no pending review, no actionable Codex feedback, checks pass, the latest `@codex review` trigger names the current head SHA, and Codex has approved with a 👍 reaction on the PR description or latest review trigger.
-
-## Important rules
-
-- Never use `@codex` in routine "fixed" replies.
-- Only `@codex review` should be used to request a new review pass.
-- Do not consider Codex complete until `main_thread_approved=true`.
-- Use a bounded loop. Stop and ask for guidance if feedback is conflicting, unclear, or requires product judgement.
-- Do not amend commits after posting `Fixed in <sha>` replies.
-- Resolve conversations only after addressing feedback, replying, and verifying the remote state.
-
-## Commands
+Load `babysitting-prs` and use its `scripts/pr_babysit.sh` helper. It is the single implementation for generic PR state and Codex state:
 
 ```bash
-# Run these from the loaded skill directory. Show Codex state for a PR
-scripts/codex_review_loop.sh state --pr 32 --repo owner/repo
-
-# Wait for pending Codex review to finish
-scripts/codex_review_loop.sh wait --pr 32 --repo owner/repo --timeout 900 --interval 20
-
-# Resolve review threads for addressed comments
-scripts/codex_review_loop.sh resolve --pr 32 --repo owner/repo --comment-ids 12345,67890
-
-# Check PR CI status from GitHub's check rollup
-scripts/codex_review_loop.sh checks --pr 32 --repo owner/repo
-
-# Auto-detect PR from current branch
-scripts/codex_review_loop.sh state
+scripts/pr_babysit.sh codex-state --pr 32 --repo owner/repo
+scripts/pr_babysit.sh codex-wait --pr 32 --repo owner/repo --timeout 900 --interval 20
+scripts/pr_babysit.sh resolve --pr 32 --repo owner/repo --comment-ids 12345,67890
+scripts/pr_babysit.sh checks --pr 32 --repo owner/repo
 ```
 
-## State interpretation
+Run those commands from the loaded `babysitting-prs` skill directory.
 
-- `pending_review=true`: a recent `@codex review` trigger exists without newer Codex activity, or Codex has an `eyes` reaction on the PR description or latest review trigger with no newer Codex activity or thumbs-up reaction.
-- `codex_review_unavailable=true`: Codex responded that the repo needs an environment before reviews can run. Do not wait for a thumbs-up or post another `@codex review`; report the setup blocker only if the user explicitly wants Codex review completed.
-- `actionable_diff_comments_count>0`: unresolved Codex inline diff comments need fixes or explicit replies.
-- `actionable_top_level_reviews_count>0`: actionable Codex top-level review feedback needs fixes or an explicit PR comment that references the review ID.
-- `main_thread_approved=false`: Codex has participated, but the latest current-head `@codex review` trigger has not resulted in Codex's 👍 reaction on the PR description or review trigger.
-- `ready_for_codex=true`: Codex has no pending review or actionable feedback and has approved the latest review trigger when required.
+## Workflow
 
-## Reply templates
+1. Inspect Codex state and verify the actual review author from current PR activity; bot identities vary.
+2. If `pending_review=true`, wait. A clean pass may end with a 👍 reaction rather than a review comment.
+3. Classify feedback as actionable, already addressed, inaccurate, or requiring user judgement. Batch grounded fixes across inline comments and actionable top-level reviews.
+4. Validate, commit, and push before replying.
+5. Reply inline with `Fixed in <sha>: <what changed>`. For top-level reviews, post `Fixed in <sha> for review <review-id>: <what changed>`.
+6. React only when the reaction accurately acknowledges the feedback. Resolve threads only after the fix and reply are visible.
+7. If the user explicitly requested a first Codex review and `codex_review_required=false`, post one initial trigger. Otherwise, when Codex is already required but has not approved the current head, post exactly one fresh trigger:
+   ```text
+   @codex review
 
-```text
-Fixed in <sha>: <concise summary of change>
-```
+   Head: <40-character-head-sha>
+   ```
+8. Repeat until no review is pending, no actionable Codex feedback remains, checks pass, and `main_thread_approved=true`.
 
-```text
-Fixed in <sha> for review <review-id>: <concise summary of change>
-```
+## Safety Rules
 
-```text
-@codex review
-
-Head: <40-character-head-sha>
-```
+- Never use `@codex` in routine fix replies; anything other than `@codex review` can start a noisy cloud task.
+- Do not amend commits after replies cite their SHA.
+- If `codex_review_unavailable=true`, do not wait or post another trigger.
+- Use a bounded loop. Stop for conflicting feedback, user judgement, unavailable permissions, or repeated failure.
