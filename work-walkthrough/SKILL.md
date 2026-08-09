@@ -1,6 +1,6 @@
 ---
 name: work-walkthrough
-description: Produces a concrete end-of-work walkthrough grounded in observed behavior and validation. Use when asked for a demo, handoff, implementation summary, UX or CLI examples, web showcase, impact, limitations, or next steps; also use after executing a plan.
+description: Produces a concrete end-of-work walkthrough grounded in observed behavior and validation. Use when explicitly asked for a demo, walkthrough, substantial handoff, implementation showcase, UX or CLI examples, impact, limitations, or next steps.
 ---
 
 # Work Walkthrough

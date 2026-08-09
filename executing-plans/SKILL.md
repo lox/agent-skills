@@ -20,7 +20,6 @@ Load and use these skills when available:
 
 - `drafting-plans`: re-read and update the plan when scope, assumptions, validation, or progress changes.
 - `auto-review`: review the current-slice diff, fix grounded findings, validate, and repeat until ready or blocked.
-- `work-walkthrough`: produce the final walkthrough when the requested slice set, plan segment, or optional PR follow-through is done.
 
 If one of those skills is unavailable, follow the same workflow manually and say what was unavailable.
 
@@ -28,8 +27,9 @@ If one of those skills is unavailable, follow the same workflow manually and say
 
 Load these only when the workflow needs them:
 
-- `humanizing-text`: tighten plan prose, commit summaries, PR titles, PR bodies, and user-facing explanations.
+- `writing-pr-descriptions`: use when the user asks to publish or update a PR.
 - `babysitting-prs`: use only when the user explicitly asks to babysit, make merge-ready, land, merge, or otherwise drive an existing PR through review and CI. Use ready-only mode unless the user explicitly asks to merge.
+- `work-walkthrough`: use only when the user explicitly asks for a demo, walkthrough, showcase, or substantial handoff.
 
 ## Operating Stance
 
@@ -88,8 +88,7 @@ Load these only when the workflow needs them:
 8. Optional PR publication.
    - Publish or update a PR only when the user asks for a PR, a push, review prep, or work on an existing PR.
    - Push the branch and create or update a non-draft PR unless the user says the work is still in progress.
-   - Use a concise PR title in the repo's preferred form, for example `type: Summary`.
-   - Use `humanizing-text` on the PR body when available. Keep it brief, public, and concrete: problem, solution, examples of use, and plan slice covered.
+   - Use `writing-pr-descriptions` against the final branch, plan context, and applicable repository template to draft or update the title and body before publication.
 
 9. Optional PR babysitting.
    - Use `babysitting-prs` only when the user asks to babysit, make merge-ready, fix PR feedback, watch CI, land, merge, or otherwise drive the PR after publication.
@@ -97,11 +96,9 @@ Load these only when the workflow needs them:
    - If checks fail during requested PR babysitting, inspect the failing jobs, fix the cause, push, and repeat the check loop.
    - Use a bounded loop. Stop and ask for guidance if PR feedback conflicts, requires a product decision, or cannot be defended from the code.
 
-10. Produce the walkthrough.
-   - Use `work-walkthrough` after the requested slice set, plan segment, or optional PR follow-through reaches its stop condition.
-   - Include the problem being solved, what changed, impact, validation, hard or unexpected parts, UX changes, how to try it, and next suggested steps.
-   - For CLI changes, include example commands. For web UI changes in a remote agent environment, use the host's supervised service and URL-forwarding mechanism, then provide the returned public URL rather than a loopback URL.
-   - If work stops blocked instead of done, use `work-walkthrough` to explain what was completed, what is blocked, and the next concrete action.
+10. Report or demonstrate the result.
+   - Give a concise final handoff covering completed slices, validation, plan updates, and any blocker or next action.
+   - Use `work-walkthrough` only when the user explicitly requested a demo, walkthrough, showcase, or substantial handoff.
 
 ## Definition of Done
 
@@ -111,9 +108,8 @@ The default local workflow is done only when:
 - The plan reflects any material scope, validation, or progress changes.
 - `auto-review` reports ready, or any remaining blocker is concrete and reported.
 - Each completed slice has a clear boundary and is committed locally when the repository or user expects slice commits.
-- The final response uses `work-walkthrough` to explain the completed work and next suggested steps.
 
-If the user asked for PR publication, the PR must be open or updated and describe the problem, change, examples, and plan slice clearly.
+If the user asked for PR publication, the PR must be open or updated and `writing-pr-descriptions` must report its metadata current at the final published head.
 
 If the user asked for PR babysitting, the PR must have passing checks and no pending or actionable review feedback unless a concrete blocker remains.
 
@@ -130,6 +126,6 @@ Report:
 - Plan updates made.
 - PR, CI, and review state only when PR publication or babysitting was requested.
 - Any remaining risks or follow-up slices.
-- A `work-walkthrough` handoff with examples or demo details when applicable.
+- A `work-walkthrough` only when the user requested one.
 
 If the stop condition could not be reached, explain the blocker with concrete evidence and the next action.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Write PR Description"
+  short_description: "Draft or refresh concise PR metadata"
+  default_prompt: "Use $writing-pr-descriptions to draft or refresh a concise, accurate PR title and body from the final diff. Prefer Why and What, omit routine validation lists, and include screenshots for UI changes."

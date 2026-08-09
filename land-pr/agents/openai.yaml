@@ -1,4 +1,4 @@
 interface:
   display_name: "Land PR"
   short_description: "Open, babysit, and merge PRs"
-  default_prompt: "Use $land-pr to auto-review the current branch, open or update a PR, babysit it through CI and reviews, then merge it."
+  default_prompt: "Use $land-pr to auto-review the current branch, publish it with a concise and accurate PR description, babysit it through CI and reviews, then merge it."

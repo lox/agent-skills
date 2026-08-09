@@ -10,10 +10,9 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `babysitting-prs`: Workflow for getting GitHub pull requests through reviews, Codex feedback, Buildkite failures, rebases, merge queues, and final merge.
 - `birdclaw`: Command-line workflows for reading X posts and syncing, reading, and troubleshooting local Twitter/X memory in Birdclaw.
 - `check-docs-updated`: Checks repository docs, plans, examples, and runbooks against the actual diff.
-- `check-pr-description`: Checks PR titles and descriptions against the actual diff and repository PR conventions.
 - `consulting-librarian`: Non-Amp fallback for emulating repository-librarian research where the host has no native equivalent.
 - `drafting-plans`: Guidance for drafting durable engineering plan docs with clear scope, sequencing, validation, decisions, and open questions.
-- `executing-plans`: Workflow for executing plan slices locally through plan review, validation, auto-review cleanup, repository-aware commits, and a final walkthrough, with optional PR publication and babysitting when requested.
+- `executing-plans`: Workflow for executing plan slices locally through plan review, validation, auto-review cleanup, repository-aware commits, and a concise handoff, with optional PR publication and babysitting when requested.
 - `general-code-reviewing`: Orchestrates broad code reviews by running separate ship-risk and simplicity passes, then synthesizing the results.
 - `go-cli-writing`: Guidance for building and reviewing Go CLIs with Kong, charmbracelet/log, and clean command layout.
 - `go-writing`: Guidelines for writing, reviewing, and modernising Go code with version-gated guidance, linting, and toolchain management.
@@ -30,6 +29,7 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `slack`: Non-Amp CLI fallback for reading Slack messages, threads, channels, and users when native Slack tools are unavailable.
 - `thermo-nuclear-code-quality-review`: Extremely strict maintainability review for abstraction quality, file sprawl, and spaghetti-condition growth.
 - `work-walkthrough`: Final handoff workflow for explaining the problem, changes, impact, UX, examples or local demo, validation, surprises, and next steps.
+- `writing-pr-descriptions`: Drafts, checks, and updates concise PR titles and descriptions against the final diff and repository conventions.
 
 ## Attribution
 

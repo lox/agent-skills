@@ -11,9 +11,9 @@ Drive a review-fix-validation loop for a current PR or branch. Use `general-code
 
 - Load and use `general-code-reviewing` for each full review pass. Let that skill run its ship-risk and simplicity lenses; `auto-review` owns the bounded outer loop, fixes, validation, and targeted rechecks.
 
-Keep final-readiness checks lazy:
+Keep final-readiness checks focused:
 
-- For a PR, compare its title and body with the final diff. Load `check-pr-description` only when metadata may be stale, needs editing, or requires a deeper convention check.
+- For every existing PR target, use `writing-pr-descriptions` against the final diff after the last code edit. Update stale metadata when the requested workflow authorizes PR updates; otherwise report it as needing attention.
 - Inspect whether the final diff changes durable behavior, commands, configuration, APIs, plans, examples, or runbooks. Load `check-docs-updated` only when relevant documentation may exist or drift is plausible. Otherwise state briefly why docs are not required.
 
 ## Operating Contract
