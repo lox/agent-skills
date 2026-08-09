@@ -8,12 +8,9 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `addressing-pr-reviews`: Workflow for triaging and replying to GitHub PR review comments.
 - `auto-review`: Iterative workflow for reviewing a current PR, fixing grounded findings, validating, and re-reviewing until it is ready or blocked.
 - `babysitting-prs`: Workflow for getting GitHub pull requests through reviews, Codex feedback, Buildkite failures, rebases, merge queues, and final merge.
-- `birdclaw`: Command-line workflows for reading X posts and syncing, reading, and troubleshooting local Twitter/X memory in Birdclaw.
 - `check-docs-updated`: Checks repository docs, plans, examples, and runbooks against the actual diff.
-- `check-pr-description`: Checks PR titles and descriptions against the actual diff and repository PR conventions.
 - `consulting-librarian`: Non-Amp fallback for emulating repository-librarian research where the host has no native equivalent.
 - `drafting-plans`: Guidance for drafting durable engineering plan docs with clear scope, sequencing, validation, decisions, and open questions.
-- `executing-plans`: Workflow for executing plan slices locally through plan review, validation, auto-review cleanup, repository-aware commits, and a final walkthrough, with optional PR publication and babysitting when requested.
 - `general-code-reviewing`: Orchestrates broad code reviews by running separate ship-risk and simplicity passes, then synthesizing the results.
 - `go-cli-writing`: Guidance for building and reviewing Go CLIs with Kong, charmbracelet/log, and clean command layout.
 - `go-writing`: Guidelines for writing, reviewing, and modernising Go code with version-gated guidance, linting, and toolchain management.
@@ -28,14 +25,12 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `simplicity-review`: Reviews changes for unnecessary code, speculative generality, avoidable dependencies, and structural complexity.
 - `speak-like-lachlan`: Guidance for drafting or rewriting text in Lachlan's written and spoken voice.
 - `slack`: Non-Amp CLI fallback for reading Slack messages, threads, channels, and users when native Slack tools are unavailable.
-- `thermo-nuclear-code-quality-review`: Extremely strict maintainability review for abstraction quality, file sprawl, and spaghetti-condition growth.
 - `work-walkthrough`: Final handoff workflow for explaining the problem, changes, impact, UX, examples or local demo, validation, surprises, and next steps.
+- `writing-pr-descriptions`: Drafts, checks, and updates concise PR titles and descriptions against the final diff and repository conventions.
 
 ## Attribution
 
 The `improve-codebase-architecture` skill is adapted from Matt Pocock's [`mattpocock/skills`](https://github.com/mattpocock/skills/tree/main/skills/engineering/improve-codebase-architecture) repository. These materials are licensed under MIT. Copyright (c) 2026 Matt Pocock.
-
-The `thermo-nuclear-code-quality-review` skill is adapted from Cursor's [`cursor/plugins`](https://github.com/cursor/plugins/blob/3347cbab5b54136f6fba0994c3a01a56f7fb7fca/cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md) repository at commit `3347cbab5b54136f6fba0994c3a01a56f7fb7fca`. Cursor Team Kit is licensed under MIT; the upstream permission notice is included in `thermo-nuclear-code-quality-review/LICENSE`.
 
 The `simplicity-review` skill is adapted from Buildkite's [`buildkite/cursor-skills`](https://github.com/buildkite/cursor-skills/tree/main/auto-review/skills/simplicity-review) repository. It combines Cursor's maintainability review with YAGNI guidance adapted from Dietrich Gebert's Ponytail project. These materials are licensed under MIT; the upstream permission notice is included in `simplicity-review/LICENSE`.
 

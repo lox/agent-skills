@@ -30,9 +30,7 @@ Use GitHub's check rollup first. Only require `bk` authentication when the PR ac
 - `addressing-pr-reviews`: use for collecting review comments, replying inline, reacting, requesting re-review, and avoiding Codex task-mode noise.
 - `handling-codex-reviews`: use when the PR is already in a Codex flow: `codex.codex_review_required=true`, pending review, actionable feedback, or Codex `eyes`. Delegate Codex-specific waiting, fixes, replies, thread resolution, fresh triggers, and thumbs-up approval.
 - `adversarial-code-reviewing`: use before pushing non-trivial code fixes, especially after rebases or CI-driven changes.
-- `humanizing-text`: use before posting substantial PR comments or human-facing status updates.
-- `buildkite-preflight`: use when local changes should be validated against Buildkite before pushing, or when a repo's workflow expects preflight builds.
-- `shipping-work`: use only if the user gave a branch without an existing PR and wants it opened before babysitting.
+- `writing-pr-descriptions`: use after material code changes to keep the title, body, and UI screenshots aligned with the final head.
 
 If a companion skill is unavailable, follow the same workflow manually and mention the missing skill only if it changes the outcome.
 
@@ -73,6 +71,7 @@ Use a bounded loop, usually three fix cycles. Each cycle should batch related fi
    - Merge only when the user explicitly asks to merge, land, ship, queue, or get the PR merged.
    - If the user asks for mergeable, green, or ready-for-review state, stop once the PR is merge-ready and report the handoff.
    - If the user only says to babysit a PR without a merge verb, keep the PR merge-ready and ask before the final merge.
+   - If this workflow materially changed code, behavior, scope, evidence, or the base-to-head diff, run `writing-pr-descriptions` against the final head before declaring the PR ready.
    - Before merging, verify: PR is open and not draft, no unresolved actionable threads, no pending/actionable Codex work when Codex is in use, required reviews are satisfied, checks are green, and GitHub reports mergeable.
    - Immediately before merging, re-fetch the PR head SHA and check state. Merge only if they still match the reviewed, green head.
    - Use the repo's expected merge path: merge queue when required, auto-merge when branch protection is waiting, otherwise the repo's normal squash/merge/rebase method.

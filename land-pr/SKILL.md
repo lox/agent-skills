@@ -10,9 +10,8 @@ Use this as the outer workflow for preparing a PR and, when explicitly authorize
 ## Companion Skills
 
 - Use `auto-review` first when available. Do not publish or merge while its status is `needs-attention` or `blocked` unless the user explicitly changes scope.
+- Use `writing-pr-descriptions` to draft or update PR metadata from the final branch before publication. After material code changes, rely on the final `auto-review` pass to run it again.
 - After a PR exists, use `babysitting-prs` when available, passing through whether the request is prepare-only or merge-authorized.
-- If a new PR is opened after auto-review, use `check-pr-description` when available so the title and body match the final diff.
-- Use `humanizing-text` for substantial PR bodies or public-facing PR comments when available.
 
 If a companion skill is unavailable, perform that step directly and report the degraded workflow only when it changes confidence or the outcome.
 
@@ -42,7 +41,7 @@ If a companion skill is unavailable, perform that step directly and report the d
 
 4. Open or update the PR.
    - If the branch already has a PR, update it as needed; otherwise create a non-draft PR unless the user says the work is still in progress.
-   - Follow repository PR title and body conventions. Start from the problem or motivation, describe impact, and include concrete examples when behavior or output changes.
+   - Use `writing-pr-descriptions` against the final base-to-head diff and applicable repository template before creating or updating the PR.
    - Re-fetch the PR number, URL, head SHA, and merge state after publishing.
 
 5. Babysit and, when authorized, merge.

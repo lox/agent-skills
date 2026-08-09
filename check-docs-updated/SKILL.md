@@ -5,7 +5,7 @@ description: Checks whether repository docs, plans, examples, runbooks, changelo
 
 # Check Docs Updated
 
-Verify that durable repository documentation matches what the branch actually changes. Keep this focused on files in the repo; use `check-pr-description` for PR title and body text.
+Verify that durable repository documentation matches what the branch actually changes. Keep this focused on files in the repo; use `writing-pr-descriptions` for PR title and body text.
 
 ## Operating Contract
 
@@ -14,12 +14,11 @@ Verify that durable repository documentation matches what the branch actually ch
 - Respect repository doc and plan conventions from `AGENTS.md`, contribution docs, existing `docs/plans/` files, and generated-doc workflows.
 - Preserve caller, platform, or connector-required output formats.
 - Do not edit files unless the user asked to update, fix, prepare, or carry the branch forward. When only asked to check, report findings.
-- Keep PR title/body changes out of this skill; if PR metadata is stale, hand off to `check-pr-description`.
+- Keep PR title/body changes out of this skill; if PR metadata is stale, hand off to `writing-pr-descriptions`.
 
 ## Companion Skills
 
 - Use `drafting-plans` when a `docs/plans/` file exists for the work or the change affects plan scope, sequencing, validation, decisions, or open questions.
-- Use `humanizing-text` when rewriting substantial public-facing docs so the result stays concise and natural.
 
 ## Workflow
 

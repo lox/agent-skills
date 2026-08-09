@@ -1,4 +1,0 @@
-interface:
-  display_name: "Executing Plans"
-  short_description: "Execute plan slices locally"
-  default_prompt: "Use $executing-plans to iterate on this plan locally, validate and auto-review each slice, follow the repository's commit policy, and finish with a walkthrough."
