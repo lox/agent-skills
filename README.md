@@ -8,7 +8,6 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `addressing-pr-reviews`: Workflow for triaging and replying to GitHub PR review comments.
 - `auto-review`: Iterative workflow for reviewing a current PR, fixing grounded findings, validating, and re-reviewing until it is ready or blocked.
 - `babysitting-prs`: Workflow for getting GitHub pull requests through reviews, Codex feedback, Buildkite failures, rebases, merge queues, and final merge.
-- `birdclaw`: Command-line workflows for reading X posts and syncing, reading, and troubleshooting local Twitter/X memory in Birdclaw.
 - `check-docs-updated`: Checks repository docs, plans, examples, and runbooks against the actual diff.
 - `consulting-librarian`: Non-Amp fallback for emulating repository-librarian research where the host has no native equivalent.
 - `drafting-plans`: Guidance for drafting durable engineering plan docs with clear scope, sequencing, validation, decisions, and open questions.

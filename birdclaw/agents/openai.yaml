@@ -1,4 +1,0 @@
-interface:
-  display_name: "Birdclaw"
-  short_description: "Read X posts and local Twitter memory"
-  default_prompt: "Use $birdclaw to read this x.com post, inspect local Twitter/X archive state, sync bookmarks through xurl, and read cached timelines from Birdclaw."
