@@ -1,6 +1,6 @@
 ---
 name: simplicity-review
-description: Reviews changes for unnecessary code and structural complexity, judging whether new code, abstractions, dependencies, or configuration need to exist. Use for a YAGNI, simplicity, minimalism, maintainability, or over-engineering review.
+description: Reviews changes for unnecessary code and structural complexity, judging whether new code, abstractions, dependencies, or configuration need to exist. Use for YAGNI, simplicity, minimalism, maintainability, over-engineering, deep code-quality, or explicitly harsh and thermo-nuclear reviews.
 ---
 
 # Simplicity Review
@@ -8,6 +8,8 @@ description: Reviews changes for unnecessary code and structural complexity, jud
 Review a change with one question: does every line, concept, and layer in the diff earn its existence? The best code is code that does not need to exist; the next best code replaces more concepts than it adds.
 
 Read the changed code and enough surrounding context to understand what the change must accomplish before judging what could be smaller. Leave correctness, security, and failure modes to a ship-risk lens. Do not recommend deletion that weakens required behavior.
+
+When the user explicitly asks for a thermo-nuclear, thermonuclear, especially harsh, or deep code-quality review, apply this same evidence standard with an unusually strict maintainability stance. Push harder on structural simplification, but do not manufacture findings or recommend rewrites that are not grounded in the diff and repository context.
 
 ## Remedy Ladder
 

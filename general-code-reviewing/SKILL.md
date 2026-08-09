@@ -10,12 +10,12 @@ Run a broad review without flattening distinct review lenses into mush. Run sepa
 ## Use This When
 
 - The user asks for a general code review, PR review, diff review, or broad review.
-- The user wants an overall merge/readiness opinion and did not explicitly request only adversarial, security, simplicity, or thermonuclear review.
+- The user wants an overall merge/readiness opinion and did not explicitly request only adversarial, security, simplicity, or maintainability review.
 - The change is large enough that independent review lenses are likely to catch different classes of problems.
 
 Use a narrower skill directly only when the user requested only that lens. A focus or emphasis within a broad review does not suppress the other pass.
 
-For a narrow request, use `adversarial-code-reviewing` for adversarial, ship/no-ship, security, or production-risk review. Use `simplicity-review` for simplicity, YAGNI, minimalism, maintainability, over-engineering, abstraction, or structural review. Reserve `thermo-nuclear-code-quality-review` for explicit thermo-nuclear, thermonuclear, especially harsh, or deep code-quality requests.
+For a narrow request, use `adversarial-code-reviewing` for adversarial, ship/no-ship, security, or production-risk review. Use `simplicity-review` for simplicity, YAGNI, minimalism, maintainability, over-engineering, abstraction, structural, thermo-nuclear, especially harsh, or deep code-quality review; that skill strengthens its stance when the user explicitly asks for it.
 
 ## Review Lenses
 

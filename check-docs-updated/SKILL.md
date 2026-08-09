@@ -19,7 +19,6 @@ Verify that durable repository documentation matches what the branch actually ch
 ## Companion Skills
 
 - Use `drafting-plans` when a `docs/plans/` file exists for the work or the change affects plan scope, sequencing, validation, decisions, or open questions.
-- Use `humanizing-text` when rewriting substantial public-facing docs so the result stays concise and natural.
 
 ## Workflow
 
