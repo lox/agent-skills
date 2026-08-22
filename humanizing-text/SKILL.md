@@ -9,10 +9,12 @@ Make writing sound human without changing its meaning. Generic writing can fail 
 
 ## Task
 
+Choose the mode before editing. In review mode, report a verdict and quoted evidence; do not rewrite or score the text unless asked. In rewrite mode, make the minimum effective edit.
+
 1. **Calibrate to the author** - If source samples exist, identify their recurring choices before editing: what they include, how they order it, where they address the reader, how they handle uncertainty, and where they stop.
 2. **Review construction first** - For multi-paragraph text, read `reference/construction-patterns.md` and check patterns 25-38. Make only grounded structural edits before polishing wording; do not restructure a piece to satisfy the checklist.
-3. **Identify surface patterns** - Scan for patterns 1-24 below.
-4. **Edit surgically** - Preserve unaffected spans and exact material such as quotations, code, commands, links, identifiers, and data. Prefer local edits over regeneration.
+3. **Identify and validate surface candidates** - Scan for patterns 1-24 below. Change a match only when it harms this text; context and author evidence override the heuristic. When unsure, leave it.
+4. **Edit surgically** - Before changing a span, identify its invariants: factual claims and attribution, certainty or uncertainty, scope, commitments and obligations, plus exact quotations, code, commands, links, identifiers, and data. Preserve those invariants and unaffected spans, and prefer local edits over regeneration. Do not output a separate inventory unless asked.
 5. **Preserve meaning and fingerprint** - Keep the message, format, and the author's characteristic choices intact, including useful irregularities.
 6. **Restore voice** - Surface real personality or experience that the draft flattened. Never invent it.
 
@@ -144,6 +146,7 @@ Remove unearned praise such as "Great question!", "You're absolutely right!", or
 - "At this point in time" → "Now"
 - "has the ability to" → "can"
 - "It is important to note that" → (delete)
+- Portability check: if a sentence could move unchanged to an unrelated subject, ask whether it contributes concrete meaning here. Portability alone is not a defect; reusable or intentionally general prose may be portable by design.
 
 **23. Excessive hedging**
 - Before: "could potentially possibly be argued that it might have some effect"
@@ -169,6 +172,8 @@ If an AI detector is used, compare matched text boundaries, formats, and window-
 
 1. The rewritten text (or, for reviews: verdict, triggered patterns with evidence, and what's already working so edits don't remove it)
 2. Brief summary of changes made (optional)
+
+Keep the editing brief, rubric labels, analysis, and assistant scaffolding out of the rewritten text unless they are part of the source content the user asked to retain.
 
 ## Reference
 
