@@ -1,6 +1,6 @@
 ---
 name: improve-codebase-architecture
-description: Finds evidence-backed deepening opportunities that improve module leverage, locality, and testability. Use when asked to improve architecture, consolidate tightly coupled modules, reduce shallow abstractions, or explore a selected interface design.
+description: Finds evidence-backed deepening opportunities that improve module leverage, locality, and testability. Use when asked to improve architecture, prioritize refactoring in an unfamiliar codebase, investigate code hotspots or change coupling, consolidate tightly coupled modules, reduce shallow abstractions, or explore a selected interface design.
 ---
 
 # Improve Codebase Architecture
@@ -42,6 +42,28 @@ Use the plan docs the same way `drafting-plans` does:
 - Notice plan status (`proposed`, `active`, `paused`, `landed`, `superseded`) and avoid re-litigating landed or superseded decisions unless current code friction makes the revisit worthwhile.
 - Pull forward the plan's goals, non-goals, invariants, delivery slices, verification strategy, and open questions when evaluating architecture candidates.
 
+#### Prioritize with history when available
+
+When `scc` version 4 or newer and meaningful Git history are available, use hotspots to prioritize manual exploration and change coupling to reveal files that may share an implicit seam. This is an optional evidence source, not a prerequisite.
+
+1. Check `scc --version` and whether `git rev-parse --is-shallow-repository` reports a shallow clone. Fetch sufficient history when possible; otherwise skip history analysis and state the limitation. Do not substitute line count or churn alone for the combined hotspot signal.
+2. Compare a broad history window with a recent one. Start with these commands, adjusting depth to the repository's age and activity:
+
+   ```bash
+   scc --no-config --hotspots --depth 1000 --format json .
+   scc --no-config --hotspots --depth 50 --format json .
+   ```
+
+3. For each promising production-code candidate, inspect its historical blast radius:
+
+   ```bash
+   scc --no-config --coupling-for path/to/file --depth 1000 --format json .
+   ```
+
+4. Read the current file, its callers, coupled files, and tests before accepting it as a candidate. Stable hotspots across windows deserve attention; recent-only hotspots may reflect active feature work. Co-changing tests, generated files, migrations, or documentation may be healthy rather than architectural friction.
+
+Treat hotspot scores as relative rankings, not defect probabilities. They combine approximate current complexity with commit frequency, are normalized within each run, and describe tracked files at `HEAD` rather than uncommitted work. Do not compare raw scores across windows, repositories, or languages. A hotspot earns a recommendation only when current-code evidence identifies a concrete problem with depth, locality, ownership, or testability.
+
 Inspect the codebase with the host's normal semantic search, exact search, and file-reading tools. Explore organically and note where understanding creates friction:
 
 - Where does understanding one concept require bouncing between many small modules?
@@ -57,6 +79,7 @@ Apply the **deletion test** to anything you suspect is shallow: would deleting i
 Present a numbered list of deepening opportunities. For each candidate:
 
 - **Files** — which files/modules are involved
+- **Historical signal** — hotspot or change-coupling evidence when history analysis was available; omit otherwise
 - **Plan context** — relevant `docs/plans/` references, including conflicts or open questions when they matter
 - **Problem** — why the current architecture is causing friction
 - **Solution** — plain English description of what would change
