@@ -1,6 +1,6 @@
 ---
 name: improve-codebase-architecture
-description: Finds evidence-backed deepening opportunities that improve module leverage, locality, and testability. Use when asked to improve architecture, consolidate tightly coupled modules, reduce shallow abstractions, or explore a selected interface design.
+description: Finds evidence-backed deepening opportunities that improve module leverage, locality, and testability. Use when asked to improve architecture, prioritize refactoring in an unfamiliar codebase, investigate code hotspots or change coupling, consolidate tightly coupled modules, reduce shallow abstractions, or explore a selected interface design.
 ---
 
 # Improve Codebase Architecture
@@ -96,6 +96,7 @@ Weighted JSON is ordered by the weighted ranking, but its displayed coupling fie
 
 Use these metrics only as prioritization evidence:
 
+- Hotspot scores combine approximate complexity at `HEAD` with commit frequency and omit uncommitted work. They are normalized within each run; do not compare raw scores across windows, repositories, or languages.
 - A hotspot is not a defect and is not, by itself, a reason to split a file.
 - Change coupling is not, by itself, a reason to combine modules.
 - Formatting, vendoring, generated files, broad migrations, and commit practices can distort history.
