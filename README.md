@@ -25,6 +25,7 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `slack`: Non-Amp CLI fallback for reading Slack messages, threads, channels, and users when native Slack tools are unavailable.
 - `work-walkthrough`: Final handoff workflow for explaining the problem, changes, impact, UX, examples or local demo, validation, surprises, and next steps.
 - `writing-pr-descriptions`: Drafts, checks, and updates concise PR titles and descriptions against the final diff and repository conventions.
+- `writing-tests`: Guidance for meaningful tests, evidence-backed expectation changes, safe consolidation, and proportionate verification.
 
 ## Attribution
 
