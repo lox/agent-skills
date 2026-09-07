@@ -10,7 +10,7 @@ Preserve useful regression protection, not test volume. Verification does not al
 ## Before adding
 
 - Inspect existing coverage. Identify the distinct observable contract or realistic fault the test should protect against; extend an existing test when clearer.
-- Do not write implementation-mirroring tests for reversible, low-impact changes, or add cases merely for coverage, symmetry, or every helper and branch.
+- For reversible, low-impact changes, avoid tests that merely restate the implementation—for example, repeating a config value as an expected literal without checking a required contract. Do not add cases merely for coverage, symmetry, or every helper and branch.
 - Test through a stable interface with minimal fixtures and mocks. Assert meaningful outcomes, not mock setup or incidental internals.
 - Derive expected results from requirements, established contracts, known examples, or an independent oracle—not a copy of the implementation.
 
