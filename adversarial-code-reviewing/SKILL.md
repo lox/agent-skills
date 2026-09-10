@@ -3,131 +3,39 @@ name: adversarial-code-reviewing
 description: Performs skeptical, high-signal code reviews that try to break confidence in a change by surfacing grounded, material failure modes. Use when asked for an adversarial review, ship/no-ship assessment, or a review focused on subtle production risks instead of balanced feedback.
 ---
 
-# Adversarial Code Reviewing
+# Adversarial code reviewing
 
-Perform a skeptical code review that tries to disprove ship readiness.
+Try to disprove that the change is safe to ship. Assume it fails in a subtle, expensive, or user-visible way until the code says otherwise. Give no credit for intent, partial fixes, or promised follow-ups. A happy path that only works on the happy path is a finding. One strong finding beats five weak ones.
 
-## Use This When
+## Read before judging
 
-- The user asks for an adversarial review, devil's-advocate review, or stress test of a change.
-- The user wants a ship/no-ship assessment rather than a balanced summary.
-- A diff, migration, infra change, or refactor needs scrutiny for subtle production risks.
+Identify the target: PR diff, staged changes, branch diff, or the files the user named. Read the changed code and its callers, tests, schemas, and operational edges. For refactors and migrations, name the invariant that used to hold and check whether it still does. Follow retries, rollbacks, permissions, background jobs, caching, and concurrent access through the change, because those paths break the happy-path story. Run a targeted check when it would confirm or rule out a finding. When evidence is missing, say so rather than filling the gap.
 
-## Operating Stance
+## Where to look, in order
 
-- Default to skepticism.
-- Assume the change can fail in subtle, high-cost, or user-visible ways until the evidence says otherwise.
-- Do not give credit for good intent, partial fixes, or likely follow-up work.
-- If something only works on the happy path, treat that as a real weakness.
-- Prefer one strong finding over several weak ones.
+1. Correctness and regressions.
+2. Error handling and partial failure.
+3. Data integrity and state transitions.
+4. Security and trust boundaries.
+5. Performance on realistic hot paths.
+6. Test and observability gaps that would let the bug ship unnoticed.
 
-## Gather Context First
+Do not spend time on style or maintainability while anything above is unchecked. If the user named a focus, weight it heavily but still report anything else you can defend.
 
-1. Identify the review target: PR diff, staged changes, branch diff, or the specific files the user named.
-2. Read the changed code and the surrounding callers, tests, schemas, and operational boundaries before judging it.
-3. Compare against the previous behavior when reviewing regressions, refactors, or migrations; ask what invariant used to hold and whether this change preserves it.
-4. Inspect adjacent paths that can invalidate the happy-path story: retries, rollbacks, permissions, background jobs, migrations, caching, and concurrency.
-5. Run targeted verification when it materially increases confidence in a finding or rules one out.
-6. If the evidence is incomplete, say that explicitly instead of filling gaps with speculation.
+The expensive failures cluster in a few places: auth, permissions, and tenant isolation; data loss, duplication, and irreversible writes; retries, rollbacks, and idempotency; races, ordering assumptions, stale state, and re-entrancy; empty, null, timeout, and degraded-dependency behavior; version skew, schema drift, and migration order; and observability gaps that hide failure.
 
-## Topic Priority
+Match the lens to the change. Application code: edge cases, error propagation, state, concurrency. Infrastructure and CI: blast radius, permissions, provider drift, ordering, rollback, secret exposure, cost. Schema and data paths: reversibility, backfill safety, partial rollout, dual-read or dual-write assumptions. Dependencies: install hooks, new network or filesystem access, provenance, and whether the lockfile matches the intent.
 
-Work in this order unless the user asked for a different emphasis:
+## What counts as a finding
 
-1. Correctness and regression risk
-2. Error handling and failure modes
-3. Data integrity and state transitions
-4. Security and trust boundaries
-5. Performance and scalability in realistic hot paths
-6. Testing and observability gaps that would let the issue ship unnoticed
-
-Do not spend time on maintainability or style while higher-value risks remain.
-
-## Attack Surface
-
-Prioritize failures that are expensive, dangerous, or hard to detect:
-
-- auth, permissions, tenant isolation, and trust boundaries
-- data loss, corruption, duplication, and irreversible state changes
-- rollback safety, retries, partial failure, and idempotency gaps
-- race conditions, ordering assumptions, stale state, and re-entrancy
-- empty-state, null, timeout, and degraded dependency behavior
-- version skew, schema drift, migration hazards, and compatibility regressions
-- observability gaps that would hide failure or make recovery harder
-
-## Choose The Right Lens
-
-Adapt the review to the kind of change under review instead of using one generic checklist:
-
-- Application code: stress correctness, edge cases, error propagation, state management, and concurrency.
-- Infrastructure, CI, and config changes: stress blast radius, permissions, provider drift, dependency ordering, rollback, secret exposure, and cost surprises.
-- Schema, migration, and data-path changes: stress reversibility, backfill safety, partial rollout behavior, dual-read or dual-write assumptions, and idempotency.
-- Dependency or supply-chain changes: stress install hooks, new network or filesystem access, permission changes, provenance, and whether the lockfile actually matches the intent.
-
-## Review Method
-
-- Actively try to disprove the change.
-- Look for violated invariants, missing guards, unhandled failure paths, and assumptions that stop being true under stress.
-- Trace how bad inputs, retries, concurrent actions, or partially completed operations move through the code.
-- If the user supplied a focus area, weight it heavily, but still report any other material issue you can defend.
-- Read enough surrounding context to explain why the vulnerable path is reachable, not just why a single line looks suspicious.
-
-## Finding Bar
-
-Report only material findings.
-
-- Do not include style feedback, naming feedback, low-value cleanup, or speculative concerns without evidence.
-- A finding should answer: what can go wrong, why this code path is vulnerable, what the likely impact is, and what concrete change would reduce the risk.
-- If reviewing a diff, prefer issues newly introduced or materially worsened by that change. Call out pre-existing risks only when they are necessary context.
-- If you cannot defend a concern from the repository context or tool output, do not report it.
+A finding names a file and line, a reachable path, and what goes wrong on it. It is supported by the repository or tool output, not by an imagined incident. It is new or worsened by this diff; mention pre-existing risk only as context. It is not style, naming, or cleanup. If wider context disproves it, withdraw or downgrade it, and say when a conclusion rests on inference.
 
 ## Output
 
-For normal interactive reviews, respond with findings first, ordered by severity, each tied to a concrete file and line range.
+Write per `writing-plainly`. Findings first, ordered by severity. Each finding is one short paragraph: severity, file and line range, what goes wrong and on which path, and the smallest change that removes the risk.
 
-If high-priority areas consumed the review budget, explicitly list deferred concerns rather than silently dropping them.
+> High, `billing/charge.go:112-130`. `Charge` writes the ledger row before calling the gateway, and a gateway timeout returns without deleting it, so a retry double-books the customer. Insert the ledger row only after the gateway returns success, or key it on the gateway idempotency token.
 
-When the user explicitly wants structured output or asks to mirror the upstream adversarial-review prompt, return compact JSON matching this schema:
+Not as labeled fields, and not padded with what the change does well. If the review budget ran out before low-priority areas, list what was deferred.
 
-```json
-{
-  "verdict": "approve | needs-attention",
-  "summary": "string",
-  "findings": [
-    {
-      "severity": "critical | high | medium | low",
-      "title": "string",
-      "body": "string",
-      "file": "string",
-      "line_start": 1,
-      "line_end": 1,
-      "confidence": 0.0,
-      "recommendation": "string"
-    }
-  ],
-  "next_steps": ["string"]
-}
-```
-
-- Use `needs-attention` if there is any material risk worth blocking on.
-- Use `approve` only if you cannot support any substantive adversarial finding from the provided context.
-- Keep the summary terse and decisive.
-- Keep confidence honest when a conclusion depends on inference.
-- Do not wrap JSON output in markdown fences.
-
-## Grounding Rules
-
-- Be aggressive, but stay grounded.
-- Every finding must be defensible from the provided repository context or tool outputs.
-- Do not invent files, lines, code paths, incidents, attack chains, or runtime behavior you cannot support.
-- Withdraw or downgrade a finding if broader context disproves the initial suspicion.
-- If a conclusion depends on inference, state that explicitly in the finding body and lower confidence accordingly.
-
-## Final Check
-
-Before finalizing, make sure each finding is:
-
-- adversarial rather than stylistic
-- tied to a concrete code location
-- plausible under a real failure scenario
-- actionable for the engineer fixing it
+When the user wants structured output or the upstream adversarial-review prompt, follow [reference/structured-output.md](reference/structured-output.md).
