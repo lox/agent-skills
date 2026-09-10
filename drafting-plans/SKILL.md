@@ -5,47 +5,34 @@ description: Drafts and revises concise, durable engineering plans. Use for `doc
 
 # Drafting plans
 
-A plan is an implementation map, not a record of planning ceremony. Make it resumable and specific while including only sections the work needs.
+A plan is a map for the person implementing the work, not a record of planning. Make it specific enough to resume from and no longer than that.
 
-## Start with evidence
+## Start from evidence
 
-- Inspect existing plan conventions and relevant code, docs, schemas, configuration, issue, or PR context before naming contracts or commands.
-- Update an existing plan in place when it already owns the work.
-- Put the plan where the user asked. Preserve repository metadata and formatting conventions; do not invent frontmatter, lifecycle fields, or dates when the repository does not require them.
-- Verify cheap, drift-prone facts before presenting them as current state.
+Read the repository's plan conventions and the relevant code, docs, schemas, config, and issue or PR context before naming a contract or command. Verify cheap, drift-prone facts before stating them as current. If a plan already owns the work, update it in place. Put the plan where the user asked, keep the repository's metadata and formatting, and do not invent frontmatter, lifecycle fields, or dates the repository does not use.
 
-## Default shape
+## Shape
 
-Follow repository convention first. Otherwise use the smallest useful subset of:
+Follow the repository's convention. Otherwise use the smallest useful subset of these, in this order, with no empty headings:
 
-1. **Problem / why**: the current limitation and why it matters.
-2. **Proposed approach**: the intended behavior, important contracts, and ownership boundaries.
-3. **Scope and non-goals**: what this work will and deliberately will not solve.
-4. **Delivery slices**: independently reviewable steps, starting with the smallest useful slice.
-5. **Decisions, risks, or open questions**: only items that affect implementation or sequencing.
+1. Problem: the current limitation and why it matters.
+2. Approach: the intended behavior, the contracts that matter, and who owns what.
+3. Scope and non-goals.
+4. Delivery slices: independently reviewable steps, smallest useful slice first.
+5. Decisions, risks, and open questions that affect implementation or order.
 
-Omit empty headings. Add rollout, migration, safety, compatibility, observability, verification, backend notes, or progress sections only when the change actually needs them.
+Add rollout, migration, safety, compatibility, observability, verification, or progress sections only when the work needs them. "Overview", "Background", and "Context" headings earn a place only when they carry something the reader needs before the problem.
 
-## Resolve decisions
+## Decide
 
-- Answer questions from repository evidence when practical.
-- For blocking questions that need user judgement, recommend a default and explain the tradeoff briefly. Ask a small concrete batch rather than presenting an inert question list.
-- Record settled decisions in the relevant part of the plan. Leave an open question only when it still affects later work, and say what must resolve it.
+Answer questions from the repository when you can. For a question that needs the user, recommend a default and give the tradeoff in a sentence, and ask in a small batch rather than listing inert questions. Record settled decisions where they apply in the plan. Leave a question open only when it still affects later work, and say what resolves it.
 
-## Pressure-test when the risk warrants it
+Pressure-test the plan when the user asks or when the work is risky, cross-cutting, hard to reverse, migration-heavy, or security-sensitive. Ask whether it should be smaller, later, deleted, or built on something that exists. Put what you learn into scope, approach, risks, or slices. Do not add a "Key Learnings", alternatives, risk-matrix, or review section.
 
-Pressure-test when the user asks or when the plan is risky, cross-cutting, expensive to reverse, migration-heavy, security-sensitive, or operationally complex. Check whether the work should be smaller, deferred, deleted, or built on an existing mechanism.
+## Slices and maintenance
 
-Integrate useful findings into scope, approach, risks, or slices. Do not automatically add a “Key Learnings,” alternatives, risk matrix, or adversarial-review section.
-
-## Delivery and maintenance
-
-- Put prerequisites before dependent work and make each slice useful or correctness-preserving on its own.
-- Keep the first slice boring and concrete. Do not design later phases in more detail than the next actionable slice.
-- Include exact files, contracts, examples, commands, and checks only when they make implementation less ambiguous.
-- Update the plan when implementation changes scope, contracts, risks, sequencing, or progress. Remove stale assumptions and resolved questions rather than appending a changelog.
-- When asked for the first or next slice, identify it from the plan and proceed to implementation when authorized instead of reopening the design.
+Put prerequisites first and make each slice useful or correctness-preserving on its own. Keep the first slice boring and concrete. Do not design later phases in more detail than the next slice. Include exact files, contracts, commands, and checks only when they remove ambiguity. When implementation changes scope, contracts, risk, order, or progress, update the plan and delete what is stale; do not append a changelog. When asked for the first or next slice, take it from the plan and proceed when authorized instead of reopening the design.
 
 ## Style
 
-Write per `writing-plainly`: direct engineering prose, short paragraphs, focused bullets. Name the problem in the reader's terms and the code's names. Leave out architecture filler, speculative abstractions, decorative examples, and compatibility scaffolding with no present requirement. Headings such as "Overview", "Background", or "Context" earn a place only when they carry content the reader needs before the problem statement.
+Write per `writing-plainly`. Name the problem in the reader's terms and the code's names. Leave out architecture filler, speculative abstractions, decorative examples, and compatibility scaffolding no requirement asks for.

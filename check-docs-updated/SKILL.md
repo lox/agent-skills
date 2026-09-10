@@ -5,52 +5,31 @@ description: Checks whether repository docs, plans, examples, runbooks, changelo
 
 # Check docs updated
 
-Verify that durable repository documentation matches what the branch actually changes. Keep this focused on files in the repo; use `writing-pr-descriptions` for PR title and body text.
+Check that the repository's written artifacts still match what the branch changes. This skill covers files in the repo. PR title and body belong to `writing-pr-descriptions`.
 
 ## Rules
 
-- Treat the current PR or branch diff as the target unless the user names a different PR, commit range, or file set.
-- Use a fresh base SHA: PR base from the host when reviewing a PR, otherwise merge-base with the tracked upstream or remote default branch.
-- Respect repository doc and plan conventions from `AGENTS.md`, contribution docs, existing `docs/plans/` files, and generated-doc workflows.
-- Use the caller's required output format when there is one.
-- Do not edit files unless the user asked to update, fix, prepare, or carry the branch forward. When only asked to check, report findings.
-- Keep PR title/body changes out of this skill; if PR metadata is stale, hand off to `writing-pr-descriptions`.
-
-## Companion skills
-
-- Use `drafting-plans` when a `docs/plans/` file exists for the work or the change affects plan scope, sequencing, validation, decisions, or open questions.
+- The target is the current PR or branch diff unless the user names another PR, range, or file set.
+- Take the base SHA from the PR host when there is a PR; otherwise use the merge-base with the tracked upstream or remote default branch.
+- Follow the repository's doc and plan conventions: `AGENTS.md`, contribution docs, existing `docs/plans/` files, and generated-doc workflows.
+- Edit files only when asked to update, fix, prepare, or carry the branch forward. When asked only to check, report.
+- Use `drafting-plans` when a `docs/plans/` file covers the work or the change affects plan scope, sequencing, validation, decisions, or open questions.
 
 ## Workflow
 
-1. Resolve the target.
-   - Identify repo, branch, base SHA, and head SHA.
-   - Inspect `git status` and record unrelated dirty files.
-   - Read the diff from base to head.
+1. Resolve the target: repo, branch, base and head SHA. Note unrelated dirty files. Read the diff.
 
-2. Read what the branch actually changes.
-   - Summarize changed behavior, setup, commands, config, env vars, outputs, APIs, operational procedures, examples, migrations, and user-visible strings.
-   - Inspect changed tests, examples, and nearby docs to understand the intended contract.
+2. List what changed that a reader could depend on: behavior, setup, commands, config, environment variables, outputs, APIs, operational procedures, examples, migrations, and user-visible strings. Read the changed tests, examples, and nearby docs for the intended contract.
 
-3. Find relevant docs.
-   - Check `docs/`, `docs/plans/`, README files, examples, runbooks, changelogs, migration notes, CLI help snapshots, API references, generated docs, and package-level documentation that match changed behavior.
-   - Use targeted searches for renamed commands, config keys, env vars, API symbols, feature flags, plan names, and user-visible strings introduced or removed by the diff.
-   - If the repo has no relevant doc tree, say so explicitly instead of manufacturing a docs requirement.
+3. Find the docs that describe those things. Look in `docs/`, `docs/plans/`, READMEs, examples, runbooks, changelogs, migration notes, CLI help snapshots, API references, generated docs, and package-level docs. Search for the exact commands, config keys, env vars, symbols, flags, plan names, and strings the diff added or removed. If the repository has no relevant docs, say so rather than inventing a requirement.
 
-4. Decide whether docs are required.
-   - Docs are required when behavior, setup, commands, config, outputs, APIs, operational procedures, examples, migrations, troubleshooting guidance, or developer-facing contracts change.
-   - Plan updates are required when a slice is completed, scope changes, implementation diverges from the plan, validation changes, decisions are made, or open questions are resolved.
-   - Docs are usually not required for internal-only refactors, tests-only changes, mechanical renames hidden behind unchanged public contracts, or private cleanup with no durable plan.
+4. Decide. Docs need updating when anything from step 2 changed and a doc describes it. A plan needs updating when a slice landed, scope changed, the implementation diverged, validation changed, a decision was made, or an open question was answered. Internal refactors, tests-only changes, and renames behind unchanged public contracts usually need nothing.
 
-5. Fix when authorized.
-   - Patch the smallest accurate docs or plan update.
-   - Match the surrounding doc's register, person, and heading style. Write the instruction the reader follows, not a description of it: "Run `make sync`" rather than "This section describes how to run the sync command." Otherwise follow `writing-plainly`.
-   - If docs are generated, update the source and regenerate instead of editing generated output by hand.
-   - Run relevant validation for changed docs, generated artifacts, examples, or loaders.
-   - Keep unrelated dirty files out of the patch.
+5. Fix when authorized. Make the smallest accurate edit. Match the surrounding doc's register, person, and heading style, and write the instruction the reader follows ("Run `make sync`"), not a description of it. Otherwise follow `writing-plainly`. For generated docs, change the source and regenerate. Run the validation that covers changed docs, generated files, examples, or loaders. Keep unrelated dirty files out.
 
 ## Output
 
-Start with a status line, then a short paragraph for each item that has content. Omit the rest.
+Start with a status line, then a short paragraph for each item that has content.
 
-- Check-only pass: `Status: current | needs-update | not-required | blocked`, then the docs or plan findings, which files should change or why none need to, and anything deferred.
-- Fix pass: `Status: updated | not-required | blocked`, then the files changed, the validation commands and results, and any remaining risk.
+- Check: `Status: current | needs-update | not-required | blocked`, then the findings, which files should change or why none need to, and anything deferred.
+- Fix: `Status: updated | not-required | blocked`, then the files changed, validation run and results, and any remaining risk.

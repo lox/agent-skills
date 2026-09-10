@@ -5,63 +5,43 @@ description: Opens, updates, and carries GitHub pull requests through review fee
 
 # Babysitting PRs
 
-Drive a branch or GitHub pull request to the end state the user requested: published, updated, merge-ready, or merged.
+Take a branch or pull request to the state the user asked for: published, updated, merge-ready, or merged.
 
-## Authorization and scope
+## Authorization
 
-- Inspecting local or PR state is read-only. A request to publish, update, address feedback, prepare, land, or merge authorizes the corresponding branch and PR writes; preserve unrelated work and avoid rewriting remote history unless explicitly authorized.
-- Merge only when the user explicitly asks to merge, land, ship, queue, or get the PR merged. “Prepare to land,” “babysit,” “make mergeable,” and “ready for review” mean merge-ready only. Ambiguous follow-ups such as “looks good” do not grant new merge permission.
-- Do not introduce GitHub Codex review. Continue it only when the PR already has Codex review activity or the user explicitly asks for it.
+Reading local or PR state is always allowed. A request to publish, update, address feedback, prepare, land, or merge authorizes the matching branch and PR writes. Do not rewrite remote history unless asked.
+
+Merge only when the user says merge, land, ship, queue, or get it merged. "Prepare to land", "babysit", "make mergeable", and "ready for review" mean merge-ready and stop there. A later "looks good" does not grant merge permission.
+
+Do not introduce GitHub Codex review. If the PR already has Codex activity, or the user asks for it, use `handling-codex-reviews`.
 
 ## Companion skills
 
-- Use `writing-pr-descriptions` before creating a PR and after the diff of an existing PR changes.
-- Use `auto-review` when the user asks for it or the diff is risky: behavior, public contracts, data, security, concurrency, migrations, or cross-cutting structure. For small docs, metadata, configuration, or mechanical changes, use focused inspection and risk-matched validation instead of a mandatory full review loop.
-- Use `handling-codex-reviews` only for an already-active or explicitly requested Codex loop.
+Run `writing-pr-descriptions` before creating a PR and again whenever the diff of an existing PR changes. Run `auto-review` when the user asks for it or the diff is risky: behavior, public contracts, data, security, concurrency, migrations, or cross-cutting structure. For small docs, metadata, config, or mechanical changes, inspect directly and validate in proportion instead.
 
 ## Workflow
 
-Use a bounded loop, normally no more than three fix cycles. Batch related fixes before pushing.
+Batch related fixes before pushing. Normally no more than three fix cycles.
 
-1. **Resolve the target and requested end state**
-   - Read repository instructions, `git status`, branch, remotes, and existing PR metadata.
-   - Identify the base and current head SHA. Preserve unrelated dirty files.
-   - If no PR exists and publication is in scope, use the repository’s branch convention, commit only intended changes, and push the branch. Do not create a PR when the user asked only for local work.
+1. Resolve the target. Read repository instructions, `git status`, branch, remotes, and existing PR metadata. Note the base and head SHA. Leave unrelated dirty files alone. If no PR exists and publishing is in scope, use the repository's branch convention, commit only the intended changes, and push.
 
-2. **Review and publish when needed**
-   - Apply the risk rule above rather than running `auto-review` by rote.
-   - Use `writing-pr-descriptions` against the final base-to-head diff and applicable template, then create or update a non-draft PR unless the user requested a draft.
-   - Re-fetch the PR number, URL, head SHA, and merge state after publishing.
+2. Review and publish. Apply the risk rule above. Run `writing-pr-descriptions` against the base-to-head diff, then create or update a non-draft PR unless the user asked for a draft. Re-fetch the PR number, URL, head SHA, and merge state.
 
-3. **Read current PR state**
-   - Run `scripts/pr_babysit.sh status --pr <pr> --repo <owner/repo>`.
-   - Treat unresolved review threads as the source of truth for inline feedback. Include submitted top-level reviews, but ignore withdrawn, pending, already acknowledged, or stale feedback that no longer applies to the current diff.
+3. Read PR state with `scripts/pr_babysit.sh status --pr <pr> --repo <owner/repo>`. Unresolved review threads are the source of truth for inline feedback. Include submitted top-level reviews. Ignore withdrawn, pending, acknowledged, or stale feedback that no longer applies to the diff.
 
-4. **Clear branch and review blockers**
-   - Rebase or merge the base according to repository convention and resolve conflicts with the smallest correct change.
-   - Classify feedback as actionable, already addressed, inaccurate, or requiring user judgement. Fix the evidenced items in one batch and run focused validation.
-   - Commit and push before replying. Reply inline with `Fixed in <sha>: <what changed>`; for top-level reviews include the review ID so later runs can correlate it.
-   - Write replies per `writing-plainly`: one or two sentences, no thanks or praise, no apology. When declining, say why with the evidence.
+4. Clear review blockers. Rebase or merge the base per repository convention and resolve conflicts with the smallest correct change. Sort feedback into actionable, already addressed, inaccurate, or needing the user. Fix the actionable items in one batch and validate. Commit and push before replying. Reply inline with `Fixed in <sha>: <what changed>`; for a top-level review include the review ID. Replies follow `writing-plainly`: one or two sentences, no thanks, praise, or apology, and evidence when declining.
 
-     > Fixed in a1b2c3d: `parseLimit` now rejects negative values and the test covers -1 and 0.
+   > Fixed in a1b2c3d: `parseLimit` now rejects negative values and the test covers -1 and 0.
 
-     > Not changed. `flush` already runs under `mu` (see line 88), so the extra lock here would deadlock on the retry path.
-   - Add reactions only when they accurately acknowledge the feedback. Resolve a thread only after the pushed fix and reply are visible, then re-query unresolved threads.
-   - Do not amend a commit after publishing replies that cite its SHA. Re-request only reviewers already participating, using their established mechanism; do not substitute or introduce a different bot.
+   > Not changed. `flush` already runs under `mu` (line 88), so the extra lock here would deadlock on the retry path.
 
-5. **Handle Codex only when present**
-   - If status reports existing Codex activity, pending review, actionable Codex feedback, or active `eyes`, use `handling-codex-reviews`.
-   - If Codex is unavailable, continue with non-Codex blockers. Do not post another trigger or block on approval unless completing Codex review was explicitly requested.
+   React only when the reaction is accurate. Resolve a thread only after the fix and reply are visible, then re-query. Never amend a commit after a reply cites its SHA. Re-request review only from reviewers already on the PR.
 
-6. **Clear CI blockers**
-   - Run `scripts/pr_babysit.sh checks --pr <pr> --repo <owner/repo>` and inspect failures through GitHub first.
-   - Use Buildkite-specific tools only when the PR has Buildkite checks and linked GitHub output is insufficient. Missing Buildkite access blocks only that diagnosis.
-   - Fix branch-caused failures and retry one evidenced flaky or external failure once. Stop after two serious attempts at the same branch-caused failure.
+5. If status shows Codex activity, a pending Codex review, or an active `eyes`, use `handling-codex-reviews`. If Codex is unavailable, continue with other blockers and do not post another trigger.
 
-7. **Refresh metadata and finish**
-   - If code, behavior, scope, or evidence changed, run `writing-pr-descriptions` against the final head.
-   - Before merge or handoff, re-fetch head SHA, reviews, unresolved threads, checks, and merge state. Never merge a head different from the reviewed green head.
-   - Use the repository’s merge queue, auto-merge, or normal merge method. Delete the branch only when requested or established repository configuration does so.
+6. Clear CI. Run `scripts/pr_babysit.sh checks --pr <pr> --repo <owner/repo>` and read failures through GitHub first. Use Buildkite tools only when the PR has Buildkite checks and the GitHub output is not enough. Fix failures the branch caused. Retry an evidenced flaky or external failure once. Stop after two real attempts at the same branch-caused failure.
+
+7. Finish. Before merge or handoff, re-fetch head SHA, reviews, unresolved threads, checks, and merge state. Never merge a head other than the reviewed green one. Use the repository's merge queue, auto-merge, or normal merge method. Delete the branch only when asked or when the repository is configured to.
 
 ## Helper commands
 
@@ -71,10 +51,10 @@ scripts/pr_babysit.sh resolve --pr 32 --repo owner/repo --comment-ids 12345,6789
 scripts/pr_babysit.sh checks --pr 32 --repo owner/repo
 ```
 
-The status result includes `merge_blockers`, `ready_to_merge`, unresolved review threads, check state, and Codex state. It is a fast summary, not a substitute for judgement.
+`status` returns `merge_blockers`, `ready_to_merge`, unresolved threads, check state, and Codex state. It is a summary, not a substitute for reading the PR.
 
 ## Stop and report
 
-Stop for missing authorization, contradictory feedback, required human or product judgement, unavailable essential credentials, branch protection, or a repeated blocker that evidence-based fixes did not clear.
+Stop for missing authorization, contradictory feedback, a call that needs a human, missing credentials, branch protection, or a blocker that two evidence-based fixes did not clear.
 
-Report the achieved state, PR URL, and exact blocker when unfinished, per `writing-plainly`. Mention commits or validation only when the reader needs them for the handoff.
+Report the state reached, the PR URL, and the exact blocker if unfinished, per `writing-plainly`. Mention commits or validation only when the reader needs them.

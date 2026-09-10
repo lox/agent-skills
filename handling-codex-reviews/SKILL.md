@@ -5,13 +5,13 @@ description: Handles Codex GitHub PR review loops by waiting for reviews, fixing
 
 # Handling Codex reviews
 
-Drive an existing or explicitly requested Codex review loop to completion. Do not introduce Codex merely because this skill is available.
+Finish a Codex review loop that already exists or that the user asked for. Do not start one because this skill is available.
 
-Inspecting state is read-only. Fixing code, pushing, replying, reacting, resolving threads, or posting `@codex review` must be within the user’s requested PR workflow.
+Reading state is always allowed. Fixing, pushing, replying, reacting, resolving threads, and posting `@codex review` must be part of the PR workflow the user requested.
 
-## Shared helper
+## Helper
 
-Load `babysitting-prs` and use its `scripts/pr_babysit.sh` helper. It is the single implementation for generic PR state and Codex state:
+Load `babysitting-prs` and run its `scripts/pr_babysit.sh` from that skill's directory. It is the one implementation of PR and Codex state.
 
 ```bash
 scripts/pr_babysit.sh codex-state --pr 32 --repo owner/repo
@@ -20,27 +20,25 @@ scripts/pr_babysit.sh resolve --pr 32 --repo owner/repo --comment-ids 12345,6789
 scripts/pr_babysit.sh checks --pr 32 --repo owner/repo
 ```
 
-Run those commands from the loaded `babysitting-prs` skill directory.
-
 ## Workflow
 
-1. Inspect Codex state and verify the actual review author from current PR activity; bot identities vary.
-2. If `pending_review=true`, wait. A clean pass may end with a 👍 reaction rather than a review comment.
-3. Classify feedback as actionable, already addressed, inaccurate, or requiring user judgement. Batch the evidenced fixes across inline comments and actionable top-level reviews.
+1. Read Codex state and confirm who actually authored the review from PR activity; bot identities vary.
+2. If `pending_review=true`, wait. A clean pass may end in a 👍 reaction with no comment.
+3. Sort feedback into actionable, already addressed, inaccurate, or needing the user. Batch the actionable fixes across inline comments and top-level reviews.
 4. Validate, commit, and push before replying.
-5. Reply inline with `Fixed in <sha>: <what changed>`. For top-level reviews, post `Fixed in <sha> for review <review-id>: <what changed>`. Keep replies to one or two plain sentences per `writing-plainly`; when declining a comment, state the evidence, with no thanks or apology.
-6. React only when the reaction accurately acknowledges the feedback. Resolve threads only after the fix and reply are visible.
-7. If the user explicitly requested a first Codex review and `codex_review_required=false`, post one initial trigger. Otherwise, when Codex is already required but has not approved the current head, post exactly one fresh trigger:
+5. Reply inline with `Fixed in <sha>: <what changed>`; for a top-level review, `Fixed in <sha> for review <review-id>: <what changed>`. One or two sentences per `writing-plainly`. When declining, give the evidence, with no thanks or apology.
+6. React only when the reaction is accurate. Resolve a thread only after the fix and reply are visible.
+7. If the user asked for a first Codex review and `codex_review_required=false`, post one trigger. If Codex is required but has not approved the current head, post exactly one fresh trigger:
    ```text
    @codex review
 
    Head: <40-character-head-sha>
    ```
-8. Repeat until no review is pending, no actionable Codex feedback remains, checks pass, and `main_thread_approved=true`.
+8. Repeat until no review is pending, no actionable feedback remains, checks pass, and `main_thread_approved=true`.
 
-## Safety rules
+## Safety
 
-- Never use `@codex` in routine fix replies; anything other than `@codex review` can start a noisy cloud task.
-- Do not amend commits after replies cite their SHA.
+- Never write `@codex` in a routine reply. Anything other than `@codex review` can start a cloud task.
+- Never amend a commit after a reply cites its SHA.
 - If `codex_review_unavailable=true`, do not wait or post another trigger.
-- Use a bounded loop. Stop for conflicting feedback, user judgement, unavailable permissions, or repeated failure.
+- Stop for conflicting feedback, a call that needs the user, missing permissions, or a failure that repeats.

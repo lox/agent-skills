@@ -15,7 +15,7 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `go-writing`: Guidelines for writing, reviewing, and modernising Go code with version-gated guidance, linting, and toolchain management.
 - `handling-codex-reviews`: Codex-specific GitHub PR review loop for waiting on reviews, fixing feedback, resolving threads, and requiring Codex's main-thread thumbs-up.
 - `high-performance-zig`: Guidance for writing and reviewing fast Zig systems code with measurement, cache-aware layout, comptime specialization, SIMD fast paths, and allocator discipline.
-- `humanizing-text`: Guidance for rewriting AI-sounding text to feel more natural and human.
+- `humanizing-text`: Rewrites existing text to sound like its author: calibration to samples, construction patterns, and restoring voice. Wording rules live in `writing-plainly`.
 - `improve-codebase-architecture`: Guidance for finding codebase architecture deepening opportunities.
 - `linear`: Command-line workflows for searching and managing Linear issues.
 - `notion`: Command-line workflows for searching and managing Notion pages, databases, and comments.
@@ -24,7 +24,7 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `speak-like-lachlan`: Guidance for drafting or rewriting text in Lachlan's written and spoken voice.
 - `slack`: Non-Amp CLI fallback for reading Slack messages, threads, channels, and users when native Slack tools are unavailable.
 - `work-walkthrough`: Final handoff workflow for explaining the problem, changes, impact, UX, examples or local demo, validation, surprises, and next steps.
-- `writing-plainly`: Defaults for drafting brief, plain prose that a person will read; the other skills point here for their output style.
+- `writing-plainly`: Numbered rules for plain, brief prose without AI tells. Every other skill writes its output by these rules and cites them by number.
 - `writing-pr-descriptions`: Drafts, checks, and updates concise PR titles and descriptions against the final diff and repository conventions.
 - `writing-tests`: Guidance for meaningful tests, evidence-backed expectation changes, safe consolidation, and proportionate verification.
 

@@ -5,36 +5,29 @@ description: Produces a concrete end-of-work walkthrough grounded in observed be
 
 # Work walkthrough
 
-Create a clear handoff that explains the work from the user's point of view.
+Explain finished work from the user's side: what they can do now, how to try it, and what to trust.
 
 ## Gather evidence
 
-- Re-read the user's request, the plan or issue when present, the final diff, validation output, commits, and PR state when a PR was in scope.
-- Verify the current branch and dirty state so the walkthrough does not claim unrelated work.
-- Prefer concrete file paths, commands, URLs, screenshots, and observed behavior over broad summaries.
-- Do not invent impact, validation, UX behavior, or next steps. If something was not verified, say so directly.
+Re-read the request, the plan or issue, the final diff, validation output, commits, and PR state. Check the branch and dirty state so the walkthrough does not claim unrelated work. Prefer file paths, commands, URLs, screenshots, and observed behavior over summary. Say plainly what was not verified. Do not describe a demo, validation, or artifact you did not produce.
 
 ## Demo the change
 
-- For CLI changes, include copyable commands with realistic arguments and note the expected result. Run harmless examples when practical; use dry-run, help, fixture, or read-only commands when real operations would mutate user data.
-- Distinguish a code walkthrough, automated validation, recorded artifact, and live demo. Do not imply one was performed when only another was available.
-- For web UI changes in a remote agent environment, use the repository's declared services or the host's supervised service mechanism. Expose the listening service with the host's URL-forwarding, tunnel, or portal capability and share that public URL, never a loopback URL.
-- On a persistent workstation or runner, follow its existing service management. Do not assume local state, credentials, or ports also exist in an isolated remote environment.
-- When browser automation is available, open the accessible page and verify the changed UI is visible. If URL forwarding or verification fails, report the exact limitation rather than claiming a live showcase.
-- For API or service changes, include representative `curl`, config, payload, or log examples when they are safe and useful.
-- If no local showcase is practical, explain the concrete blocker and provide the closest useful command, test, screenshot path, or manual verification route.
-- Do not leave unnecessary servers running unless the user needs the URL to keep testing. If a supervised service remains running, name it and explain how to stop it.
+For a CLI change, give copyable commands with realistic arguments and the expected result. Run harmless ones when practical; use dry-run, help, fixture, or read-only commands where a real run would change user data. For an API or service change, give a `curl`, config, payload, or log example when it is safe.
+
+For a web UI change in a remote agent environment, start the repository's declared services or the host's supervised service, expose it through the host's portal or tunnel, and share that public URL, never a loopback address. On a workstation or runner, use its existing service management, and do not assume local credentials or ports exist remotely. When browser automation is available, open the page and confirm the changed UI is visible. If forwarding or verification fails, name the exact failure and give the closest useful command, test, or screenshot instead.
+
+Do not leave servers running unless the user needs the URL. If one stays up, name it and say how to stop it.
 
 ## Output
 
-Write it per `writing-plainly`, in this order unless the user asked for a different format. Cover each point that applies; merge or drop the rest. Do not add a heading for a point that has nothing to say.
+Write per `writing-plainly`, in this order unless the user asked for another format. Cover what applies and drop the rest. No heading for a point with nothing under it.
 
-1. The problem, and why it mattered. Start here, not with a list of files.
-2. What changed: the behavior, files, commands, UI, schema, or workflow, and what users or operators can now do that they could not before.
-3. How to try it: commands, a public demo URL, API examples, an artifact, or validation commands, each with the expected result. Include examples for behavior changes; skip them for invisible cleanup.
-4. User-visible changes to output, flags, errors, or screens, when there are any.
-5. What was hard or surprising: design changes, bugs found, validation surprises, tradeoffs.
-6. Validation run, and whether each check passed, failed, or was skipped and why.
-7. Next steps, only when there is a specific follow-up worth doing. Name it; "continue improving this" is not a next step.
+1. The problem and why it mattered. Start here, not with files.
+2. What changed and what users or operators can now do that they could not before, including any visible change to output, flags, errors, or screens.
+3. How to try it: commands, a public demo URL, API examples, an artifact, or validation commands, each with the expected result. Skip for invisible cleanup.
+4. What was hard or surprising: design changes, bugs found, tradeoffs.
+5. Validation run, and whether each check passed, failed, or was skipped and why.
+6. A next step, only when there is a specific one worth doing. "Continue improving this" is not one.
 
-The result is a practical walkthrough, not a changelog dump. A small change may need three short paragraphs.
+A small change may need three short paragraphs.

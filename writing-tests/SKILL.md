@@ -5,28 +5,20 @@ description: Writes and maintains meaningful tests with minimal machinery. Use w
 
 # Writing tests
 
-Preserve useful regression protection, not test volume. Verification does not always require new tests.
+Keep the tests that catch regressions, not the most tests. A change does not always need a new test.
 
-## Before adding
+## Before adding a test
 
-- Inspect existing coverage. Identify the distinct observable contract or realistic fault the test should protect against; extend an existing test when clearer.
-- For reversible, low-impact changes, avoid tests that merely restate the implementation—for example, repeating a config value as an expected literal without checking a required contract. Do not add cases merely for coverage, symmetry, or every helper and branch.
-- Test through a stable interface with minimal fixtures and mocks. Assert meaningful outcomes, not mock setup or incidental internals.
-- Derive expected results from requirements, established contracts, known examples, or an independent oracle—not a copy of the implementation.
+Look at existing coverage first. Name the observable contract or realistic fault the new test protects, and extend an existing test when that is clearer. Do not add tests that restate the implementation, such as asserting a config value as a literal without checking any contract, and do not add cases for coverage, symmetry, or every helper and branch. Test through a stable interface with the fewest fixtures and mocks that work, and assert the outcome, not the mock setup. Take expected values from requirements, contracts, known examples, or an independent oracle, never from a copy of the implementation.
 
-## When tests fail
+## When a test fails
 
-- Determine whether the implementation, test, or environment is wrong before editing expectations. Observed output alone does not justify a change.
-- Change expectations only for an intended contract change or evidence the old expectation was incorrect. Replace refactor-sensitive assertions while preserving required behaviour.
-- Never weaken assertions, regenerate snapshots, broaden tolerances, skip cases, or delete tests merely to get green checks.
-- For bug fixes, demonstrate the reproducer fails against the buggy implementation and passes with the fix where practical.
+Decide whether the implementation, the test, or the environment is wrong before touching the expectation. Observed output alone does not justify changing it. Change an expectation only for an intended contract change or evidence the old one was wrong. Replace refactor-sensitive assertions while keeping the required behavior covered. Never weaken an assertion, regenerate a snapshot, widen a tolerance, skip a case, or delete a test to get green. For a bug fix, show the reproducer failing before the fix and passing after when practical.
 
-## When simplifying
+## When removing or merging tests
 
-- Delete or consolidate tests only when retained tests protect the same required contract and failure mode. Shared line coverage is insufficient evidence.
-- Preserve distinct rejection, security, persistence, concurrency, compatibility, boundary, and numerical guarantees. Small tests and rare cases can be valuable.
-- Characterisation tests establish existing behaviour, not correctness. Do not silently replace a specification with observed output.
+Delete or merge only when the remaining tests protect the same contract and failure mode. Shared line coverage is not enough. Keep distinct rejection, security, persistence, concurrency, compatibility, boundary, and numerical guarantees; small tests for rare cases are often the valuable ones. A characterisation test records existing behavior, not correctness. Do not silently replace a specification with observed output.
 
-## Stop
+## When to stop
 
-Run tests appropriate to the change and complete required checks. Once those pass, broaden or repeat testing only for new changes, failures, or specific unresolved concerns. No mandatory per-test reports or mutation-testing framework.
+Run the tests that cover the change and the repository's required checks. Once they pass, test more only for new changes, failures, or a specific unresolved concern. Do not add per-test reports or mutation testing unless asked.
