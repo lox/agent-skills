@@ -3,13 +3,13 @@ name: handling-codex-reviews
 description: Handles Codex GitHub PR review loops by waiting for reviews, fixing actionable feedback, resolving threads, and requiring Codex's main-thread thumbs-up. Use when Codex is already reviewing a PR, the PR has `@codex review` activity, or Codex has added an `eyes` reaction.
 ---
 
-# Handling Codex Reviews
+# Handling Codex reviews
 
 Drive an existing or explicitly requested Codex review loop to completion. Do not introduce Codex merely because this skill is available.
 
 Inspecting state is read-only. Fixing code, pushing, replying, reacting, resolving threads, or posting `@codex review` must be within the user’s requested PR workflow.
 
-## Shared Helper
+## Shared helper
 
 Load `babysitting-prs` and use its `scripts/pr_babysit.sh` helper. It is the single implementation for generic PR state and Codex state:
 
@@ -26,9 +26,9 @@ Run those commands from the loaded `babysitting-prs` skill directory.
 
 1. Inspect Codex state and verify the actual review author from current PR activity; bot identities vary.
 2. If `pending_review=true`, wait. A clean pass may end with a 👍 reaction rather than a review comment.
-3. Classify feedback as actionable, already addressed, inaccurate, or requiring user judgement. Batch grounded fixes across inline comments and actionable top-level reviews.
+3. Classify feedback as actionable, already addressed, inaccurate, or requiring user judgement. Batch the evidenced fixes across inline comments and actionable top-level reviews.
 4. Validate, commit, and push before replying.
-5. Reply inline with `Fixed in <sha>: <what changed>`. For top-level reviews, post `Fixed in <sha> for review <review-id>: <what changed>`.
+5. Reply inline with `Fixed in <sha>: <what changed>`. For top-level reviews, post `Fixed in <sha> for review <review-id>: <what changed>`. Keep replies to one or two plain sentences per `writing-plainly`; when declining a comment, state the evidence, with no thanks or apology.
 6. React only when the reaction accurately acknowledges the feedback. Resolve threads only after the fix and reply are visible.
 7. If the user explicitly requested a first Codex review and `codex_review_required=false`, post one initial trigger. Otherwise, when Codex is already required but has not approved the current head, post exactly one fresh trigger:
    ```text
@@ -38,7 +38,7 @@ Run those commands from the loaded `babysitting-prs` skill directory.
    ```
 8. Repeat until no review is pending, no actionable Codex feedback remains, checks pass, and `main_thread_approved=true`.
 
-## Safety Rules
+## Safety rules
 
 - Never use `@codex` in routine fix replies; anything other than `@codex review` can start a noisy cloud task.
 - Do not amend commits after replies cite their SHA.

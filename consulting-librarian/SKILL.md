@@ -3,11 +3,11 @@ name: consulting-librarian
 description: Emulates repository-librarian research in hosts without a native Librarian. Use in non-Amp agents when tracing dependency internals, comparing remote repositories, reading commit history, or explaining external architecture.
 ---
 
-# Consulting Librarian
+# Consulting librarian
 
 Use this only in hosts without a native remote-repository research tool. Use the strongest native repository, connector, web, or shell tools available; do not look for a tool literally named `librarian`.
 
-## Use This Skill When
+## Use this skill when
 
 - The answer depends on code in a dependency, framework, SDK, or another repository.
 - The user wants architecture or behavior explained across one or more remote repositories.
@@ -16,7 +16,7 @@ Use this only in hosts without a native remote-repository research tool. Use the
 
 Do not use this skill for local workspace reads, exact local string lookups, or code edits in the current repository.
 
-## Core Behavior
+## Core behavior
 
 - Act as a dedicated remote-code researcher, not as a generic assistant.
 - Use the host agent's native tools to inspect remote repositories directly.
@@ -26,7 +26,7 @@ Do not use this skill for local workspace reads, exact local string lookups, or 
 - Read source code deeply and trace implementations end to end rather than stopping at README-level summaries.
 - Return the final answer directly. Do not say "the librarian tool is unavailable" unless you are truly blocked from accessing the repository at all.
 
-## Work In This Order
+## Work in this order
 
 1. Normalize the user's question into a concrete engineering investigation.
 2. Identify the best available source access path for the target repository.
@@ -34,7 +34,7 @@ Do not use this skill for local workspace reads, exact local string lookups, or 
 4. Read enough source to trace the behavior end to end.
 5. Answer with concrete file paths, symbols, and line references when the environment supports them.
 
-## Query Patterns
+## Query patterns
 
 Use direct, engineering-focused queries like these:
 
@@ -44,7 +44,7 @@ Use direct, engineering-focused queries like these:
 - Commit history: `What changed in commit abc123 in owner/repo, and why does it matter for the cache invalidation path?`
 - Example hunting: `Find strong open-source examples of webhook signature verification in Go and compare the best candidates.`
 
-## Working Style
+## Working style
 
 - Start with repository structure discovery, then narrow to concrete files and symbols.
 - Read source code, not just READMEs or docs, unless the user explicitly asked for docs.
@@ -55,7 +55,7 @@ Use direct, engineering-focused queries like these:
 - Prefer official repositories and upstream source when the question is about framework or library behavior.
 - Parallelize independent reads and searches whenever the host environment allows it.
 
-## Source Access Order
+## Source access order
 
 - First choice: native remote-repository tools provided by the host agent.
 - Second choice: official GitHub or Bitbucket connectors, MCP servers, or repository-reading plugins.
@@ -64,7 +64,7 @@ Use direct, engineering-focused queries like these:
 
 Use the strongest source available and say which one you used only when it helps the answer.
 
-## When Not To Use It
+## When not to use it
 
 - The answer is already in the local workspace.
 - You only need an exact file path or string in the current repo.
@@ -72,7 +72,7 @@ Use the strongest source available and say which one you used only when it helps
 
 If all remote-repository access paths fail, state the actual blocker and what access would unblock the task.
 
-## Example Prompts
+## Example prompts
 
 - `Use $consulting-librarian to explain how Prisma handles migration locking internally.`
 - `Use $consulting-librarian to compare the retry logic in stripe-go and aws-sdk-go-v2.`

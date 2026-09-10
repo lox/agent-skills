@@ -3,15 +3,15 @@ name: high-performance-zig
 description: Writes, reviews, and optimizes high-performance Zig code with a measurement-first workflow, cache-aware layout, allocator discipline, comptime specialization, SIMD/scalar paths, and regression checks. Use for `.zig` changes where latency, throughput, memory, startup, binary size, or layout-sensitive code matters.
 ---
 
-# High Performance Zig
+# High performance Zig
 
 Use this skill to make Zig code measurably faster without turning it into folklore. Start from the repository's real toolchain, workload, and hot path; then apply the smallest data-layout, allocator, comptime, or SIMD change that the measurement supports.
 
-## Load The Reference
+## Load the reference
 
 Read [references/performance-patterns.md](references/performance-patterns.md) before changing non-trivial performance-sensitive Zig code, doing a performance review, or making claims about cache behavior, struct layout, SIMD, allocators, or comptime cost.
 
-## Work In This Order
+## Work in this order
 
 1. Identify the performance target: startup, steady-state throughput, tail latency, frame time, memory footprint, binary size, build time, or CPU time in one named workload.
 2. Inspect local context first: Zig version, `build.zig`, build options, target CPU/OS, benchmark harnesses, tests, allocators, and adjacent data structures.
@@ -22,7 +22,7 @@ Read [references/performance-patterns.md](references/performance-patterns.md) be
 
 Record the Zig version, release mode, target, workload, baseline, and relevant machine assumptions with benchmark results. Compare like with like, and do not present numbers from an unrepresentative debug build as production evidence.
 
-## Optimization Priorities
+## Optimization priorities
 
 - Keep the common path explicit and cheap. Put rare cases behind clear slow paths.
 - Prefer fewer allocations, stable ownership, and local buffers before custom pools.
@@ -34,7 +34,7 @@ Record the Zig version, release mode, target, workload, baseline, and relevant m
 - Keep SIMD behind the same public API as the scalar path. Test scalar/SIMD parity on malformed and boundary inputs.
 - Treat C and GUI API boundaries as unsafe lifetime boundaries. Pair performance memory tricks with leak-detecting allocators, Valgrind/Instruments where available, and regression tests that exercise error paths.
 
-## Review Checklist
+## Review checklist
 
 - Is there a named workload and a before/after number, or is this still speculation?
 - Does the benchmark run in the right build mode and on the right target?
@@ -44,6 +44,6 @@ Record the Zig version, release mode, target, workload, baseline, and relevant m
 - Does every custom allocator, pool, mmap page, C allocation, and `errdefer` path have a test or tool-backed leak check?
 - Is the faster path still correct for invalid input, large input, non-ASCII input, OOM, and platform-specific behavior?
 
-## Output Expectations
+## Output expectations
 
 State the measurement, the optimization, and the remaining ceiling. If a faster-looking change is unmeasured, say so and prefer the simpler code until the data exists.

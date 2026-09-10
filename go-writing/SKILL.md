@@ -3,11 +3,11 @@ name: go-writing
 description: Writes, reviews, and refactors Go code with idiomatic package design, error handling, concurrency, performance, tests, linting, and toolchain awareness. Use when implementing or reviewing `.go` changes, tests, benchmarks, package APIs, or version-gated Go modernization.
 ---
 
-# Go Writing
+# Go writing
 
 Keep Go code boring, explicit, version-aware, and easy to verify. Start from repository conventions, then use official Go guidance and version-specific modernization references to break ties or fill gaps.
 
-## Start With Local Context
+## Start with local context
 
 - Read `go.mod`, `go.work`, `mise.toml`, `.mise.toml`, or `.tool-versions` when present, plus the changed package, adjacent tests, and build or CI scripts before proposing structure.
 - Treat the module or workspace `go` directive as the minimum language and compatibility target.
@@ -19,7 +19,7 @@ Keep Go code boring, explicit, version-aware, and easy to verify. Start from rep
 - Open [references/go-1.26-modernization.md](references/go-1.26-modernization.md) when the user asks for the latest Go patterns, when the repo already targets Go 1.26+, or when planning a toolchain upgrade.
 - Open [../go-cli-writing/SKILL.md](../go-cli-writing/SKILL.md) when the work is primarily about CLI structure, subcommands, flag UX, or command output.
 
-## Work In This Order
+## Work in this order
 
 1. Inspect the package boundary, dependencies, tests, and module version.
 2. Decide whether the problem needs a new type, function, interface, goroutine, or dependency at all.
@@ -27,7 +27,7 @@ Keep Go code boring, explicit, version-aware, and easy to verify. Start from rep
 4. Add or update tests and benchmarks before optimizing.
 5. Run the narrowest useful verification loop, then the repo's broader checks.
 
-## Shape The API
+## Shape the API
 
 - Choose package names that are short, lower-case, and non-stuttering.
 - Keep exported APIs small and documented. Add doc comments for exported identifiers, and add a package comment when creating a new package.
@@ -40,13 +40,13 @@ Keep Go code boring, explicit, version-aware, and easy to verify. Start from rep
 - Keep `context.Context` as the first parameter on request-scoped work, blocking operations, and cancellable I/O. Do not store it in a struct.
 - Avoid package names such as `util`, `common`, `misc`, `types`, and `api` unless the repository already normalized them.
 
-## Organize Files For Cohesion
+## Organize files for cohesion
 
 - Optimize file layout for cohesion and reader navigation, not an arbitrary line-count limit.
 - Split long files only when the new file creates a real boundary such as a distinct type family, protocol, platform, generated code path, or test fixture area.
 - Keep a type and its methods close together. Do not split methods with the same receiver across files just to shorten files unless there is a strong boundary such as build tags or generated code.
 
-## Write The Implementation
+## Write the implementation
 
 - Prefer straight-line control flow with early returns over deep nesting.
 - Return errors instead of logging or exiting inside library code.
@@ -63,7 +63,7 @@ Keep Go code boring, explicit, version-aware, and easy to verify. Start from rep
 - Avoid new dependencies for trivial helpers when the standard library already covers the job.
 - Prefer standard-library helpers such as `cmp`, `maps`, and `slices` before adding custom glue code.
 
-## Shape Data Carefully
+## Shape data carefully
 
 - Prefer nil slices over empty slices unless an external contract requires `[]` instead of `null`.
 - Preallocate slices when the final size is known or tightly bounded.
@@ -71,7 +71,7 @@ Keep Go code boring, explicit, version-aware, and easy to verify. Start from rep
 - Use field names in struct literals outside tightly local tests.
 - Avoid embedding locks or other implementation details in exported structs.
 
-## Use Concurrency Deliberately
+## Use concurrency deliberately
 
 - Add goroutines only when they improve latency, throughput, or responsiveness in a clear way.
 - Thread context cancellation through concurrent work.
@@ -83,7 +83,7 @@ Keep Go code boring, explicit, version-aware, and easy to verify. Start from rep
 - Protect shared mutable state or remove the sharing.
 - Use typed atomics from `sync/atomic` when atomics are truly the right tool.
 
-## Test Behavior First
+## Test behavior first
 
 - Start with a failing test when changing behavior.
 - Prefer table-driven tests for input or state matrices, and use subtests to name cases.
@@ -94,7 +94,7 @@ Keep Go code boring, explicit, version-aware, and easy to verify. Start from rep
 - Add fuzz tests for parsers, decoders, and input-validation code when the risk justifies it.
 - Add benchmarks before claiming a performance win. Use `pprof` only after measuring a real bottleneck.
 
-## Verify Before Finishing
+## Verify before finishing
 
 - Run the narrowest useful package test loop while iterating, then run the repository's broader verification path.
 - Use repository tooling if it exists. Otherwise default to `gofmt -w`, `go test ./...`, and `go vet ./...`; add `go test -race ./...` for concurrency changes and `go mod tidy` when dependencies change.
@@ -103,7 +103,7 @@ Keep Go code boring, explicit, version-aware, and easy to verify. Start from rep
 - Keep imports and module metadata consistent with the repository workflow.
 - If the repository lacks linting, recommend an appropriate lint path rather than introducing tooling as part of unrelated work.
 
-## Output Expectations
+## Output expectations
 
 - Explain any non-obvious Go tradeoff in one or two sentences.
 - Call out repository-specific deviations from generic Go advice when they matter.

@@ -3,13 +3,13 @@ name: speak-like-lachlan
 description: Writes, rewrites, drafts, or reviews text in Lachlan's written and spoken voice. Use when the user asks to "talk like me" or "sound like me", or needs Slack replies, emails, leadership notes, technical feedback, customer or strategy messages, meeting comments, or talking points that match Lachlan's directness, dry humour, and evidence-first engineering judgement.
 ---
 
-# Speak Like Lachlan
+# Speak like Lachlan
 
 Use this skill to produce text that sounds like Lachlan without becoming a caricature. This is a communication guide, not a persona or authority model. Preserve the supplied meaning, facts, stance, audience, and degree of commitment. Match how Lachlan expresses that view; do not infer private views, personal history, or commitments.
 
 Apply this voice only when explicitly requested or when the task is clearly to draft communication on Lachlan's behalf. Do not silently apply it to neutral technical documentation, legal text, incident records, or text attributed to someone else.
 
-## Calibration Order
+## Calibration order
 
 Use the strongest available evidence in this order:
 
@@ -33,7 +33,7 @@ If no same-mode example is available, use this guide lightly and preserve more o
 6. When rewriting, edit in place and preserve unaffected spans.
 7. Read the result for evidence, forward motion, unnecessary polish, and any shift in meaning or commitment.
 
-## Structural Fingerprint
+## Structural fingerprint
 
 The strongest voice signal is not slang. It is:
 
@@ -45,7 +45,7 @@ The strongest voice signal is not slang. It is:
 
 Match those choices before copying wording. A generically human-sounding rewrite is still wrong if it loses Lachlan's selection, order, or weighting. Do not force every message through the same conclusion-risk-next-step template. A formal announcement can be polished and resolved; a working technical thought can remain fragmentary and exploratory.
 
-## Core Voice
+## Core voice
 
 Prefer:
 
@@ -61,7 +61,7 @@ Common language includes "I think", "I actually think", "seems", "probably", "di
 
 These are clues, not a quota. A message can sound right without any of them. Repeating stock phrases or adding slang after the fact usually makes the voice less accurate.
 
-## Reasoning in the Message
+## Reasoning in the message
 
 For substantive communication:
 
@@ -78,39 +78,39 @@ A common technical shape is:
 
 Use that shape only when it fits the material.
 
-## Message Modes
+## Message modes
 
-### Quick Replies
+### Quick replies
 
 Keep acknowledgements, steering, and small asks to one or two lines. Do not explain a decision that only needs confirmation.
 
 > Yup, sounds good. Let's chat tomorrow and make a call.
 
-### Technical Threads
+### Technical threads
 
 It is fine to be iterative, fragmentary, and dense with code, links, or logs. State the current read, show the evidence, name the constraint, and ask for the next exact check. Do not polish a working theory into a fake final answer.
 
-### Reviews and Pushback
+### Reviews and pushback
 
 State the verdict plainly and ground it in specifics. Acknowledge real work when useful, then say what should change. Challenge unsupported severity and weak abstractions without becoming performatively harsh.
 
-### Operational Direction
+### Operational direction
 
 Name the action, owner, and immediate evidence or checkpoint. Keep the ask small enough to do now. Avoid adding process when a concrete check or decision will unblock the work.
 
-### Leadership Announcements
+### Leadership announcements
 
 These can be more polished than technical threads. Give enough context, state the decision or change clearly, explain practical effects, and make the ask explicit. Own mistakes directly. Keep care specific rather than sentimental.
 
-### Customer and Strategy Messages
+### Customer and strategy messages
 
 Start with the overall read, then connect technical details to customer pain, adoption, retention, reliability, cost, or willingness to pay. Compare alternatives directly. Avoid generic strategy language and tidy pros-and-cons theatre.
 
-### Spoken Comments and Talking Points
+### Spoken comments and talking points
 
 Use shorter clauses and fewer nested qualifications than in a written memo. Build around one main point, the reason, and the next question or action. Write for natural delivery, not as prose to be read aloud. Do not spell out an accent or load the script with Australian slang.
 
-## Editing Existing Text
+## Editing existing text
 
 - preserve the intended meaning, factual claims, audience, and strength of the position
 - preserve quotations, code, commands, links, identifiers, and data verbatim unless asked to change them
@@ -121,7 +121,7 @@ Use shorter clauses and fewer nested qualifications than in a written memo. Buil
 - never invent anecdotes, opinions, personal experience, relationships, references, or commitments
 - do not add mistakes or artificial mess to make the draft look human
 
-## Avoid Caricature
+## Avoid caricature
 
 Avoid:
 

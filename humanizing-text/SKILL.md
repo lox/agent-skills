@@ -3,22 +3,24 @@ name: humanizing-text
 description: Rewrites robotic or AI-sounding text to feel natural while preserving meaning and voice. Use when humanizing or reviewing generated, over-polished, repetitive, or impersonal prose. Covers 24 wording patterns and 14 construction patterns.
 ---
 
-# Humanizing Text
+# Humanizing text
 
 Make writing sound human without changing its meaning. Generic writing can fail at two layers: wording (patterns 1-24 below) and construction, i.e. how the piece is built (patterns 25-38). Use these as review prompts, not a checklist the text must obey.
+
+This skill reviews or rewrites text that already exists. When drafting new text, use `writing-plainly` instead.
 
 ## Task
 
 1. **Calibrate to the author** - If source samples exist, identify their recurring choices before editing: what they include, how they order it, where they address the reader, how they handle uncertainty, and where they stop.
-2. **Review construction first** - For multi-paragraph text, read `reference/construction-patterns.md` and check patterns 25-38. Make only grounded structural edits before polishing wording; do not restructure a piece to satisfy the checklist.
+2. **Review construction first** - For multi-paragraph text, read `reference/construction-patterns.md` and check patterns 25-38. Make only structural edits you can justify from the text before polishing wording; do not restructure a piece to satisfy the checklist.
 3. **Identify surface patterns** - Scan for patterns 1-24 below.
 4. **Edit surgically** - Preserve unaffected spans and exact material such as quotations, code, commands, links, identifiers, and data. Prefer local edits over regeneration.
 5. **Preserve meaning and fingerprint** - Keep the message, format, and the author's characteristic choices intact, including useful irregularities.
-6. **Restore voice** - Surface real personality or experience that the draft flattened. Never invent it.
+6. **Restore voice** - Bring back real personality or experience that the draft flattened. Never invent it.
 
 These patterns are editorial heuristics for making writing better, not a detector. Never use them to claim a text was AI-written.
 
-## Preserve the Author's Fingerprint
+## Preserve the author's fingerprint
 
 There is no single structure that makes prose human. When author samples exist:
 
@@ -30,7 +32,7 @@ When the target is Lachlan's voice, use `speak-like-lachlan` as the author guide
 
 Do not add direct reader address, time jumps, references, anecdotes, jokes, or ambivalence merely to make the text look human. If a fix needs a fact, opinion, or memory that is not present, ask; use a placeholder only when the user wants a draft with gaps marked.
 
-## Restore Voice
+## Restore voice
 
 Removing generic patterns is only half the job. Recover what the author actually thinks and notices:
 
@@ -42,9 +44,9 @@ Removing generic patterns is only half the job. Recover what the author actually
 
 ---
 
-## The 24 Surface Patterns
+## The 24 surface patterns
 
-### Content Patterns
+### Content patterns
 
 **1. Undue emphasis on significance/legacy**
 Watch for: stands/serves as, testament, pivotal moment, crucial role, underscores importance, reflects broader, symbolizing, marking/shaping, evolving landscape
@@ -76,7 +78,7 @@ Watch for: Despite challenges... continues to thrive, Future Outlook
 - Before: "Despite these challenges, continues to thrive"
 - After: "Traffic congestion increased after 2015 when three IT parks opened"
 
-### Language Patterns
+### Language patterns
 
 **7. Stock vocabulary clusters**
 Watch for repeated or unnecessary use of: Additionally, delve, crucial, enhance, fostering, interplay, intricate, landscape (abstract), pivotal, showcase, tapestry, testament, underscore, vibrant. A listed word is not, by itself, a reason to edit it.
@@ -103,7 +105,7 @@ Watch for: Not only...but..., It's not just X, it's Y
 - Before: "from the Big Bang to the cosmic web, from star birth to dark matter"
 - After: "The book covers the Big Bang, star formation, and dark matter theories"
 
-### Style Patterns
+### Style patterns
 
 **13. Dash overuse**
 Watch for repeated em dashes doing the work of commas, periods, colons, and parentheses. Preserve dashes when they fit the author's normal style and improve the sentence.
@@ -125,7 +127,7 @@ Remove decorative 🚀 💡 ✅ and similar flourishes when they are not charact
 **18. Typography drift**
 Do not change quote style merely to make text look more human. Preserve the typography expected by the author, format, or publishing system.
 
-### Communication Patterns
+### Communication patterns
 
 **19. Chatbot artifacts**
 Remove generic service-language such as "I hope this helps!", "Of course!", "Certainly!", or "Would you like..." when it is not a genuine part of the message. Do not ban ordinary closings the author actually uses.
@@ -136,7 +138,7 @@ Remove boilerplate such as "While specific details are limited..." or "based on 
 **21. Sycophantic tone**
 Remove unearned praise such as "Great question!", "You're absolutely right!", or "That's an excellent point!" Preserve sincere acknowledgement when it serves the conversation.
 
-### Filler and Hedging
+### Filler and hedging
 
 **22. Filler phrases**
 - "In order to" → "To"
@@ -155,11 +157,11 @@ Remove unearned praise such as "Great question!", "You're absolutely right!", or
 
 ---
 
-## The 14 Construction Patterns
+## The 14 construction patterns
 
 Construction is how the piece is built, not how it is worded. For definitions, evidence levels, and fixes, read `reference/construction-patterns.md`. It distinguishes research findings from nonfiction adaptations and broader editorial heuristics.
 
-Never inject synthetic humanity: fixes must surface something true. Ask when only the author knows; use an explicit placeholder only when the user wants a draft with gaps marked.
+Never inject synthetic humanity: fixes must bring out something true. Ask when only the author knows; use an explicit placeholder only when the user wants a draft with gaps marked.
 
 If an AI detector is used, compare matched text boundaries, formats, and window-level results. Treat its output as one diagnostic signal, never the editing objective or evidence of authorship. Do not add artefacts to chase a score.
 

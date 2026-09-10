@@ -24,6 +24,7 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `speak-like-lachlan`: Guidance for drafting or rewriting text in Lachlan's written and spoken voice.
 - `slack`: Non-Amp CLI fallback for reading Slack messages, threads, channels, and users when native Slack tools are unavailable.
 - `work-walkthrough`: Final handoff workflow for explaining the problem, changes, impact, UX, examples or local demo, validation, surprises, and next steps.
+- `writing-plainly`: Defaults for drafting brief, plain prose that a person will read; the other skills point here for their output style.
 - `writing-pr-descriptions`: Drafts, checks, and updates concise PR titles and descriptions against the final diff and repository conventions.
 - `writing-tests`: Guidance for meaningful tests, evidence-backed expectation changes, safe consolidation, and proportionate verification.
 

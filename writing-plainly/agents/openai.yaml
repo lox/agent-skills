@@ -1,0 +1,4 @@
+interface:
+  display_name: "Writing Plainly"
+  short_description: "Draft brief, plain prose for readers"
+  default_prompt: "Use $writing-plainly to write this so the reader can act after the first sentence: plain words, no filler, no template padding."

@@ -7,16 +7,16 @@ description: Opens, updates, and carries GitHub pull requests through review fee
 
 Drive a branch or GitHub pull request to the end state the user requested: published, updated, merge-ready, or merged.
 
-## Authorization And Scope
+## Authorization and scope
 
 - Inspecting local or PR state is read-only. A request to publish, update, address feedback, prepare, land, or merge authorizes the corresponding branch and PR writes; preserve unrelated work and avoid rewriting remote history unless explicitly authorized.
 - Merge only when the user explicitly asks to merge, land, ship, queue, or get the PR merged. “Prepare to land,” “babysit,” “make mergeable,” and “ready for review” mean merge-ready only. Ambiguous follow-ups such as “looks good” do not grant new merge permission.
 - Do not introduce GitHub Codex review. Continue it only when the PR already has Codex review activity or the user explicitly asks for it.
 
-## Companion Skills
+## Companion skills
 
-- Use `writing-pr-descriptions` before creating a PR and after material changes to an existing PR.
-- Use `auto-review` when the user asks for it or the diff is materially risky: behavior, public contracts, data, security, concurrency, migrations, or cross-cutting structure. For small docs, metadata, configuration, or mechanical changes, use focused inspection and risk-matched validation instead of a mandatory full review loop.
+- Use `writing-pr-descriptions` before creating a PR and after the diff of an existing PR changes.
+- Use `auto-review` when the user asks for it or the diff is risky: behavior, public contracts, data, security, concurrency, migrations, or cross-cutting structure. For small docs, metadata, configuration, or mechanical changes, use focused inspection and risk-matched validation instead of a mandatory full review loop.
 - Use `handling-codex-reviews` only for an already-active or explicitly requested Codex loop.
 
 ## Workflow
@@ -39,8 +39,13 @@ Use a bounded loop, normally no more than three fix cycles. Batch related fixes 
 
 4. **Clear branch and review blockers**
    - Rebase or merge the base according to repository convention and resolve conflicts with the smallest correct change.
-   - Classify feedback as actionable, already addressed, inaccurate, or requiring user judgement. Fix grounded items in one batch and run focused validation.
+   - Classify feedback as actionable, already addressed, inaccurate, or requiring user judgement. Fix the evidenced items in one batch and run focused validation.
    - Commit and push before replying. Reply inline with `Fixed in <sha>: <what changed>`; for top-level reviews include the review ID so later runs can correlate it.
+   - Write replies per `writing-plainly`: one or two sentences, no thanks or praise, no apology. When declining, say why with the evidence.
+
+     > Fixed in a1b2c3d: `parseLimit` now rejects negative values and the test covers -1 and 0.
+
+     > Not changed. `flush` already runs under `mu` (see line 88), so the extra lock here would deadlock on the retry path.
    - Add reactions only when they accurately acknowledge the feedback. Resolve a thread only after the pushed fix and reply are visible, then re-query unresolved threads.
    - Do not amend a commit after publishing replies that cite its SHA. Re-request only reviewers already participating, using their established mechanism; do not substitute or introduce a different bot.
 
@@ -54,11 +59,11 @@ Use a bounded loop, normally no more than three fix cycles. Batch related fixes 
    - Fix branch-caused failures and retry one evidenced flaky or external failure once. Stop after two serious attempts at the same branch-caused failure.
 
 7. **Refresh metadata and finish**
-   - If code, behavior, scope, or evidence changed materially, run `writing-pr-descriptions` against the final head.
+   - If code, behavior, scope, or evidence changed, run `writing-pr-descriptions` against the final head.
    - Before merge or handoff, re-fetch head SHA, reviews, unresolved threads, checks, and merge state. Never merge a head different from the reviewed green head.
    - Use the repository’s merge queue, auto-merge, or normal merge method. Delete the branch only when requested or established repository configuration does so.
 
-## Helper Commands
+## Helper commands
 
 ```bash
 scripts/pr_babysit.sh status --pr 32 --repo owner/repo
@@ -68,8 +73,8 @@ scripts/pr_babysit.sh checks --pr 32 --repo owner/repo
 
 The status result includes `merge_blockers`, `ready_to_merge`, unresolved review threads, check state, and Codex state. It is a fast summary, not a substitute for judgement.
 
-## Stop And Report
+## Stop and report
 
 Stop for missing authorization, contradictory feedback, required human or product judgement, unavailable essential credentials, branch protection, or a repeated blocker that evidence-based fixes did not clear.
 
-Report the achieved state, PR URL, and exact blocker when unfinished. Mention commits or validation only when they materially help the handoff.
+Report the achieved state, PR URL, and exact blocker when unfinished, per `writing-plainly`. Mention commits or validation only when the reader needs them for the handoff.

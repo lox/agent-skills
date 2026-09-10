@@ -7,14 +7,14 @@ description: "Searches and manages Linear issues with the external linear CLI. U
 
 Manage Linear issues from the command line using `linear` CLI.
 
-## Requirements And Safety
+## Requirements and safety
 
 - Verify `command -v linear`, `linear --help`, and the CLI's authenticated workspace before relying on examples or mutating issues. Do not start login or print an auth token unless the user asks for authentication help.
 - Discover team keys, project names, workflow states, and the authenticated user's identity with the installed CLI; do not assume `ENG`, `TC-*`, or a fixed assignee.
 - Read the target issue before updating it. Search for an existing issue before creating a likely duplicate.
-- A request to manage a specific issue authorizes the narrow described update. Confirm before bulk edits, reassignment to another person, destructive operations, or status transitions with material workflow consequences.
+- A request to manage a specific issue authorizes the narrow described update. Confirm before bulk edits, reassignment to another person, destructive operations, or status transitions that trigger workflow side effects.
 
-## Quick Reference
+## Quick reference
 
 ```bash
 # List issues
@@ -47,7 +47,7 @@ linear team list
 linear team members
 ```
 
-## Common Workflows
+## Common workflows
 
 ### Find issues by keyword
 ```bash
@@ -71,7 +71,7 @@ linear issue view TC-123              # Includes comments by default
 linear issue view TC-123 --no-comments
 ```
 
-## State Values
+## State values
 
 - `triage` - Needs triage
 - `backlog` - Backlog
@@ -80,7 +80,7 @@ linear issue view TC-123 --no-comments
 - `completed` - Done
 - `canceled` - Canceled
 
-## Priority Values
+## Priority values
 
 - `1` - Urgent
 - `2` - High
@@ -102,6 +102,6 @@ curl -s -X POST https://api.linear.app/graphql \
   -d '{"query": "{ viewer { assignedIssues(first: 10) { nodes { identifier title } } } }"}'
 ```
 
-## Full Command Reference
+## Full command reference
 
 Run `linear --help` or `linear issue --help` for complete options.

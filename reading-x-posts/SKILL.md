@@ -3,7 +3,7 @@ name: reading-x-posts
 description: Reads x.com/twitter.com posts, quote posts, replies, and user-provided status IDs through the authenticated xurl CLI, with Birdclaw as an optional local fallback. Use when asked to read, summarize, inspect, quote, fetch, or explain an X/Twitter post or use authenticated X context.
 ---
 
-# Reading X Posts
+# Reading X posts
 
 Use `xurl` for live single-post reads and Birdclaw for local Twitter/X memory.
 
@@ -49,7 +49,7 @@ birdclaw sync bookmarks --mode xurl --limit 100 --max-pages 5 --early-stop --ref
 Never run X write actions such as post, reply, like, repost, follow, block,
 mute, bookmark, or DM unless the user explicitly asks for that action.
 
-## Response Shape
+## Response shape
 
 - Include the author, handle, timestamp, post URL or ID, and post text or a
   faithful summary.

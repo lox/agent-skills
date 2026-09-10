@@ -3,7 +3,7 @@ name: writing-tests
 description: Writes and maintains meaningful tests with minimal machinery. Use when deciding whether to add tests, investigating failures, or changing assertions, snapshots, fixtures, mocks, skips, or tolerances.
 ---
 
-# Writing Tests
+# Writing tests
 
 Preserve useful regression protection, not test volume. Verification does not always require new tests.
 
