@@ -27,20 +27,20 @@ Create a clear handoff that explains the work from the user's point of view.
 
 ## Output Shape
 
-Use this structure unless the user requested a different format:
+Use the smallest useful subset of the following unless the user requested a different format. Omit unsupported or empty sections rather than filling the template:
 
 1. Problem: what the work was trying to solve and why it mattered.
 2. What changed: the concrete behavior, files, commands, UI, schema, or workflow changes.
-3. Impact: what users, developers, or operators can now do, and what risks were reduced.
+3. Impact: observed or directly supported changes in what users, developers, or operators can do, or risks actually reduced.
 4. How to try it: CLI commands, public demo URL, API examples, artifact, or validation commands with expected outcomes.
-5. UX changes: user-visible behavior, CLI output, flags, errors, screens, or interaction changes. Say "None" only when that is accurate.
-6. Hard or unexpected: friction, design changes, bugs found, validation surprises, or tradeoffs discovered.
+5. UX changes: include only when user-visible behavior, CLI output, flags, errors, screens, or interactions changed.
+6. Hard or unexpected: include only when the work surfaced real friction, design changes, bugs, validation surprises, or tradeoffs.
 7. Validation: checks run and whether they passed, failed, or were skipped with reason.
-8. Next suggested steps: the smallest concrete follow-ups in priority order.
+8. Next suggested steps: include only concrete unfinished work or follow-ups supported by scope, validation, or the user's request; omit when none remain.
 
 ## Style
 
 - Keep it concise but useful. The goal is a practical walkthrough, not a changelog dump.
 - Start with the problem or motivation, not a list of files.
 - Include examples for behavior changes; do not include examples for invisible cleanup unless they clarify reviewer or operator impact.
-- Make next steps actionable. Avoid vague prompts like "continue improving this" unless there is no better concrete next action.
+- When next steps are included, make them actionable. Avoid vague prompts like "continue improving this" unless there is no better concrete next action.

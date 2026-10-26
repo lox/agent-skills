@@ -8,6 +8,8 @@ Labels below distinguish **research finding** from **nonfiction adaptation** and
 
 Work from a structural template of the piece, not the prose. For each section note: what it does (setup, evidence, resolution, lesson), where the thesis appears, what tension is raised and whether it resolves, time structure, and every author/reader appearance.
 
+One optional diagnostic for multi-paragraph arguments: if major paragraphs can be reordered without changing the reasoning, check whether the piece is a collection of interchangeable points rather than an accumulating argument. Modular reference or procedural prose may be reorderable by design; do not manufacture dependencies or transitions.
+
 ## Calibrate before correcting
 
 In the fiction corpus, human stories were more dispersed in narrative feature space, while the five AI sources clustered together. The implication is not to chase whatever was statistically human-leaning. It is to avoid convergence and preserve the target author's own recurring choices.

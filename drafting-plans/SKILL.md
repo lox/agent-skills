@@ -10,7 +10,7 @@ A plan is an implementation map, not a record of planning ceremony. Make it resu
 ## Start With Evidence
 
 - Inspect existing plan conventions and relevant code, docs, schemas, configuration, issue, or PR context before naming contracts or commands.
-- Update an existing plan in place when it already owns the work.
+- When revising, update an existing plan in place when it already owns the work. When asked only to review, report findings and proposed edits without changing it.
 - Put the plan where the user asked. Preserve repository metadata and formatting conventions; do not invent frontmatter, lifecycle fields, or dates when the repository does not require them.
 - Verify cheap, drift-prone facts before presenting them as current state.
 
@@ -44,6 +44,7 @@ Integrate useful findings into scope, approach, risks, or slices. Do not automat
 - Keep the first slice boring and concrete. Do not design later phases in more detail than the next actionable slice.
 - Include exact files, contracts, examples, commands, and checks only when they make implementation less ambiguous.
 - Update the plan when implementation changes scope, contracts, risks, sequencing, or progress. Remove stale assumptions and resolved questions rather than appending a changelog.
+- When revising, preserve settled decisions, scope and non-goals, commitments, and the stated status of uncertainty unless repository evidence, implementation, or user direction changes them. Do not turn an open question into a decision for cleaner prose.
 - When asked for the first or next slice, identify it from the plan and proceed to implementation when authorized instead of reopening the design.
 
 ## Style
