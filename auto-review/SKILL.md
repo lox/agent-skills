@@ -84,7 +84,7 @@ Apply stop states in this order: `blocked`, then `needs-attention`, then `ready`
 - Stage only files changed for this loop.
 - If pushing, use the current PR branch and avoid rewriting history unless the user requested it or repository policy permits it.
 - Do not merge a PR unless the user explicitly asks to merge, land, ship, or queue it.
-- If PR review comments or CI are involved, use the repository's existing PR or CI workflow skills rather than duplicating them. Use `handling-codex-reviews` only within the GitHub Codex review boundary above.
+- If PR review comments or CI are involved, use the repository's existing PR or CI workflow skills rather than duplicating them.
 
 ## Output
 
