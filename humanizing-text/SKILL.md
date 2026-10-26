@@ -9,7 +9,7 @@ Preserve meaning while improving wording (patterns 1-24) and construction (25-38
 
 ## Task
 
-Choose the mode first. Review: verdict and quoted evidence, no rewrite or score unless asked. Rewrite: minimum effective edit. Apply the editing steps below only in rewrite mode.
+Review: verdict and quoted evidence, no rewrite or score unless asked. Rewrite: minimum effective edit. Analyze with steps 1–3 in both modes; apply edits and steps 4–6 only in rewrite mode.
 
 1. **Calibrate to the author** - If source samples exist, identify their recurring choices before editing: what they include, how they order it, where they address the reader, how they handle uncertainty, and where they stop.
 2. **Review construction first** - For multi-paragraph text, read `reference/construction-patterns.md`. Make grounded structural edits before polishing wording, never to satisfy the checklist.
