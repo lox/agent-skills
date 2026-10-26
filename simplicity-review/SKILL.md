@@ -22,7 +22,9 @@ For each meaningful part of the diff, find the lowest rung that covers the need.
 5. Use an already-installed dependency before adding a package.
 6. Prefer a short idiomatic expression over a bespoke abstraction.
 7. Add the minimum direct, boring code needed for current requirements.
-8. Add structure—a helper, typed model, dispatcher, or module split—only when repeated conditionals, scattered feature checks, duplicated branches, or poor ownership show a missing model, and the result leaves the reader holding fewer concepts.
+8. Add structure (a helper, typed model, dispatcher, or module split) only when both conditions hold:
+   - Repeated conditionals, scattered feature checks, duplicated branches, or poor ownership show a missing model.
+   - The result leaves the reader holding fewer concepts.
 
 An abstraction must earn its keep. Indirection alone is not simplification.
 
@@ -46,7 +48,14 @@ Treat file size as a prompt to inspect cohesion, not a defect by itself. New str
 
 ## Do Not Simplify Away
 
-Do not remove input validation at trust boundaries, error handling that prevents data loss, security or accessibility requirements, calibration controls for real hardware or environment drift, observability needed to operate the system, or behavior explicitly required by the change.
+Do not remove:
+
+- Input validation at trust boundaries.
+- Error handling that prevents data loss.
+- Security or accessibility requirements.
+- Calibration controls for real hardware or environment drift.
+- Observability needed to operate the system.
+- Behavior explicitly required by the change.
 
 Between equally small approaches, prefer the one that remains correct at the relevant edges. Trivial one-liners need no test; one focused assertion is often enough for a narrow behavior.
 

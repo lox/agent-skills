@@ -48,7 +48,10 @@ Use at most two full review passes. Within each full pass, use at most two fix-a
 4. Validate: run the smallest meaningful tests or lints first, then broader repo validation as needed. Use local project commands such as `mise`, package scripts, and language tooling before inventing new commands.
 5. Targeted recheck: review the fixes, original findings, affected call sites, tests, and likely blast radius with the relevant review lenses. Do not rerun the entire broad review merely because the diff changed.
 6. Repeat the fix and targeted-recheck round once when material findings remain and another focused fix is justified.
-7. Run a second full review only when the fixes materially changed the structure or behavior of the diff, the targeted recheck exposed cross-cutting risk, or material findings remain after the first pass's rounds.
+7. Run a second full review only when at least one of these is true:
+   - The fixes materially changed the diff's structure or behavior.
+   - The targeted recheck exposed cross-cutting risk.
+   - Material findings remain after the first pass's rounds.
 
 Each recheck must be fresh and read-only. Passing tests alone is not a recheck. If a fix changes the shape of the diff, expand the recheck to affected call sites and tests rather than assuming prior coverage still applies.
 
