@@ -19,6 +19,21 @@ Write brief, reviewer-useful PR metadata that explains why the change is needed 
 - Do not edit PR metadata unless the user asked to create, update, fix, prepare, or carry the PR forward. When only asked to check, report findings.
 - Keep repository file changes out of this skill; if docs need edits, hand off to `check-docs-updated`.
 
+## Plain language and examples
+
+- Write for a reviewer who understands the product but not the subsystem. Prefer words from the user's configuration, command, error, or UI over internal type, module, protocol, or planning names.
+- Put the problem before the mechanism. Introduce an unavoidable domain term with a concrete example instead of assuming the reader knows it.
+- Show the smallest useful example when the change affects syntax, commands, configuration, API payloads, errors, or output. In `Why`, show what fails today. In `What`, show the new result or a compact before/after comparison.
+- Do not force an example when it would be artificial, such as a behavior-preserving internal refactor. Explain the practical engineering outcome plainly instead.
+- Titles should name the task that now works or the problem that no longer occurs. They should not name the implementation layer unless that layer is itself the reviewer-facing subject.
+
+For example:
+
+| Avoid | Prefer |
+| --- | --- |
+| `Support unavailable action check run IDs` | `Allow actions when no GitHub check run ID exists` |
+| `Improve provider-token authority planning` | `Avoid requesting a GitHub token for branches that cannot run` |
+
 ## Workflow
 
 1. Resolve the target.
@@ -38,7 +53,8 @@ Write brief, reviewer-useful PR metadata that explains why the change is needed 
 3. Draft or check the body.
    - Preserve an applicable repository template and fill it tersely. Do not mark checkboxes for work that was not verified.
    - Without a template, write one short `Why` section or paragraph and one short `What` section or paragraph. For a trivial change, two unheaded paragraphs are enough.
-   - Explain the concrete problem or motivation, then the delivered behavior and only the implementation decisions reviewers need to understand.
+   - Explain the concrete problem or motivation, then the delivered behavior and only the implementation decisions reviewers need to understand. Prefer a small failing example before explanatory prose when one exists.
+   - Use a before/after example when it communicates the change more clearly than another paragraph.
    - Do not repeat the commit log or Files tab. Omit empty headings and routine implementation detail.
    - Use issue-closing keywords only when this PR fully resolves the issue; otherwise use a non-closing related reference.
    - Add migration, rollout, risk, compatibility, requested-feedback, or review-order guidance only when it materially helps this review. Keep it inline or compact rather than adding habitual sections.
@@ -47,10 +63,13 @@ Write brief, reviewer-useful PR metadata that explains why the change is needed 
 
 4. Write or check the title last.
    - Follow the repository convention and describe the delivered behavior or value rather than a file operation.
-   - Keep it specific and concise. Reject titles that are too narrow, depend on stale implementation details, use discouraged prefixes, or promise behavior the branch does not deliver.
+   - Keep it specific and concise. Reject titles that are too narrow, depend on stale implementation details, use unexplained subsystem jargon, use discouraged prefixes, or promise behavior the branch does not deliver.
+   - Ask whether a reviewer outside the subsystem can tell what problem the PR solves. Rewrite the title in product or user terms when the answer is no.
 
 5. Audit the result.
    - Confirm a fresh reviewer can answer why the change exists and what the branch does without reading the full diff first.
+   - Confirm the title and opening paragraph make sense without knowing internal package, type, protocol, or planning names.
+   - Confirm a useful concrete example is present when the changed behavior is naturally demonstrated by input and output.
    - Confirm every material body claim has a source in the diff, tests, observed results, issue, plan, specification, user context, or PR discussion.
    - Confirm all material branch concerns are represented, with no reverted concern still claimed.
    - Confirm the body contains no routine validation list, checklist, file inventory, generic conclusion, or empty section introduced by this skill.
