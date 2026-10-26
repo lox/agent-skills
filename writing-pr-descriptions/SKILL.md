@@ -61,6 +61,14 @@ For example:
    - Preserve still-accurate human-written rationale, wording, links, and screenshots. Make the smallest edits needed to reflect the final branch; remove reverted or superseded claims.
    - Flag stale examples, screenshots, validation claims, file names, scope, and fixed risks presented as still open.
 
+   Without a template, a body for a small fix can be this short:
+
+   > Nightly order sync aborted about twice a week because `fetchOrders` failed on the first `ECONNRESET`.
+   >
+   > Retries now back off 100ms, 200ms, 400ms and stop after three attempts. Failures still raise after the third try so the job does not hang.
+
+   Not a `Summary`/`Changes`/`Testing` scaffold that restates the diff and ticks "All tests pass".
+
 4. Write or check the title last.
    - Follow the repository convention and describe the delivered behavior or value rather than a file operation.
    - Keep it specific and concise. Reject titles that are too narrow, depend on stale implementation details, use unexplained subsystem jargon, use discouraged prefixes, or promise behavior the branch does not deliver.

@@ -78,7 +78,9 @@ Report only material findings. Be aggressive, but stay grounded.
 
 ## Output
 
-For normal interactive reviews, respond with findings first, ordered by severity, each tied to a concrete file and line range.
+For normal interactive reviews, respond with findings first, ordered by severity, each tied to a concrete file and line range. A short paragraph per finding is usually enough:
+
+> High, `billing/charge.go:112-130`: `Charge` writes the ledger row before calling the gateway, and a gateway timeout returns without deleting it, so a retry double-books the customer. Insert the ledger row only after the gateway returns success, or key it on the gateway idempotency token.
 
 If high-priority areas consumed the review budget, explicitly list deferred concerns rather than silently dropping them.
 

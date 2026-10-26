@@ -68,4 +68,8 @@ Report only grounded findings tied to specific code in the diff. Each finding st
 3. the lowest remedy-ladder rung that covers the requirement
 4. the concrete smaller replacement, including meaningful deletion when practical
 
+A short paragraph can carry all four:
+
+> `internal/retry/policy.go` adds a `Policy` interface, a `DefaultPolicy` struct, and a factory for the one backoff schedule the code uses, so readers trace three types to find a constant. Delete all three and call `backoff.Retry(ctx, fn, 3, 100*time.Millisecond)` from the two call sites; add the interface when a second schedule exists.
+
 Prefer one strong deletion or reframing over several nits. Be direct without being rude. If the diff is already minimal, idiomatic, and well placed, say so and stop rather than manufacturing findings.
