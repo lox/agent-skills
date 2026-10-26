@@ -49,6 +49,8 @@ Verify that durable repository documentation matches what the branch actually ch
 
 ## Output
 
+Always give the status line. Omit later items that have nothing to report.
+
 For a check-only pass, report:
 
 1. `Status: current | needs-update | not-required | blocked`

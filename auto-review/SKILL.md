@@ -88,10 +88,9 @@ Apply stop states in this order: `blocked`, then `needs-attention`, then `ready`
 
 ## Output
 
-Final response:
+Start the final response with `Status: ready | needs-attention | blocked`. Then include only the items that have content:
 
-1. State `Status: ready | needs-attention | blocked`.
-2. Summarize review iterations and fixes briefly.
-3. List validation commands and results.
-4. Call out residual risks or deferred items.
-5. Include branch, commit, and PR details when commits or pushes were made.
+- review iterations and fixes, briefly;
+- validation commands and results;
+- residual risks or deferred items;
+- branch, commit, and PR details when commits or pushes were made.
