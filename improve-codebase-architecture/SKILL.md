@@ -5,7 +5,7 @@ description: Finds evidence-backed deepening opportunities that improve module l
 
 # Improve Codebase Architecture
 
-Surface architectural friction and propose **deepening opportunities** — refactors that turn shallow modules into deep ones. The aim is testability and AI-navigability.
+Find **deepening opportunities**: refactors that hide more useful behaviour behind a simpler interface. Focus on testability and keeping related knowledge together, not abstract cleanliness.
 
 ## Glossary
 
@@ -26,31 +26,38 @@ Key principles (see [reference/language.md](reference/language.md) for the full 
 - **The interface is the test surface.**
 - **One adapter = hypothetical seam. Two adapters = real seam.**
 
-When relevant engineering plans exist, use them to identify important seams, settled decisions, and codebase constraints. Do not assume every repository has `docs/plans/` or require a plan for architecture analysis.
+## Evidence discipline
+
+Every candidate needs file-level evidence of friction in current code:
+
+- Repeated co-change whose current files spread one responsibility across modules.
+- A cross-module bug whose underlying design problem remains.
+- Tests that mock internals, break on refactor, or cannot exercise behaviour through the interface.
+- Invariants, ordering constraints, or configuration facts each caller must independently get right.
+
+Read the implementation, callers, and tests before accepting historical signals or plan claims. Separate measurements from interpretation. Drop candidates without current-code corroboration.
+
+Do not propose single-adapter seams with nothing varying, file splits for size alone, move/rename-only refactors, or a new interface as complicated as what it hides. Preserve distinct regression contracts when moving tests; new interface tests alone do not justify deleting old ones (see [reference/deepening.md](reference/deepening.md)).
 
 ## Process
 
-### 1. Explore
+### 1. Scope and explore
 
-Read relevant engineering plans first when they exist. Prefer recent, active, and similar-domain plans when there are many.
+Start with the named module or pain point. Otherwise use history to prioritize exploration and widen the search when changes are scattered. This is targeted discovery, not an exhaustive audit.
 
-Use the plan docs the same way `drafting-plans` does:
+Read relevant plans or ADRs when present. Treat settled decisions as constraints unless current friction warrants reopening them. Do not require a plan.
 
-- Treat an existing plan as the sequencing source of truth when the architecture question continues that work.
-- Read relevant code, docs, schemas, runtime config, or issue/PR context before naming interfaces, examples, commands, or validation.
-- Verify cheap drift-prone facts against the current repo before treating a plan statement as current state.
-- Notice plan status (`proposed`, `active`, `paused`, `landed`, `superseded`) and avoid re-litigating landed or superseded decisions unless current code friction makes the revisit worthwhile.
-- Pull forward the plan's goals, non-goals, invariants, delivery slices, verification strategy, and open questions when evaluating architecture candidates.
+Use the host's search and file-reading tools. Delegate bounded subsystem exploration only when useful and permitted by the host's delegation rules; do not require subagents or named tools.
 
-Inspect the codebase with the host's normal semantic search, exact search, and file-reading tools. Explore organically and note where understanding creates friction:
+Look for:
 
-- Where does understanding one concept require bouncing between many small modules?
-- Where are modules **shallow** — interface nearly as complex as the implementation?
-- Where have pure functions been extracted just for testability, but the real bugs hide in how they're called (no **locality**)?
-- Where do tightly-coupled modules leak across their seams?
-- Which parts of the codebase are untested, or hard to test through their current interface?
+- One concept scattered across many modules.
+- Shallow interfaces that impose nearly as much complexity as they hide.
+- Pure functions extracted for testing while bugs remain in their orchestration.
+- Coupled modules leaking knowledge across seams.
+- Behaviour that cannot be tested through the current interface.
 
-Apply the **deletion test** to anything you suspect is shallow: would deleting it concentrate complexity, or just move it? A "yes, concentrates" is the signal you want.
+Apply the deletion test: does removing a module eliminate needless complexity or scatter useful implementation into its callers?
 
 #### Focus exploration with historical evidence
 
@@ -68,7 +75,7 @@ elif command -v mise >/dev/null; then
 fi
 ```
 
-If `scc` is not directly installed but mise is available, replace the leading `scc` in the commands below with `mise exec aqua:boyter/scc@4.0.0 -- scc`; this installs into mise's cache without changing project or global mise configuration. If neither route provides `scc` 4 or newer, or `jq` is unavailable, continue without this analysis rather than blocking the review.
+If `scc` is absent but mise is available, replace the leading `scc` below with `mise exec aqua:boyter/scc@4.0.0 -- scc`. This installs into mise's cache without changing project or global configuration. If neither route provides `scc` 4 or newer, or `jq` is unavailable, continue without these reports. Git history remains a change-frequency lead, not an equivalent hotspot score.
 
 If the checkout is shallow, fetch the full history before drawing conclusions when possible. If history cannot be completed, state the limitation and treat the results as recent-history evidence only.
 
@@ -104,7 +111,7 @@ Use these metrics only as prioritization evidence:
 
 ### 2. Present candidates
 
-Present a numbered list of deepening opportunities. For each candidate:
+Present a short ranked list. For each candidate include:
 
 - **Files** — which files/modules are involved
 - **Evidence** — observed code friction plus relevant hotspot/coupling evidence and rejected noise; separate measured facts from interpretation
@@ -114,28 +121,16 @@ Present a numbered list of deepening opportunities. For each candidate:
 - **Benefits** — explained in terms of locality and leverage, and also in how tests and plan verification would improve
 - **First slice** — the smallest boring, useful step if the user chooses to explore it
 
-**Use plan vocabulary for the product or system domain when plans exist, and [reference/language.md](reference/language.md) vocabulary for the architecture.** If plans define a concept such as "Order intake," use that name consistently instead of falling back to incidental implementation names.
+Use the architecture vocabulary above. When plans define product or system terms, use those terms too.
 
-**Plan conflicts**: if a candidate contradicts an existing plan decision, only surface it when the friction is real enough to warrant revisiting the plan. Mark it clearly (e.g. _"contradicts `docs/plans/example.md` — but worth reopening because…"_). Don't list every theoretical refactor a plan rules out.
+Flag any settled decision worth reopening and the current evidence for doing so. For a high-stakes or contested candidate, seek a read-only expert review when available and permitted by the host. Resolve unsupported claims before presenting.
 
 Do NOT propose interfaces yet. Ask the user: "Which of these would you like to explore?"
 
-### 3. Grilling loop
+### 3. Design the chosen candidate
 
-Once the user picks a candidate, drop into a grilling conversation. Walk the design tree with them — constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive.
+After the user chooses, work through constraints, dependencies, interface alternatives, and test migration. Use [reference/deepening.md](reference/deepening.md) for dependencies and tests, and [reference/interface-design.md](reference/interface-design.md) to compare designs. Pressure-test the recommendation against the strongest alternative, using a read-only advisor when available and permitted.
 
 When historical evidence informed the candidate, inspect `--coupling-for` results and representative shared commits during this loop. Decide whether the coupled files express one responsibility that lacks an owner or merely healthy coordination. Do not invent a combined architecture score; the code-level explanation is the decision evidence.
 
-Update an existing plan only when the user asked to revise the plan or the architecture work is part of an authorized implementation workflow. Otherwise recommend the durable update in the handoff.
-
-As decisions crystallize:
-
-- **Naming a deepened module after a concept that belongs in an existing plan?** Update the relevant `docs/plans/` document with the term, ownership seam, or decision.
-- **Sharpening a fuzzy term during the conversation?** Record the clarified terminology in the relevant plan when it will help future architecture work.
-- **Changing scope, interface shape, risks, sequencing, or validation?** Update the plan in the same pass. Treat the plan as the working map, not a changelog.
-- **Resolving an open question?** Move it to resolved decisions or adjust goals/non-goals and delivery slices. Leave only genuinely unresolved questions.
-- **Adding material findings from the architecture review?** Prefer a concise `Key Learnings From Pressure-Testing` or existing equivalent section over a detached critique.
-- **Updating a plan with YAML frontmatter?** Update `last_reviewed` after material revisions or revalidation, and change `status` only for lifecycle changes.
-- **User rejects the candidate with a load-bearing reason?** Offer to record the reason in the relevant plan so future architecture reviews don't re-suggest it. Only offer when the reason would actually be needed by a future explorer — skip ephemeral reasons ("not worth it right now") and self-evident ones.
-- **No relevant plan exists, but the candidate becomes real work?** Offer to draft a new `docs/plans/` plan using the repository's plan conventions. Do not create one just to record a casual idea.
-- **Want to explore alternative interfaces for the deepened module?** See [reference/interface-design.md](reference/interface-design.md).
+Record decisions only within an authorized plan-update or implementation workflow; otherwise recommend the update. Offer to record a durable reason for rejecting a candidate so future reviews do not repeat it. Do not create a plan for a casual idea or record temporary preferences as constraints.

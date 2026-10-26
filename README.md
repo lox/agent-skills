@@ -5,6 +5,7 @@ Reusable Amp/Codex skills managed with `skillyard`.
 ## Included Skills
 
 - `adversarial-code-reviewing`: Guidance for skeptical, high-signal code reviews that look for material ship blockers and subtle production risks.
+- `audit-your-codebase`: Explicitly requested, read-only audits of the whole codebase, with coverage accounting and evidence-backed simplification findings.
 - `auto-review`: Iterative workflow for reviewing a current PR, fixing grounded findings, validating, and re-reviewing until it is ready or blocked.
 - `babysitting-prs`: Full branch-to-PR workflow for publication, review feedback, Codex, CI, rebases, merge queues, and optional final merge.
 - `check-docs-updated`: Checks repository docs, plans, examples, and runbooks against the actual diff.
