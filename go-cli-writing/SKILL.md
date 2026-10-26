@@ -19,8 +19,8 @@ Keep Go CLIs predictable, scriptable, and easy to extend. Favor a thin `main`, a
 
 1. Inspect the command tree, global flags, config flow, and current stdout or stderr behavior.
 2. Decide whether the change belongs in `main.go`, `cmd/`, or an `internal/` package before adding code.
-3. Write the smallest failing test for the behavior change.
-4. Implement the narrowest command or helper change that makes the test pass.
+3. When the behavior change needs a regression test that existing tests do not give, write the smallest failing one.
+4. Implement the narrowest command or helper change that delivers the behavior.
 5. Run focused verification, then the broader CLI checks.
 
 ## Shape The Packages
@@ -58,7 +58,7 @@ Keep Go CLIs predictable, scriptable, and easy to extend. Favor a thin `main`, a
 
 ## Test The CLI Behavior
 
-- Start with a failing test for parsing, config resolution, or command behavior before changing implementation.
+- When adding a test for parsing, config resolution, or command behavior, write it to fail before changing the implementation.
 - Prefer narrow tests on command helpers, config helpers, and parsing utilities before reaching for subprocess end-to-end tests.
 - Use table-driven tests for flags, positional args, resolver logic, and output edge cases.
 - Add one smoke check for help or version paths when changing root command wiring.

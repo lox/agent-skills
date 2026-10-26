@@ -42,12 +42,14 @@ Verify that durable repository documentation matches what the branch actually ch
    - Docs are usually not required for internal-only refactors, tests-only changes, mechanical renames hidden behind unchanged public contracts, or private cleanup with no durable plan.
 
 5. Fix when authorized.
-   - Patch the smallest accurate docs or plan update.
+   - Preserve still-accurate prose, examples, and surrounding structure. Prefer the smallest local edit that makes the document accurate; restructure only when the changed contract requires it.
    - If docs are generated, update the source and regenerate instead of editing generated output by hand.
    - Run relevant validation for changed docs, generated artifacts, examples, or loaders.
    - Keep unrelated dirty files out of the patch.
 
 ## Output
+
+Always give the status line. Omit later items that have nothing to report.
 
 For a check-only pass, report:
 

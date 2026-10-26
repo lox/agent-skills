@@ -7,12 +7,6 @@ description: Performs skeptical, high-signal code reviews that try to break conf
 
 Perform a skeptical code review that tries to disprove ship readiness.
 
-## Use This When
-
-- The user asks for an adversarial review, devil's-advocate review, or stress test of a change.
-- The user wants a ship/no-ship assessment rather than a balanced summary.
-- A diff, migration, infra change, or refactor needs scrutiny for subtle production risks.
-
 ## Operating Stance
 
 - Default to skepticism.
@@ -74,54 +68,23 @@ Adapt the review to the kind of change under review instead of using one generic
 
 ## Finding Bar
 
-Report only material findings.
+Report only material findings. Be aggressive, but stay grounded.
 
+- Every finding must be defensible from the provided repository context or tool outputs. Do not invent files, lines, code paths, incidents, attack chains, or runtime behavior you cannot support.
 - Do not include style feedback, naming feedback, low-value cleanup, or speculative concerns without evidence.
 - A finding should answer: what can go wrong, why this code path is vulnerable, what the likely impact is, and what concrete change would reduce the risk.
 - If reviewing a diff, prefer issues newly introduced or materially worsened by that change. Call out pre-existing risks only when they are necessary context.
-- If you cannot defend a concern from the repository context or tool output, do not report it.
+- Withdraw or downgrade a finding if broader context disproves the initial suspicion. If a conclusion depends on inference, state that explicitly in the finding and lower confidence accordingly.
 
 ## Output
 
-For normal interactive reviews, respond with findings first, ordered by severity, each tied to a concrete file and line range.
+For normal interactive reviews, respond with findings first, ordered by severity, each tied to a concrete file and line range. A short paragraph per finding is usually enough:
+
+> High, `billing/charge.go:112-130`: `Charge` writes the ledger row before calling the gateway, and a gateway timeout returns without deleting it, so a retry double-books the customer. Insert the ledger row only after the gateway returns success, or key it on the gateway idempotency token.
 
 If high-priority areas consumed the review budget, explicitly list deferred concerns rather than silently dropping them.
 
-When the user explicitly wants structured output or asks to mirror the upstream adversarial-review prompt, return compact JSON matching this schema:
-
-```json
-{
-  "verdict": "approve | needs-attention",
-  "summary": "string",
-  "findings": [
-    {
-      "severity": "critical | high | medium | low",
-      "title": "string",
-      "body": "string",
-      "file": "string",
-      "line_start": 1,
-      "line_end": 1,
-      "confidence": 0.0,
-      "recommendation": "string"
-    }
-  ],
-  "next_steps": ["string"]
-}
-```
-
-- Use `needs-attention` if there is any material risk worth blocking on.
-- Use `approve` only if you cannot support any substantive adversarial finding from the provided context.
-- Keep the summary terse and decisive.
-- Keep confidence honest when a conclusion depends on inference.
-- Do not wrap JSON output in markdown fences.
-
-## Grounding Rules
-
-- Be aggressive, but stay grounded.
-- Every finding must be defensible from the provided repository context or tool outputs.
-- Do not invent files, lines, code paths, incidents, attack chains, or runtime behavior you cannot support.
-- Withdraw or downgrade a finding if broader context disproves the initial suspicion.
-- If a conclusion depends on inference, state that explicitly in the finding body and lower confidence accordingly.
+When the user explicitly wants structured output or asks to mirror the upstream adversarial-review prompt, return compact JSON as described in [reference/structured-output.md](reference/structured-output.md).
 
 ## Final Check
 

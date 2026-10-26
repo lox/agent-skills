@@ -5,6 +5,7 @@ Reusable Amp/Codex skills managed with `skillyard`.
 ## Included Skills
 
 - `adversarial-code-reviewing`: Guidance for skeptical, high-signal code reviews that look for material ship blockers and subtle production risks.
+- `audit-your-codebase`: Explicitly requested, read-only audits of the whole codebase, with coverage accounting and evidence-backed simplification findings.
 - `auto-review`: Iterative workflow for reviewing a current PR, fixing grounded findings, validating, and re-reviewing until it is ready or blocked.
 - `babysitting-prs`: Full branch-to-PR workflow for publication, review feedback, Codex, CI, rebases, merge queues, and optional final merge.
 - `check-docs-updated`: Checks repository docs, plans, examples, and runbooks against the actual diff.
@@ -16,7 +17,7 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `handling-codex-reviews`: Codex-specific GitHub PR review loop for waiting on reviews, fixing feedback, resolving threads, and requiring Codex's main-thread thumbs-up.
 - `high-performance-zig`: Guidance for writing and reviewing fast Zig systems code with measurement, cache-aware layout, comptime specialization, SIMD fast paths, and allocator discipline.
 - `humanizing-text`: Guidance for rewriting AI-sounding text to feel more natural and human.
-- `improve-codebase-architecture`: Guidance for finding codebase architecture deepening opportunities.
+- `improve-codebase-architecture`: Guidance for finding architecture deepening opportunities, using code hotspots and change coupling when available to prioritize investigation.
 - `linear`: Command-line workflows for searching and managing Linear issues.
 - `notion`: Command-line workflows for searching and managing Notion pages, databases, and comments.
 - `reading-x-posts`: Read x.com and twitter.com posts through xurl, with Birdclaw as the local cache and research fallback.
@@ -30,6 +31,8 @@ Reusable Amp/Codex skills managed with `skillyard`.
 ## Attribution
 
 The `improve-codebase-architecture` skill is adapted from Matt Pocock's [`mattpocock/skills`](https://github.com/mattpocock/skills/tree/main/skills/engineering/improve-codebase-architecture) repository. These materials are licensed under MIT. Copyright (c) 2026 Matt Pocock.
+
+Its historical prioritization workflow uses Ben Boyter's [`scc`](https://github.com/boyter/scc) v4 hotspot and change-coupling reports, described in [“Finding the files that need the most attention”](https://boyter.org/posts/sloc-cloc-code-hotspots-finding-files-that-need-attention/).
 
 The `simplicity-review` skill is adapted from Buildkite's [`buildkite/cursor-skills`](https://github.com/buildkite/cursor-skills/tree/main/auto-review/skills/simplicity-review) repository. It combines Cursor's maintainability review with YAGNI guidance adapted from Dietrich Gebert's Ponytail project. These materials are licensed under MIT; the upstream permission notice is included in `simplicity-review/LICENSE`.
 

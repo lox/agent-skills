@@ -130,10 +130,4 @@ notion-cli page list --json | jq '.[0].url'
 notion-cli search "api" --json | jq '.[] | .title'
 ```
 
-## Tips for Agents
-
-1. **Search first** - Use `notion-cli search` to find pages before operating on them
-2. **Use URLs or IDs** - Both work for page/database references
-3. **Check --help** - Every command has detailed help: `notion-cli page edit --help`
-4. **Raw output** - Use `--raw` with `page view` to see the original Notion markup
-5. **JSON for parsing** - Use `--json` when you need to extract specific fields
+Every command has detailed help, for example `notion-cli page edit --help`.
