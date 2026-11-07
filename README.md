@@ -19,11 +19,9 @@ Reusable Amp/Codex skills managed with `skillyard`.
 - `humanizing-text`: Guidance for rewriting AI-sounding text to feel more natural and human.
 - `improve-codebase-architecture`: Guidance for finding architecture deepening opportunities, using code hotspots and change coupling when available to prioritize investigation.
 - `linear`: Command-line workflows for searching and managing Linear issues.
-- `notion`: Command-line workflows for searching and managing Notion pages, databases, and comments.
 - `reading-x-posts`: Read x.com and twitter.com posts through xurl, with Birdclaw as the local cache and research fallback.
 - `simplicity-review`: Reviews changes for unnecessary code, speculative generality, avoidable dependencies, and structural complexity.
 - `speak-like-lachlan`: Guidance for drafting or rewriting text in Lachlan's written and spoken voice.
-- `slack`: Non-Amp CLI fallback for reading Slack messages, threads, channels, and users when native Slack tools are unavailable.
 - `work-walkthrough`: Final handoff workflow for explaining the problem, changes, impact, UX, examples or local demo, validation, surprises, and next steps.
 - `writing-pr-descriptions`: Drafts, checks, and updates concise PR titles and descriptions against the final diff and repository conventions.
 - `writing-tests`: Guidance for meaningful tests, evidence-backed expectation changes, safe consolidation, and proportionate verification.
@@ -49,12 +47,14 @@ Use `skillyard` to subscribe Codex and Amp to the published repo:
 ```bash
 skillyard setup
 skillyard subscribe github:lox/agent-skills --include '*' --target codex --force
-skillyard subscribe github:lox/agent-skills --include '*' --exclude consulting-librarian --exclude slack --target amp --force
+skillyard subscribe github:lox/agent-skills --include '*' --exclude consulting-librarian --target amp --force
 ```
 
-`mise run install` runs the two `subscribe` commands. The `--force` flag is useful when migrating old repo-owned symlinks; omit it if you want `skillyard` to stop instead of replacing unmanaged links.
+`mise run install` runs the two `subscribe` commands; rerun it to refresh existing subscriptions before syncing. The `--force` flag is useful when migrating old repo-owned symlinks; omit it if you want `skillyard` to stop instead of replacing unmanaged links.
 
-`consulting-librarian` and `slack` are excluded from Amp because Amp already provides native Librarian and Slack tools. They remain upstream as explicit fallbacks for hosts without those capabilities.
+`consulting-librarian` is excluded from Amp because Amp already provides a native Librarian. It remains upstream as an explicit fallback for hosts without that capability.
+
+Notion and Slack tasks in Amp use its native integrations; neither needs a separate skill.
 
 After the subscription exists, use `skillyard sync github:lox/agent-skills` to reconcile installed links with the current locked source state.
 

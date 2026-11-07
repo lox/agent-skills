@@ -12,7 +12,6 @@ Keep Go CLIs predictable, scriptable, and easy to extend. Favor a thin `main`, a
 - Read `go.mod`, `main.go`, the `cmd/` package, config loading, adjacent tests, and `mise.toml`, `.mise.toml`, or `.tool-versions` when present before changing structure.
 - Follow the repository's parser, logger, version manager, and lint setup when present. For a small new command, consider the standard library before adding dependencies.
 - For a new multi-command CLI with no established stack, prefer `github.com/alecthomas/kong`, `github.com/charmbracelet/log`, `mise`, and `golangci-lint`; these are intentional defaults, not reasons to replace a working repository convention.
-- Open [references/slack-cli-patterns.md](references/slack-cli-patterns.md) when a concrete lox CLI example would help.
 - Keep CLI-specific structure here. Use broader Go package guidance only for non-CLI design questions.
 
 ## Work In This Order
