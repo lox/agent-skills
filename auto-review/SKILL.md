@@ -48,7 +48,10 @@ Use at most two full review passes. Within each full pass, use at most two fix-a
 4. Validate: run the smallest meaningful tests or lints first, then broader repo validation as needed. Use local project commands such as `mise`, package scripts, and language tooling before inventing new commands.
 5. Targeted recheck: review the fixes, original findings, affected call sites, tests, and likely blast radius with the relevant review lenses. Do not rerun the entire broad review merely because the diff changed.
 6. Repeat the fix and targeted-recheck round once when material findings remain and another focused fix is justified.
-7. Run a second full review only when the fixes materially changed the structure or behavior of the diff, the targeted recheck exposed cross-cutting risk, or material findings remain after the first pass's rounds.
+7. Run a second full review only when at least one of these is true:
+   - The fixes materially changed the diff's structure or behavior.
+   - The targeted recheck exposed cross-cutting risk.
+   - Material findings remain after the first pass's rounds.
 
 Each recheck must be fresh and read-only. Passing tests alone is not a recheck. If a fix changes the shape of the diff, expand the recheck to affected call sites and tests rather than assuming prior coverage still applies.
 
@@ -81,14 +84,13 @@ Apply stop states in this order: `blocked`, then `needs-attention`, then `ready`
 - Stage only files changed for this loop.
 - If pushing, use the current PR branch and avoid rewriting history unless the user requested it or repository policy permits it.
 - Do not merge a PR unless the user explicitly asks to merge, land, ship, or queue it.
-- If PR review comments or CI are involved, use the repository's existing PR or CI workflow skills rather than duplicating them. Use `handling-codex-reviews` only within the GitHub Codex review boundary above.
+- If PR review comments or CI are involved, use the repository's existing PR or CI workflow skills rather than duplicating them.
 
 ## Output
 
-Final response:
+Start the final response with `Status: ready | needs-attention | blocked`. Then include only the items that have content:
 
-1. State `Status: ready | needs-attention | blocked`.
-2. Summarize review iterations and fixes briefly.
-3. List validation commands and results.
-4. Call out residual risks or deferred items.
-5. Include branch, commit, and PR details when commits or pushes were made.
+- review iterations and fixes, briefly;
+- validation commands and results;
+- residual risks or deferred items;
+- branch, commit, and PR details when commits or pushes were made.

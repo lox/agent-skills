@@ -18,7 +18,7 @@ Use this frame as the common brief for each design.
 
 ### 2. Generate distinct designs
 
-Generate at least three meaningfully different interfaces sequentially by default. If the user explicitly requests delegation and the host supports it, independent designs may be delegated in parallel.
+Generate at least three meaningfully different interfaces. Delegate independent designs in parallel only when the brief is self-contained and the host's delegation rules permit it; otherwise work sequentially.
 
 Use the same technical brief for each design: file paths, coupling details, dependency category from [deepening.md](deepening.md), what sits behind the seam, and one different design constraint:
 

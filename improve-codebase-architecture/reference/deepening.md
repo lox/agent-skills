@@ -29,9 +29,10 @@ Third-party services (Stripe, Twilio, etc.) you don't control. The deepened modu
 - **One adapter means a hypothetical seam. Two adapters means a real one.** Don't introduce a port unless at least two adapters are justified (typically production + test). A single-adapter seam is just indirection.
 - **Internal seams vs external seams.** A deep module can have internal seams (private to its implementation, used by its own tests) as well as the external seam at its interface. Don't expose internal seams through the interface just because tests use them.
 
-## Testing strategy: replace, don't layer
+## Testing strategy: preserve contracts while moving tests
 
-- Old unit tests on shallow modules become waste once tests at the deepened module's interface exist — delete them.
-- Write new tests at the deepened module's interface. The **interface is the test surface**.
+- Move refactor-sensitive assertions to the deepened module's interface. The **interface is the test surface**.
+- Delete or consolidate an old test only when retained tests protect the same required contract and realistic failure mode. New interface tests or shared line coverage are not sufficient evidence.
+- Preserve distinct rejection, security, persistence, concurrency, compatibility, boundary, and numerical guarantees. Keep a test at a smaller stable interface when it protects a separate contract.
 - Tests assert on observable outcomes through the interface, not internal state.
-- Tests should survive internal refactors — they describe behaviour, not implementation. If a test has to change when the implementation changes, it's testing past the interface.
+- Validate replacement tests before removing superseded assertions. Do not change expectations or delete a failing test merely to make a refactor pass; follow `writing-tests` when it is available.

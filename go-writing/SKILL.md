@@ -85,7 +85,7 @@ Keep Go code boring, explicit, version-aware, and easy to verify. Start from rep
 
 ## Test Behavior First
 
-- Start with a failing test when changing behavior.
+- When a behavior change needs regression protection that existing tests do not give, start with a failing test.
 - Prefer table-driven tests for input or state matrices, and use subtests to name cases.
 - Use `t.Helper()` in helpers and `t.Parallel()` only when the test and its fixtures are concurrency-safe.
 - Test observable behavior and error semantics, not private implementation details.

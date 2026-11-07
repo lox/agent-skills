@@ -22,7 +22,9 @@ For each meaningful part of the diff, find the lowest rung that covers the need.
 5. Use an already-installed dependency before adding a package.
 6. Prefer a short idiomatic expression over a bespoke abstraction.
 7. Add the minimum direct, boring code needed for current requirements.
-8. Add structure—a helper, typed model, dispatcher, or module split—only when repeated conditionals, scattered feature checks, duplicated branches, or poor ownership show a missing model, and the result leaves the reader holding fewer concepts.
+8. Add structure (a helper, typed model, dispatcher, or module split) only when both conditions hold:
+   - Repeated conditionals, scattered feature checks, duplicated branches, or poor ownership show a missing model.
+   - The result leaves the reader holding fewer concepts.
 
 An abstraction must earn its keep. Indirection alone is not simplification.
 
@@ -46,7 +48,14 @@ Treat file size as a prompt to inspect cohesion, not a defect by itself. New str
 
 ## Do Not Simplify Away
 
-Do not remove input validation at trust boundaries, error handling that prevents data loss, security or accessibility requirements, calibration controls for real hardware or environment drift, observability needed to operate the system, or behavior explicitly required by the change.
+Do not remove:
+
+- Input validation at trust boundaries.
+- Error handling that prevents data loss.
+- Security or accessibility requirements.
+- Calibration controls for real hardware or environment drift.
+- Observability needed to operate the system.
+- Behavior explicitly required by the change.
 
 Between equally small approaches, prefer the one that remains correct at the relevant edges. Trivial one-liners need no test; one focused assertion is often enough for a narrow behavior.
 
@@ -58,5 +67,9 @@ Report only grounded findings tied to specific code in the diff. Each finding st
 2. why it increases conceptual load or future change risk
 3. the lowest remedy-ladder rung that covers the requirement
 4. the concrete smaller replacement, including meaningful deletion when practical
+
+A short paragraph can carry all four:
+
+> `internal/retry/policy.go` adds a `Policy` interface, a `DefaultPolicy` struct, and a factory for the one backoff schedule the code uses, so readers trace three types to find a constant. Delete all three and call `backoff.Retry(ctx, fn, 3, 100*time.Millisecond)` from the two call sites; add the interface when a second schedule exists.
 
 Prefer one strong deletion or reframing over several nits. Be direct without being rude. If the diff is already minimal, idiomatic, and well placed, say so and stop rather than manufacturing findings.

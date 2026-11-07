@@ -40,7 +40,11 @@ Use a bounded loop, normally no more than three fix cycles. Batch related fixes 
 4. **Clear branch and review blockers**
    - Rebase or merge the base according to repository convention and resolve conflicts with the smallest correct change.
    - Classify feedback as actionable, already addressed, inaccurate, or requiring user judgement. Fix grounded items in one batch and run focused validation.
-   - Commit and push before replying. Reply inline with `Fixed in <sha>: <what changed>`; for top-level reviews include the review ID so later runs can correlate it.
+   - Commit and push before replying. Reply inline with `Fixed in <sha>: <what changed>`; for top-level reviews include the review ID so later runs can correlate it. When declining, give the evidence. For example:
+
+     > Fixed in a1b2c3d: `parseLimit` now rejects negative values, and the test covers -1 and 0.
+
+     > Not changed. `flush` already runs under `mu` (line 88), so taking the lock again here would deadlock on the retry path.
    - Add reactions only when they accurately acknowledge the feedback. Resolve a thread only after the pushed fix and reply are visible, then re-query unresolved threads.
    - Do not amend a commit after publishing replies that cite its SHA. Re-request only reviewers already participating, using their established mechanism; do not substitute or introduce a different bot.
 
