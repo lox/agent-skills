@@ -5,7 +5,7 @@ node = "lts"
 [tasks.install]
 description = "Subscribe Codex and Amp to these skills with skillyard"
 run = [
-  "skillyard subscribe github:lox/agent-skills --include '*' --target codex --force",
+  "skillyard subscribe github:lox/agent-skills --include '*' --exclude notion --target codex --force",
   "skillyard subscribe github:lox/agent-skills --include '*' --exclude consulting-librarian --target amp --force",
 ]
 

@@ -44,15 +44,15 @@ Use `skillyard` to subscribe Codex and Amp to the published repo:
 
 ```bash
 skillyard setup
-skillyard subscribe github:lox/agent-skills --include '*' --target codex --force
+skillyard subscribe github:lox/agent-skills --include '*' --exclude notion --target codex --force
 skillyard subscribe github:lox/agent-skills --include '*' --exclude consulting-librarian --target amp --force
 ```
 
-`mise run install` runs the two `subscribe` commands. The `--force` flag is useful when migrating old repo-owned symlinks; omit it if you want `skillyard` to stop instead of replacing unmanaged links.
+`mise run install` runs the two `subscribe` commands; rerun it to update the host exclusions on existing subscriptions. The `--force` flag is useful when migrating old repo-owned symlinks; omit it if you want `skillyard` to stop instead of replacing unmanaged links.
 
 `consulting-librarian` is excluded from Amp because Amp already provides a native Librarian. It remains upstream as an explicit fallback for hosts without that capability.
 
-Notion and Slack tasks use Amp's native integrations. The `notion` skill retains write-safety policy; Slack needs no separate skill.
+Notion and Slack tasks in Amp use its native integrations. The `notion` skill retains write-safety policy and is excluded from Codex because it requires Amp's native tools. Slack needs no separate skill.
 
 After the subscription exists, use `skillyard sync github:lox/agent-skills` to reconcile installed links with the current locked source state.
 
